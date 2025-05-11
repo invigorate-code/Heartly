@@ -1,0 +1,16 @@
+{
+  "name": "Heartly - Care Management System",
+  "short_name": "Heartly",
+  "description": "A comprehensive, HIPAA-compliant management system for Adult Residential Facilities (ARFs) and Adult Residential Treatment Facilities (ARTFs)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#66cfcf",
+  "orientation": "any",
+  "scope": "/",
+  "categories": ["healthcare", "productivity", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
+

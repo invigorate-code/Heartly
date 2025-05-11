@@ -1,0 +1,50 @@
+# #############################################
+# This script is used to check the branch name
+# #############################################
+# The branch name must be in the following format:
+# (feature|feat|chore|fix|bugfix|hotfix|docs|refactor|test|build|perf|style|ci|release|merge)(.<ticket>?).<subject-example>
+# example: feature.123.add-login-feature
+# example: feat.123.add-login-feature
+# example: chore.123.add-login-feature
+# example: fix.123.add-login-feature
+# example: bugfix.123.add-login-feature
+# example: hotfix.123.add-login-feature
+# example: docs.123.add-login-feature
+# example: refactor.123.add-login-feature
+# #############################################
+# <type> is one of the following:
+# - feature: a new feature
+# - feat: a new feature
+# - chore: other changes that don't modify src or test files
+# - fix: a bug fix
+# - bugfix: a bug fix
+# - hotfix: a hotfix
+# - docs: documentation only changes
+# - refactor: a code change that neither fixes a bug nor adds a feature
+# - test: adding missing tests
+# - build: changes that affect the build system or external dependencies
+# - perf: a code change that improves performance
+# - style: changes that do not affect the meaning of the code (white-space, formatting, etc)
+# - ci: changes to CI configuration files and scripts
+# - release: a release commit
+# - merge: a merge commit
+# #############################################
+# <ticket> is the ticket number
+# <subject-example> is the subject of the commit
+# #############################################
+
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+REGEX="^(feature|feat|chore|fix|bugfix|hotfix|docs|refactor|test|build|perf|style|ci|release|merge)\.([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*)$"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+echo "Branch name: ${GREEN}$BRANCH${NC}"
+if ! echo "$BRANCH" | grep -qE "$REGEX"; then
+  echo "${RED}Your commit was rejected due to branching name"
+  echo "Please rename your branch with '(feature|feat|chore|fix|bugfix|hotfix|docs|refactor|test|build|perf|style|ci|release|merge)(.<ticket>?).<subject-example>' syntax${NC}"
+  exit 1
+fi
+
+pnpm lint-staged

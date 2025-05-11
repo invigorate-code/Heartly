@@ -1,0 +1,143 @@
+NOT Healthcare app!!
+
+Project Overview:
+The Heartly app is an advanced, HIPAA-compliant management system designed for Adult Residential Facilities (ARFs) and Adult Residential Treatment Facilities (ARTFs). Its primary objectives are to streamline operations, enhance resident care quality, ensure strict regulatory compliance, improve overall facility management, and provide a seamless experience for all users including owners, administrators, and direct support staff.
+
+Key Features and Modules:
+
+1. User Authentication & Authorization:
+
+1. Role-based access control (Owner, Facility Administrator, DSS)
+2. Schedule-based access for Direct Support Staff (DSS)
+3. Multi-factor authentication
+4. Password policies and reset procedures
+5. Session management with automatic logouts
+
+2. Facility Management:
+
+1. Facility creation, editing, and viewing
+2. Room management (add, edit, view)
+3. Facility-wide settings configuration
+4. Occupancy tracking and management
+5. Facility dashboard with key metrics
+
+3. Staff Management:
+
+1. Staff profiles (create, edit, view)
+2. Shift assignment and scheduling
+3. Time-off request and approval system
+4. Staff performance tracking and reporting
+5. Certification and training management
+
+4. Resident Management:
+
+1. Comprehensive resident profiles
+2. Medical history tracking and updates
+3. Document upload and management
+4. Daily notes and observations
+5. Resident list with filtering and search capabilities
+
+5. Medication Management:
+
+1. Medication database and inventory
+2. Medication assignment to residents
+3. Medication schedules and reminders
+4. Administration recording and tracking
+5. Missed medication logging and reporting
+6. Medication compliance reports
+
+6. Incident Reporting:
+
+1. Incident creation and categorization
+2. Incident editing and follow-up
+3. Incident viewing and listing
+4. Analytics on incident occurrences
+5. Notification system for new incidents
+6. Archiving of resolved incidents
+
+7. Documentation & Forms:
+
+1. Custom form template creation and editing
+2. Form filling and submission
+3. Viewing of completed forms
+4. Daily notes management
+5. Advanced search functionality for notes and forms
+6. Report generation from form data
+7. Document export capabilities
+
+8. Reporting & Analytics:
+
+1. Facility-wide dashboard for owners
+2. Staff performance reports
+3. Resident health trend analysis
+4. Medication compliance reporting
+5. Incident trend analysis
+6. Occupancy reporting across facilities
+7. Custom report builder
+8. Scheduled automated report generation
+
+9. Audit & Compliance:
+
+1. Comprehensive user action logging
+2. Data access attempt logging
+3. Audit log viewing for owners
+4. Data encryption at rest
+5. HIPAA compliance checks and reporting
+6. Data retention policy management
+7. Security breach alerts
+8. Compliance training tracking for staff
+
+Technical Specifications:
+
+- Frontend: Next.js with App Router for efficient, server-side rendered React applications
+- Backend: Supabase for real-time database, authentication, and serverless functions
+- UI Components: NextUI v2 for a modern, customizable component library
+- Styling: Tailwind CSS for utility-first, responsive design
+- State Management: React Context API and hooks for local state, Supabase for global state
+- API: RESTful API design with Supabase
+- Authentication: JWT-based authentication with Supabase Auth
+- Database: PostgreSQL (provided by Supabase)
+- File Storage: Supabase Storage for document and image management
+- Offline Capabilities: Service workers, IndexedDB for local storage
+- Performance Optimization: Code splitting, lazy loading, and caching strategies
+- Testing: Jest for unit testing, Cypress for end-to-end testing
+
+Key Considerations:
+
+- Accessibility: WCAG 2.1 AA compliance, screen reader compatibility, keyboard navigation
+- Performance: Optimize for low-bandwidth scenarios, implement efficient data fetching strategies
+- Scalability: Microservices architecture for future scaling, database indexing and optimization
+- Data Privacy: End-to-end encryption, data anonymization for analytics, strict access controls
+- User Experience: Intuitive UI/UX design, user testing and feedback incorporation
+- Compliance: Regular HIPAA compliance audits, staff training on data handling procedures
+- Integration: Design API endpoints for potential future integrations with external systems
+
+I am using nextui v2 for component library. ensure all components created are responsive it must still look good on all screen sizes. Also that they all have a solid and tasteful dark mode.
+
+When writing any supabase queries ensure you are referring to the types_db.ts file in the root of the project to ensure you are creating only queries that are possible and also are able to provide suggestions where to improve or what to add. Also refer to supabase.pdf file to ensure you are in line with supabase best practices.
+
+
+When writing and reviewing supaase code ensure that we are using createClient from server.ts file as little as possible as to reduce vulnerability and to ensure RLS is not bypassed. The createClient from client.ts is to be used mostly it will allow for RLS protection.
+
+Below is what is required from supabase in order for the app to be hipaa compliant, be mindful that not all the items are something that are related programmatically:
+
+You can use Supabase to store and process Protected Health Information (PHI). You are responsible for the following
+
+Signing a Business Associate Agreement (BAA) with Supabase. Submit a HIPAA add-on request to get started. You will need to be at least on the Team Plan to sign a BAA with us.
+
+Marking specific projects as HIPAA projects and addressing security issues raised by the advisor.
+Ensuring MFA is enabled on all Supabase accounts.
+Enabling Point in Time Recovery which requires at least a small compute add-on.
+Turning on SSL Enforcement.
+Enabling Network Restrictions.
+Disabling data sharing for Supabase AI editor in our dashboard.
+Specifically, "Opt-in to sending anonymous data to OpenAI" should be disabled (Opt-out).
+Complying with encryption requirements in the HIPAA Security Rule. Data is encrypted at rest and in transit by Supabase. You can consider encrypting the data at your application layer.
+Not using Edge functions to process PHI.
+Not storing PHI in public Storage buckets.
+Not transferring projects to a non-HIPAA organization.
+
+
+lets also make sure to follow next.js best practices and lets use api folder to keep as much code on the server and on an endpoint for the client to hit unless its something that requires RLS
+
+'@supabase/auth-helpers-nextjs' is deprecated just use client.ts supabase variable and sever.ts  createClient

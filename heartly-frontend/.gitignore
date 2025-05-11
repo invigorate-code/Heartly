@@ -1,0 +1,54 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# intellij
+/.idea/
+
+/.vscode/
+
+.supabase-info
+supabase/supabase_info.txt
+
+/react-email-starter/node_modules
+/react-email-starter/.next
+/react-email-starter/dist
+/react-email-starter/build
+/react-email-starter/public
+/react-email-starter/src/emails
+
+

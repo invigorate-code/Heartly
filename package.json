@@ -1,0 +1,26 @@
+{
+  "name": "heartly",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "generate:types": "node --loader ts-node/esm scripts/generate-types.js",
+    "build:backend": "pnpm --filter heartly-backend run build",
+    "sync-types": "pnpm run build:backend && pnpm run generate:types"
+  },
+  "devDependencies": {
+    "glob": "^11.0.2",
+    "json-schema-ref-parser": "^9.0.9",
+    "json-schema-to-typescript": "^15.0.4",
+    "ts-json-schema-generator": "^2.4.0",
+    "ts-morph": "^25.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "typeorm-schema-to-json-schema": "^1.0.3"
+  }
+}

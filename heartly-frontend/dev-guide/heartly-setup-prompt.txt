@@ -1,0 +1,141 @@
+Project Setup Instructions
+1. Tech Stack & Services
+Frontend: Next.js with TypeScript.
+UI Framework: TailwindCSS and NextUI v2.
+Backend: NestJS with TypeScript.
+Authentication: SuperTokens for authentication and Role-Based Access Control (RBAC), supporting multi-tenant scenarios.
+Database: PostgresSQL.
+ORM: Primarily TypeORM with an option to leverage Prisma for more advanced or introspective queries.
+API Architecture: REST endpoints provided by NestJS.
+Multi-Tenancy Strategy: All data is tied to a tenantId to facilitate easy data isolation and deletion.
+2. Goals
+Define & Optimize Database Schema
+
+Set up TypeORM (and/or Prisma) models to handle multi-tenancy.
+Attach tenantId to all relevant entities for data isolation and streamlined cleanup.
+Set Up Data Queries (REST Endpoints)
+
+Use NestJS controllers and services to create, read, update, and delete (CRUD) resources.
+Outline endpoints for user onboarding, facility creation, and staff invitations.
+Implement User Authentication & Authorization
+
+Configure SuperTokens for signup, login, and session management.
+Enforce RBAC via roles (e.g., admin, facility manager, staff, etc.).
+Ensure only users with a valid subscription can onboard new staff.
+Develop Feature Flows Iteratively
+
+Focus first on the onboarding flow (user signup, email verification, facility creation, staff invitations).
+Expand to subsequent features once onboarding is functional.
+Future-Proof for Performance
+
+While high performance is not the primary objective initially, ensure code structure and DB schema are scalable.
+3. Development Process
+A. Database Schema
+Entity/Model Design
+
+Define entities in both TypeORM and/or Prisma to ensure flexibility.
+Maintain a consistent naming convention.
+Include tenantId in all multi-tenant tables/models (e.g., Users, Facilities, StaffInvitations).
+Initial Migration
+
+Use TypeORM migrations (or Prisma migrations) to create the initial database schema.
+Verify all indexes and constraints align with multi-tenant requirements.
+B. Onboarding Flow Implementation
+Landing Page
+
+Provide a “Get Started” or “Sign Up” button for new users.
+Signup & Verification
+
+Handle user signup through SuperTokens (collect name, email, password).
+Implement email verification via SuperTokens or a custom flow if necessary.
+Facility Creation
+
+Once verified, prompt the user to create at least one facility.
+Attach tenantId to the facility record.
+Staff Invitation
+
+Allow the user to invite staff via email, automatically assigning them a tenantId and appropriate role in RBAC.
+C. Access Control & Multi-Tenancy
+SuperTokens Configuration
+
+Ensure correct session management and token-based authentication.
+Add custom claims (like tenantId or user roles) to tokens if needed.
+Role-Based Access Control
+
+Define roles (e.g., Admin, Manager, Staff).
+Restrict endpoints based on roles.
+Store role information in the user entity or via SuperTokens metadata.
+Data Isolation
+
+In each REST endpoint, filter or restrict queries based on tenantId.
+Validate user context matches the tenantId for data they’re accessing.
+D. API Queries & NestJS Integration
+Controller & Service Methods
+
+Create NestJS controllers for each entity (e.g., UserController, FacilityController).
+Implement business logic in services (e.g., UserService, FacilityService) to handle CRUD.
+Validation
+
+Use NestJS pipes for request validation (e.g., class-validator) to ensure correct data shape.
+Logging & Monitoring
+
+Integrate simple logging for debugging.
+Plan for more advanced monitoring (e.g., using tools like Sentry or Datadog) as the project grows.
+E. Testing & Optimization
+Unit & Integration Tests
+
+Test controllers and services using Jest.
+Mock database interactions with TypeORM or Prisma test utilities.
+Onboarding Flow QA
+
+Verify the user signup process, facility creation, and staff invitations all work end-to-end.
+Confirm RBAC prevents unauthorized actions.
+Performance & Scalability
+
+While not an immediate focus, keep the schema and queries efficient.
+Utilize indexing and caching strategies in MySQL if necessary.
+4. Deployment Notes (High-Level)
+Containerization: (Optional) Dockerize the NestJS server and Next.js frontend for ease of deployment.
+Environment Variables: Keep sensitive information (database credentials, SuperTokens keys) outside version control.
+CI/CD: Set up a simple pipeline (e.g., GitHub Actions) for automated testing and deployment checks.
+Summary
+By leveraging Next.js for the frontend, NestJS with SuperTokens for the backend, and MySQL (via TypeORM or Prisma), this stack provides a type-safe, REST-based solution. The core focus remains on robust multi-tenancy, RBAC, and a streamlined onboarding flow. Following these guidelines will help ensure a scalable, maintainable application that can evolve alongside your feature set and performance needs.
+|
+
+Additional Project Instructions & Clarifications
+File Storage & Encryption
+
+Provider: Use DigitalOcean Spaces for file storage, ensuring a signed BAA for HIPAA compliance.
+Encryption:
+At Rest: Confirm DigitalOcean Spaces encryption settings are enabled.
+In Transit: Enforce HTTPS/SSL for all file uploads and downloads.
+Access Controls: Employ the principle of least privilege. Assign role-based permissions to buckets or folders (e.g., per facility).
+Policy: Maintain a written policy covering encryption, access controls, logging, and breach response.
+Offline Capabilities
+
+Currently unsure of offline usage requirements. Consider using a basic PWA approach with service workers or IndexedDB if staff need to operate in low-connectivity areas.
+Revisit after MVP to gauge real-world demand.
+HIPAA Compliance & Security
+
+BAA: Already in progress with DigitalOcean; no additional third-party data processors at this time.
+Logging & Auditing: Implement granular, in-depth auditing (field-level changes, user actions, timestamps).
+Encryption: Data encrypted at rest (database, file storage) and in flight (HTTPS).
+Access Management: Ensure multi-factor authentication, strict password policies, and role-based access control (RBAC) across the app.
+Scheduling & Shifts
+
+For MVP, use a simple shift model (start/end times per staff member).
+Future expansions: split shifts, rotating schedules, on-call staff, or external integrations for time-tracking/hardware.
+Team & Workflows
+
+Solo developer for both front-end and back-end.
+Designs are already created; no external UX/design resource needed at this stage.
+Plan for 2-week sprints, with small, pointed user stories.
+Project Timeline & Sprint Planning
+
+2-Week Sprints: Use a light story-point system to keep tasks manageable (1-2 points for small tasks, 3-5 for medium, 8+ for large).
+Initial Focus: Authentication (SuperTokens), facility/staff/resident core features, file uploads, and HIPAA compliance basics.
+Post-MVP: Expand with advanced scheduling, offline features, deeper analytics, and any required external integrations.
+Deployment & Environments
+
+Initially, development and production might be merged. Add staging environment post-MVP.
+Prioritize rapid iteration to achieve “ASAP” soft launch; refine and harden security in subsequent sprints.
