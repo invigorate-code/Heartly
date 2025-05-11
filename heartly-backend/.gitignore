@@ -44,6 +44,7 @@ lerna-debug.log*
 .env.local
 .env.test
 .env.test.local
+.env.docker
 .env.development
 .env.development.local
 .env.staging
