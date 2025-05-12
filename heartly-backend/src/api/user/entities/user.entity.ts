@@ -21,7 +21,7 @@ export enum UserRole {
 @Entity('user')
 export class UserEntity extends AbstractEntity {
   @PrimaryColumn('uuid')
-  declare id: string;
+  override id: string = null;
 
   @Column({ length: 50 })
   firstName!: string;
@@ -43,6 +43,9 @@ export class UserEntity extends AbstractEntity {
 
   @Column({ default: 0 })
   onboarding_step?: number;
+
+  @Column('uuid')
+  tenantId!: string;
 
   @Column({
     type: 'enum',
