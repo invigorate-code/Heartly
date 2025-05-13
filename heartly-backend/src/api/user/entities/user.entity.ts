@@ -4,11 +4,9 @@ import { AbstractEntity } from '@/common/entities/abstract.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 
@@ -44,9 +42,6 @@ export class UserEntity extends AbstractEntity {
   @Column({ default: 0 })
   onboarding_step?: number;
 
-  @Column('uuid')
-  tenantId!: string;
-
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -58,22 +53,15 @@ export class UserEntity extends AbstractEntity {
   @Column({ type: 'jsonb', nullable: true })
   permissions?: Record<string, boolean>;
 
-
-  /** Owner ↔ Tenant one-to-one */
-  @OneToOne(/* target */ 'TenantEntity', /* inverse */ 'owner', {
-    onDelete: 'CASCADE',
-    eager: true,
-  })
-  tenantOwned?: TenantEntity;
-
   /** Many users belong to one tenant */
-  @ManyToOne(/* target */ 'TenantEntity', /* inverse */ 'users', {
-    nullable: false,
-    onDelete: 'CASCADE',
-    eager: true,
-  })
-  @JoinColumn({ name: 'tenantId' })
-  tenant!: TenantEntity;
+  // @ManyToOne(/* target */ 'TenantEntity', /* inverse */ 'users', {
+  //   nullable: true,
+  //   onDelete: 'CASCADE',
+  //   eager: true,
+  // })
+
+  @ManyToOne(/* target */ 'TenantEntity', /* inverse */ 'users')
+  tenant: TenantEntity;
 
   /** Staff assignments to facilities */
   @ManyToMany(/* target */ 'FacilityEntity', /* inverse */ 'staff', {

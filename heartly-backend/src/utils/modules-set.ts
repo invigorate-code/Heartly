@@ -71,9 +71,18 @@ async function createSubscriberProfileAndTenantRecord(
     throw new Error('Email already in use');
   }
 
+  // create tenant
+  const tenantRepository = AppDataSource.getRepository(TenantEntity);
+  const newTenant = tenantRepository.create({
+    name: formFields.find((f) => f.id === 'company')?.value,
+  });
+
+  const tenantResponse = await tenantRepository.save(newTenant);
+
   // create user
   const newUser = userRepository.create({
     id: userId,
+    tenant: tenantResponse,
     email: formFields.find((f) => f.id === 'actualEmail')?.value,
     username: formFields.find((f) => f.id === 'email')?.value,
     firstName: formFields.find((f) => f.id === 'firstName')?.value,
@@ -83,15 +92,13 @@ async function createSubscriberProfileAndTenantRecord(
   });
 
   const userResponse = await userRepository.save(newUser);
+  newTenant.users = [userResponse];
+  const tenantUser = await tenantRepository.save(newTenant);
+  console.log('tenant user', tenantUser);
 
-  // create tenant
-  const tenantRepository = AppDataSource.getRepository(TenantEntity);
-  const newTenant = tenantRepository.create({
-    name: formFields.find((f) => f.id === 'company')?.value,
-    ownerId: userId,
-  });
+  console.log('user response', userResponse);
 
-  const tenantResponse = await tenantRepository.save(newTenant);
+  console.log('tenant response', tenantResponse);
 
   return userResponse;
 }

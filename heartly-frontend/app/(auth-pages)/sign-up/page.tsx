@@ -7,7 +7,7 @@ import { useState, Suspense } from "react";
 import { EyeFilledIcon } from "@/shared/components/icons/eye.tsx";
 import { EyeSlashFilledIcon } from "@/shared/components/icons/eyeSlash.tsx";
 import { useSearchParams } from "next/navigation";
-import { authApi } from "@/app/api/poc-api-using-api-util/auth";
+import { signUpUser } from "@/app/api/poc-api-using-api-util/auth";
 
 const SignUpForm = () => {
   const [showPasswordText, setShowPasswordText] = useState(false);
@@ -21,7 +21,7 @@ const SignUpForm = () => {
       />
     </Suspense>
   );
-}
+};
 
 function SignUpFormContent({ showPasswordText, toggleVisibility }) {
   const searchParams = useSearchParams();
@@ -67,10 +67,10 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
         {
           id: "password",
           value: password,
-        }
-      ]
+        },
+      ],
     };
-    const response = await authApi.signUpUser(formData);
+    const response = await signUpUser(formData);
     if (response.status === "success") {
       console.log("User created successfully");
     } else {
@@ -98,12 +98,42 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
       <p className="pb-2 text-2xl font-bold">Get Started with Heartly</p>
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <div className="flex gap-3">
-          <Input name="firstName" placeholder="First Name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
-          <Input name="lastName" placeholder="Last Name" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+          <Input
+            name="firstName"
+            placeholder="First Name"
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <Input
+            name="lastName"
+            placeholder="Last Name"
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
         </div>
-        <Input name="actualEmail" placeholder="Email Address" type="email" value={actualEmail} onChange={(e) => setActualEmail(e.target.value)}/>
-        <Input name="username" placeholder="Username" type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
-        <Input name="companyName" placeholder="Organization Name" type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}/>
+        <Input
+          name="actualEmail"
+          placeholder="Email Address"
+          type="email"
+          value={actualEmail}
+          onChange={(e) => setActualEmail(e.target.value)}
+        />
+        <Input
+          name="username"
+          placeholder="Username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <Input
+          name="companyName"
+          placeholder="Organization Name"
+          type="text"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+        />
         <div className="flex gap-3">
           <Input
             endContent={
@@ -133,9 +163,7 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        <SubmitButton pendingText={"Signing Up..."}>
-          {"Sign Up"}
-        </SubmitButton>
+        <SubmitButton pendingText={"Signing Up..."}>{"Sign Up"}</SubmitButton>
         <Divider />
         <p className="text-center">
           Already have an account? <Link href="/login">Sign In</Link>

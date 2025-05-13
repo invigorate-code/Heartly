@@ -50,7 +50,6 @@ export class AuthService {
     // 3) Persist your own UserEntity, linking to that authUserId
     const user = this.userRepository.create({
       id: authUserId, // use the same UUID
-      tenantId: dto.tenantId,
       firstName: dto.firstName,
       lastName: dto.lastName,
       username: dto.username,
