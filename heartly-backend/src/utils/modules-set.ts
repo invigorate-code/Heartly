@@ -35,6 +35,7 @@ import EmailVerification from 'supertokens-node/recipe/emailverification';
 import Session from 'supertokens-node/recipe/session';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 import loggerFactory from './logger-factory';
 
 async function getUserUsingEmail(
@@ -57,7 +58,7 @@ async function getUserUsingEmail(
 async function createSubscriberProfileAndTenantRecord(
   formFields: { id: string; value: any }[],
   userId: string,
-): Promise<UserResponseDto> {
+): Promise<TenantEntity> {
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
@@ -71,29 +72,26 @@ async function createSubscriberProfileAndTenantRecord(
     throw new Error('Email already in use');
   }
 
-  // create user
-  const newUser = userRepository.create({
-    id: userId,
-    email: formFields.find((f) => f.id === 'actualEmail')?.value,
-    username: formFields.find((f) => f.id === 'email')?.value,
-    firstName: formFields.find((f) => f.id === 'firstName')?.value,
-    lastName: formFields.find((f) => f.id === 'lastName')?.value,
-    company: formFields.find((f) => f.id === 'company')?.value,
-    role: UserRole.OWNER,
-  });
-
-  const userResponse = await userRepository.save(newUser);
-
-  // create tenant
   const tenantRepository = AppDataSource.getRepository(TenantEntity);
-  const newTenant = tenantRepository.create({
+  const tenant = await tenantRepository.create({
+    id: uuid(),
     name: formFields.find((f) => f.id === 'company')?.value,
-    ownerId: userId,
+    users: [
+      {
+        id: userId,
+        email: formFields.find((f) => f.id === 'actualEmail')?.value,
+        username: formFields.find((f) => f.id === 'email')?.value,
+        firstName: formFields.find((f) => f.id === 'firstName')?.value,
+        lastName: formFields.find((f) => f.id === 'lastName')?.value,
+        company: formFields.find((f) => f.id === 'company')?.value,
+        role: UserRole.OWNER,
+      },
+    ],
   });
 
-  const tenantResponse = await tenantRepository.save(newTenant);
+  const savedTenant = await tenantRepository.save(tenant);
 
-  return userResponse;
+  return savedTenant;
 }
 
 async function getEmailUsingUserId(

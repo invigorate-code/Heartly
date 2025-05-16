@@ -8,7 +8,6 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 
@@ -47,6 +46,9 @@ export class UserEntity extends AbstractEntity {
   @Column('uuid')
   tenantId!: string;
 
+  @Column({ default: false })
+  isOwner!: boolean;
+
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -58,25 +60,17 @@ export class UserEntity extends AbstractEntity {
   @Column({ type: 'jsonb', nullable: true })
   permissions?: Record<string, boolean>;
 
-
-  /** Owner ↔ Tenant one-to-one */
-  @OneToOne(/* target */ 'TenantEntity', /* inverse */ 'owner', {
-    onDelete: 'CASCADE',
-    eager: true,
-  })
-  tenantOwned?: TenantEntity;
-
   /** Many users belong to one tenant */
-  @ManyToOne(/* target */ 'TenantEntity', /* inverse */ 'users', {
+  @ManyToOne('TenantEntity', 'users', {
     nullable: false,
     onDelete: 'CASCADE',
-    eager: true,
+    cascade: ['insert', 'update'],
   })
   @JoinColumn({ name: 'tenantId' })
   tenant!: TenantEntity;
 
   /** Staff assignments to facilities */
-  @ManyToMany(/* target */ 'FacilityEntity', /* inverse */ 'staff', {
+  @ManyToMany('FacilityEntity', 'staff', {
     cascade: ['insert', 'update'],
     eager: true,
   })

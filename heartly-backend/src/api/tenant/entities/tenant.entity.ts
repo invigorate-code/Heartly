@@ -1,5 +1,5 @@
 import type { FacilityEntity } from '@/api/facility/entities/facility.entity';
-import type { UserEntity } from '@/api/user/entities/user.entity';
+import { UserEntity } from '@/api/user/entities/user.entity';
 import { AbstractEntity } from '@/common/entities/abstract.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
@@ -8,25 +8,15 @@ export class TenantEntity extends AbstractEntity {
   @Column({ unique: true, length: 100 })
   name!: string;
 
-  @Column()
-  ownerId!: string;
-
-  /** The subscribing user who “owns” this tenant */
-  @OneToOne(/* target */ 'UserEntity', /* inverse */ 'tenantOwned', {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'ownerId' })
-  owner!: UserEntity;
-
   /** All users under this tenant */
-  @OneToMany(/* target */ 'UserEntity', /* inverse */ 'tenant', {
+  @OneToMany('UserEntity', 'tenant', {
     cascade: ['insert', 'update', 'remove'],
   })
-  users!: UserEntity[];
+  users?: UserEntity[];
 
   /** All facilities under this tenant */
-  @OneToMany(/* target */ 'FacilityEntity', /* inverse */ 'tenant', {
+  @OneToMany('FacilityEntity', 'tenant', {
     cascade: ['insert', 'update', 'remove'],
   })
-  facilities!: FacilityEntity[];
+  facilities?: FacilityEntity[];
 }
