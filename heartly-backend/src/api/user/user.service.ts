@@ -5,9 +5,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FacilityEntity } from '../facility/entities/facility.entity';
-import { CreateOwnerDto } from './dto/create-owner.dto';
-import { InviteUserDto } from './dto/invite-user.dto';
-import { UserEntity, UserRole } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.req.dto';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -18,44 +17,21 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createOwner(createOwnerDto: CreateOwnerDto): Promise<UserEntity> {
-    // Create owner with email (and later, send confirmation email)
-
+  async createUser(user: CreateUserDto, tenantId: string): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOne({
-      where: {
-        email: createOwnerDto.email,
-      },
+      where: { username: user.username },
     });
-
     if (existingUser) {
-      throw new ValidationException(ErrorCode.E001);
+      this.logger.error(`User with username ${user.username} already exists`);
+      throw new ValidationException(ErrorCode.E002);
     }
 
-    const user = new UserEntity();
-    user.id = createOwnerDto.id;
-    user.createdAt = createOwnerDto.createdAt;
-    user.updatedAt = createOwnerDto.updatedAt;
-    user.email = createOwnerDto.email;
-    user.role = UserRole.OWNER;
-
-    const savedUser = await this.userRepository.save(user);
-
-    this.logger.debug(savedUser);
-
-    return savedUser;
-  }
-
-  async inviteUser(
-    inviteUserDto: InviteUserDto,
-    tenantId: Uuid,
-  ): Promise<UserEntity> {
-    // For invited users, email may be null or optional.
-    const userData = {
-      ...inviteUserDto,
-      tenant: { id: tenantId },
-      role: UserRole.STAFF,
-    };
-    return await this.userRepository.save(userData);
+    // const newUser = this.userRepository.create({
+    //   ...user,
+    //   tenantId,
+    //   facilityId
+    // });
+    return;
   }
 
   async getUserFacilities(userId: string): Promise<FacilityEntity[]> {

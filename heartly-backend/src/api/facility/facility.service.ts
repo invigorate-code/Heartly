@@ -29,10 +29,16 @@ export class FacilityService {
     const { metadata } = await UserMetadata.getUserMetadata(userId);
 
     console.log('metadata', metadata, session.getUserId());
+    const tenant = await this.tenantService.findTenantById(metadata.tenantId);
+    if (!tenant) {
+      throw new NotFoundException(
+        `Tenant with id ${metadata.tenantId} not found`,
+      );
+    }
 
     const facilityWithTenantId = {
       ...facility,
-      tenantId: metadata.tenantId,
+      tenant: tenant,
       // projected client count
     };
 
@@ -43,16 +49,14 @@ export class FacilityService {
   async getFacilityById(id: string): Promise<FacilityResDto> {
     const facility = await this.facilityRepository.findOne({
       where: { id },
-      relations: ['tenant', 'staff'],
+      relations: { tenant: true, users: true },
     });
 
     if (!facility) {
       throw new NotFoundException(`Facility with id ${id} not found`);
     }
 
-    return plainToInstance(FacilityResDto, facility, {
-      excludeExtraneousValues: true,
-    });
+    return plainToInstance(FacilityResDto, facility);
   }
 
   async getAllFacilities(): Promise<FacilityResDto[]> {
@@ -61,9 +65,7 @@ export class FacilityService {
       throw new NotFoundException('No facilities found');
     }
     const allFacilities = allFacilityEntities.map((facility) =>
-      plainToInstance(FacilityResDto, facility, {
-        excludeExtraneousValues: true,
-      }),
+      plainToInstance(FacilityResDto, facility),
     );
 
     // QUESTION(@thompson): Do we want to paginate full volume sets like this?
@@ -71,27 +73,27 @@ export class FacilityService {
     return allFacilities;
   }
 
-  async getFacilitiesByTenantId(tenantId: string): Promise<FacilityResDto[]> {
-    const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
-      where: { tenantId },
-      relations: ['tenant', 'staff'],
-    });
+  // async getFacilitiesByTenantId(tenantId: string): Promise<FacilityResDto[]> {
+  //   const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
+  //     where: { tenantId },
+  //     relations: ['tenant', 'staff'],
+  //   });
 
-    if (allFacilitiesEntitiesByTenantId.length === 0) {
-      throw new NotFoundException(
-        `Facilities with tenantId ${tenantId} not found`,
-      );
-    }
+  //   if (allFacilitiesEntitiesByTenantId.length === 0) {
+  //     throw new NotFoundException(
+  //       `Facilities with tenantId ${tenantId} not found`,
+  //     );
+  //   }
 
-    const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
-      (facility) =>
-        plainToInstance(FacilityResDto, facility, {
-          excludeExtraneousValues: true,
-        }),
-    );
+  //   const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
+  //     (facility) =>
+  //       plainToInstance(FacilityResDto, facility, {
+  //         excludeExtraneousValues: true,
+  //       }),
+  //   );
 
-    return allFacilitiesByTenantId;
-  }
+  //   return allFacilitiesByTenantId;
+  // }
 
   async getLoggedInUsersFacilities(id: string): Promise<FacilityResDto[]> {
     const userFacilityEntities = (
@@ -144,7 +146,7 @@ export class FacilityService {
         // QUESTION(@thompson): Do we want to allow this?
         if (
           facility.tenantId &&
-          facility.tenantId !== existingFacility.tenantId
+          facility.tenantId !== existingFacility.tenant.id
         ) {
           try {
             await this.tenantService.findTenantById(facility.tenantId);

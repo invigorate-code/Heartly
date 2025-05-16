@@ -30,9 +30,6 @@ export class FacilityEntity extends AbstractEntity {
   @Column('int')
   projected_client_count!: number;
 
-  @Column('uuid')
-  tenantId!: string;
-
   /** Which tenant (subscriber) this facility belongs to */
   @ManyToOne(() => TenantEntity, (t) => t.facilities, {
     nullable: false,
@@ -48,5 +45,5 @@ export class FacilityEntity extends AbstractEntity {
     joinColumn: { name: 'facilityId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
   })
-  staff!: UserEntity[];
+  users!: UserEntity[];
 }

@@ -3,7 +3,7 @@ import { Uuid } from '@/common/types/common.type';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { UserRole } from '../entities/user.entity';
 
-export class InviteUserDto {
+export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   firstName: string;
@@ -27,4 +27,8 @@ export class InviteUserDto {
   @IsNotEmpty()
   @IsString()
   tenantId: Uuid;
+
+  @IsNotEmpty()
+  @IsString()
+  facilityId: Uuid;
 }

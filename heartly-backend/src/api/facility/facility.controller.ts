@@ -58,12 +58,11 @@ export class FacilityController {
   @VerifySession({
     roles: [UserRole.OWNER, UserRole.ADMIN],
   })
-  async getAllFacilitiesByTenantId(
-    @Body() body: { tenantId: string },
-  ): Promise<FacilityResDto[]> {
-    return await this.facilityService.getFacilitiesByTenantId(body.tenantId);
-  }
-
+  // async getAllFacilitiesByTenantId(
+  //   @Body() body: { tenantId: string },
+  // ): Promise<FacilityResDto[]> {
+  //   return await this.facilityService.getFacilitiesByTenantId(body.tenantId);
+  // }
   @Get('/getAllFacilitiesByStaffId')
   @VerifySession({ roles: [UserRole.STAFF] })
   async getAllFacilitiesByStaffId(

@@ -43,9 +43,6 @@ export class UserEntity extends AbstractEntity {
   @Column({ default: 0 })
   onboarding_step?: number;
 
-  @Column('uuid')
-  tenantId!: string;
-
   @Column({ default: false })
   isOwner!: boolean;
 
@@ -60,6 +57,9 @@ export class UserEntity extends AbstractEntity {
   @Column({ type: 'jsonb', nullable: true })
   permissions?: Record<string, boolean>;
 
+  @Column('uuid')
+  tenantId!: string;
+
   /** Many users belong to one tenant */
   @ManyToOne('TenantEntity', 'users', {
     nullable: false,
@@ -68,6 +68,9 @@ export class UserEntity extends AbstractEntity {
   })
   @JoinColumn({ name: 'tenantId' })
   tenant!: TenantEntity;
+
+  @Column('uuid')
+  facilityId!: string;
 
   /** Staff assignments to facilities */
   @ManyToMany('FacilityEntity', 'staff', {

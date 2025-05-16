@@ -21,7 +21,7 @@ export class TenantService {
   async findTenantById(id: string): Promise<TenantEntity> {
     const tenant = await this.tenantRepository.findOne({
       where: { id },
-      relations: ['owner', 'facilities'],
+      relations: ['users', 'facilities'],
     });
     if (!tenant) {
       throw new NotFoundException(`Tenant with id ${id} not found`);
@@ -31,7 +31,7 @@ export class TenantService {
 
   async findAllTenants(): Promise<TenantEntity[]> {
     return await this.tenantRepository.find({
-      relations: ['owner', 'facilities'],
+      relations: ['users', 'facilities'],
     });
   }
 }
