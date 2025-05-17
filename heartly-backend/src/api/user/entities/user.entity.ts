@@ -46,9 +46,6 @@ export class UserEntity extends AbstractEntity {
   @Column('uuid')
   tenantId!: string;
 
-  @Column({ default: false })
-  isOwner!: boolean;
-
   @Column({
     type: 'enum',
     enum: UserRole,
