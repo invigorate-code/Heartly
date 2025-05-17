@@ -49,12 +49,9 @@ export class FacilityResDto {
   @Expose()
   updatedAt: Date;
 
-  // QUESTION(@thompson): Is circular dependency the best approach here?
-  // Use type annotation for circular reference
   @Expose()
   tenant?: TenantEntity;
 
-  // @Type(() => UserResDto)
   @Expose()
   users?: UserEntity[];
 }
