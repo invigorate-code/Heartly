@@ -66,9 +66,6 @@ export class UserEntity extends AbstractEntity {
   @JoinColumn({ name: 'tenantId' })
   tenant!: TenantEntity;
 
-  @Column('uuid')
-  facilityId!: string;
-
   /** Staff assignments to facilities */
   @ManyToMany('FacilityEntity', 'staff', {
     cascade: ['insert', 'update'],

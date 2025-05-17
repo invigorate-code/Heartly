@@ -3,6 +3,7 @@ import { ErrorCode } from '@/constants/error-code.constant';
 import { ValidationException } from '@/exceptions/validation.exception';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import { Repository } from 'typeorm';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { CreateUserDto } from './dto/create-user.req.dto';
@@ -18,30 +19,42 @@ export class UserService {
   ) {}
 
   async createUser(user: CreateUserDto, tenantId: string): Promise<UserEntity> {
-    const existingUser = await this.userRepository.findOne({
-      where: { username: user.username },
-    });
+    try {
+      const existingUser = await this.userRepository.findOne({
+        where: { username: user.username },
+      });
 
-    if (existingUser) {
-      this.logger.error(`User with username ${user.username} already exists`);
-      throw new ValidationException(ErrorCode.E002);
+      if (existingUser) {
+        this.logger.error(`User with username ${user.username} already exists`);
+        throw new ValidationException(ErrorCode.E002);
+      }
+
+      const facilityEntity = await this.userRepository.findOne({
+        where: { id: user.facilityId },
+      });
+
+      if (!facilityEntity) {
+        this.logger.error(`Facility with id ${user.facilityId} not found`);
+        throw new ValidationException(ErrorCode.E003);
+      }
+
+      const newUser = this.userRepository.create({
+        ...user,
+        tenantId,
+        facilities: [facilityEntity],
+      });
+
+      await this.userRepository.save(newUser);
+
+      EmailPassword.signUp('public', user.username, user.password);
+
+      return newUser;
+    } catch (error) {
+      if (error instanceof ValidationException) {
+        throw error;
+      }
+      throw new ValidationException(error.message);
     }
-
-    const facilityEntity = await this.userRepository.findOne({
-      where: { id: user.facilityId },
-    });
-    if (!facilityEntity) {
-      this.logger.error(`Facility with id ${user.facilityId} not found`);
-      throw new ValidationException(ErrorCode.E003);
-    }
-
-    const newUser = this.userRepository.create({
-      ...user,
-      tenantId,
-      facilities: [facilityEntity],
-    });
-
-    return newUser;
   }
 
   async getUserFacilities(userId: string): Promise<FacilityEntity[]> {
