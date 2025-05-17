@@ -21,17 +21,27 @@ export class UserService {
     const existingUser = await this.userRepository.findOne({
       where: { username: user.username },
     });
+
     if (existingUser) {
       this.logger.error(`User with username ${user.username} already exists`);
       throw new ValidationException(ErrorCode.E002);
     }
 
-    // const newUser = this.userRepository.create({
-    //   ...user,
-    //   tenantId,
-    //   facilityId
-    // });
-    return;
+    const facilityEntity = await this.userRepository.findOne({
+      where: { id: user.facilityId },
+    });
+    if (!facilityEntity) {
+      this.logger.error(`Facility with id ${user.facilityId} not found`);
+      throw new ValidationException(ErrorCode.E003);
+    }
+
+    const newUser = this.userRepository.create({
+      ...user,
+      tenantId,
+      facilities: [facilityEntity],
+    });
+
+    return newUser;
   }
 
   async getUserFacilities(userId: string): Promise<FacilityEntity[]> {

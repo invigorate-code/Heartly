@@ -43,9 +43,6 @@ export class UserEntity extends AbstractEntity {
   @Column({ default: 0 })
   onboarding_step?: number;
 
-  @Column({ default: false })
-  isOwner!: boolean;
-
   @Column({
     type: 'enum',
     enum: UserRole,
