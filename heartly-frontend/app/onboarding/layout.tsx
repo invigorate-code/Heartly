@@ -1,4 +1,4 @@
-import Header from "@/shared/components/Header/Header.tsx";
+import Header from "@/components/Header/Header.tsx";
 
 const OnboardingLayout = async ({
   children,

@@ -1,6 +1,6 @@
 "use client";
 
-import { SubmitButton } from "@/shared/components/submit-button";
+import { SubmitButton } from "@/components/submit-button";
 import { Input, Button, Link, Alert } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";

@@ -3,7 +3,7 @@ import { UserProvider } from "@/shared/context/UserContext";
 import { HeroUIProvider } from "@heroui/react";
 import { ToastProvider } from "@heroui/toast";
 import { DrawerProvider } from "@/shared/context/DrawerContext";
-import { GlobalDrawer } from "@/shared/components/GlobalDrawer";
+import { GlobalDrawer } from "@/components/GlobalDrawer";
 
 export default function Providers({ children }) {
   return (

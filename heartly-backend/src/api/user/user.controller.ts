@@ -7,10 +7,10 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
+import { CreateUserDto } from './dto/create-user.req.dto';
 import { UserRole } from './entities/user.entity';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.req.dto';
-import UserMetadata  from 'supertokens-node/recipe/usermetadata';
 
 @ApiTags('users')
 @Controller({ path: 'users' })
@@ -32,7 +32,9 @@ export class UserController {
     @Session() session: SessionContainer,
     @Body() body: CreateUserDto,
   ) {
-    const { metadata } = await UserMetadata.getUserMetadata(session.getUserId());
+    const { metadata } = await UserMetadata.getUserMetadata(
+      session.getUserId(),
+    );
     const user = await this.userService.createUser(body, metadata.tenantId);
     return user;
   }

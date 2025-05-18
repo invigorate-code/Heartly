@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { useDrawer } from "@/shared/context/DrawerContext"; // Assuming you have this component
-import { ActionPopover } from "@/shared/components/popoverActionButton/action-popover.tsx";
+import { ActionPopover } from "@/components/popoverActionButton/action-popover.tsx";
 
 const PopoverDrawer: React.FC = () => {
   const { openDrawer } = useDrawer();

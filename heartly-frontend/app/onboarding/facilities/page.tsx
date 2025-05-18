@@ -20,8 +20,8 @@ import {
   TableRow,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
-import PencilIcon from "@/shared/components/icons/Pencil.tsx";
-import TrashIcon from "@/shared/components/icons/TrashIcon.tsx";
+import PencilIcon from "@/components/icons/Pencil.tsx";
+import TrashIcon from "@/components/icons/TrashIcon.tsx";
 import { validateFacility } from "@/app/onboarding/facilities/utils.ts";
 import {
   facilityTableColumns,
