@@ -66,7 +66,6 @@ export class FacilityService {
   async getFacilitiesByTenantId(
     session: SessionContainer,
   ): Promise<FacilityResDto[]> {
-    // Get user metadata to retrieve the proper tenantId
     const userId = session.getUserId();
     const { metadata } = await UserMetadata.getUserMetadata(userId);
     const tenantId = metadata.tenantId;

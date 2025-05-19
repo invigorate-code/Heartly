@@ -29,7 +29,9 @@ export class FacilityController {
   constructor(private readonly facilityService: FacilityService) {}
 
   @Post('/create')
-  @VerifySession()
+  @VerifySession({
+    roles: [UserRole.OWNER, UserRole.ADMIN],
+  })
   async createFacility(
     @Body() createFacilityDto: CreateFacilityDto,
     @Session() session: SessionContainer,
