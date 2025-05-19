@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
@@ -8,6 +12,7 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserEntity } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
+import { UpdateFacilityDto } from './dto/updateFacility.reg.dto';
 import { FacilityEntity } from './entities/facility.entity';
 
 @Injectable()
@@ -28,7 +33,6 @@ export class FacilityService {
 
     const { metadata } = await UserMetadata.getUserMetadata(userId);
 
-    console.log('metadata', metadata, session.getUserId());
     const tenant = await this.tenantService.findTenantById(metadata.tenantId);
     if (!tenant) {
       throw new NotFoundException(
@@ -59,6 +63,38 @@ export class FacilityService {
     return plainToInstance(FacilityResDto, facility);
   }
 
+  async getFacilitiesByTenantId(
+    session: SessionContainer,
+  ): Promise<FacilityResDto[]> {
+    // Get user metadata to retrieve the proper tenantId
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const tenantId = metadata.tenantId;
+
+    if (!tenantId || typeof tenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user session');
+    }
+
+    const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
+      where: {
+        tenant: { id: tenantId },
+      },
+      relations: { tenant: true, users: true },
+    });
+
+    if (allFacilitiesEntitiesByTenantId.length === 0) {
+      throw new NotFoundException(
+        `Facilities with tenantId ${tenantId} not found`,
+      );
+    }
+
+    const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
+      (facility) => plainToInstance(FacilityResDto, facility),
+    );
+
+    return allFacilitiesByTenantId;
+  }
+
   async getAllFacilities(): Promise<FacilityResDto[]> {
     const allFacilityEntities = await this.facilityRepository.find();
     if (allFacilityEntities.length === 0) {
@@ -68,113 +104,110 @@ export class FacilityService {
       plainToInstance(FacilityResDto, facility),
     );
 
-    // QUESTION(@thompson): Do we want to paginate full volume sets like this?
-    // QUESTION(@thompson): Do we want to filter this by tenantId only or keep for our sake?
     return allFacilities;
   }
 
-  // async getFacilitiesByTenantId(tenantId: string): Promise<FacilityResDto[]> {
-  //   const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
-  //     where: { tenantId },
-  //     relations: ['tenant', 'staff'],
-  //   });
+  async getLoggedInStaffFacilities(
+    session: SessionContainer,
+  ): Promise<FacilityResDto[]> {
+    const userId = session.getUserId();
 
-  //   if (allFacilitiesEntitiesByTenantId.length === 0) {
-  //     throw new NotFoundException(
-  //       `Facilities with tenantId ${tenantId} not found`,
-  //     );
-  //   }
+    const userWithFacilities = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { facilities: true },
+    });
 
-  //   const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
-  //     (facility) =>
-  //       plainToInstance(FacilityResDto, facility, {
-  //         excludeExtraneousValues: true,
-  //       }),
-  //   );
+    if (!userWithFacilities) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
 
-  //   return allFacilitiesByTenantId;
-  // }
-
-  async getLoggedInUsersFacilities(id: string): Promise<FacilityResDto[]> {
-    const userFacilityEntities = (
-      await this.userRepository.findOne({ where: { id } })
-    ).facilities;
-
-    if (userFacilityEntities.length === 0) {
+    if (userWithFacilities.facilities.length === 0) {
       throw new NotFoundException(
-        `Facilities for user with id ${id} not found`,
+        `No facilities found for user with id ${userId}`,
       );
     }
-    const userFacilities = userFacilityEntities.map((facility) =>
-      plainToInstance(FacilityResDto, facility, {
-        excludeExtraneousValues: true,
-      }),
+
+    return userWithFacilities.facilities.map((facility) =>
+      plainToInstance(FacilityResDto, facility),
     );
-    return userFacilities;
   }
 
-  // Question(@thompson): Do we want to update all fields or just some?
-  // Question(@thompson): Do we want to do this in a transaction?
   async updateFacility(
-    id: string,
-    facility: Partial<CreateFacilityDto>,
+    session: SessionContainer,
+    updateFacilityDto: UpdateFacilityDto,
   ): Promise<FacilityEntity> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
     return this.facilityRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        // Load with relations to ensure complete entity state
         const existingFacility = await transactionalEntityManager.findOne(
           FacilityEntity,
           {
-            where: { id },
-            relations: ['tenant', 'staff'],
+            where: { id: updateFacilityDto.id },
+            relations: ['tenant', 'users'],
           },
         );
 
         if (!existingFacility) {
-          throw new NotFoundException(`Facility with id ${id} not found`);
+          throw new NotFoundException(
+            `Facility with id ${updateFacilityDto.id} not found`,
+          );
         }
 
-        // Prevent tenant changes entirely
-
-        // if (
-        //   facility.tenantId &&
-        //   facility.tenantId !== existingFacility.tenantId
-        // ) {
-        //   throw new Error('Changing the tenant of a facility is not allowed');
-        // }
-
-        // QUESTION(@thompson): Do we want to allow this?
-        if (
-          facility.tenantId &&
-          facility.tenantId !== existingFacility.tenant.id
-        ) {
-          try {
-            await this.tenantService.findTenantById(facility.tenantId);
-          } catch (_error) {
-            throw new NotFoundException(
-              `Tenant with id ${facility.tenantId} not found`,
-            );
-          }
+        if (existingFacility.tenant.id !== userTenantId) {
+          throw new ForbiddenException(
+            'You do not have permission to update this facility',
+          );
         }
 
-        // Update and save
-        Object.assign(existingFacility, facility);
-        return await transactionalEntityManager.save(
+        const mergedFacility = transactionalEntityManager.merge(
           FacilityEntity,
           existingFacility,
+          updateFacilityDto,
+        );
+
+        return await transactionalEntityManager.save(
+          FacilityEntity,
+          mergedFacility,
         );
       },
     );
   }
 
   // Question(@thompson): Do we want to do a soft delete?
-  async deleteFacility(id: string): Promise<void> {
+  async deleteFacility(id: string, session: SessionContainer): Promise<void> {
     const existingFacility = await this.facilityRepository.findOne({
       where: { id },
+      relations: ['tenant'],
     });
+
     if (!existingFacility) {
       throw new NotFoundException(`Facility with id ${id} not found`);
     }
+
+    // Check if user has permission to delete this facility
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
+    if (existingFacility.tenant.id !== userTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this facility',
+      );
+    }
+
+    // Soft delete
+    // existingFacility.isDeleted = true;
+    // existingFacility.deletedAt = new Date();
+    // await this.facilityRepository.save(existingFacility);
+
+    // Hard delete
     await this.facilityRepository.delete(id);
   }
 }

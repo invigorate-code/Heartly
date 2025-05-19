@@ -18,6 +18,7 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
+import { UpdateFacilityDto } from './dto/updateFacility.reg.dto';
 import { FacilityEntity } from './entities/facility.entity';
 import { FacilityService } from './facility.service';
 
@@ -42,7 +43,6 @@ export class FacilityController {
   @Get('/getFacilityById')
   @VerifySession()
   async getFacilityById(@Body() body: { id: string }): Promise<FacilityResDto> {
-    //
     return await this.facilityService.getFacilityById(body.id);
   }
 
@@ -58,35 +58,42 @@ export class FacilityController {
   @VerifySession({
     roles: [UserRole.OWNER, UserRole.ADMIN],
   })
-  // async getAllFacilitiesByTenantId(
-  //   @Body() body: { tenantId: string },
-  // ): Promise<FacilityResDto[]> {
-  //   return await this.facilityService.getFacilitiesByTenantId(body.tenantId);
-  // }
-  @Get('/getAllFacilitiesByStaffId')
-  @VerifySession({ roles: [UserRole.STAFF] })
-  async getAllFacilitiesByStaffId(
-    @Body() body: { staffId: string },
+  async getAllFacilitiesByTenantId(
+    @Session() session: SessionContainer,
   ): Promise<FacilityResDto[]> {
-    return await this.facilityService.getLoggedInUsersFacilities(body.staffId);
+    return await this.facilityService.getFacilitiesByTenantId(session);
   }
 
-  @Patch('/:id')
+  @Get('/staff/facilities')
+  @VerifySession({ roles: [UserRole.STAFF] })
+  async getStaffFacilities(
+    @Session() session: SessionContainer,
+  ): Promise<FacilityResDto[]> {
+    return await this.facilityService.getLoggedInStaffFacilities(session);
+  }
+
+  @Patch('/updateFacility')
   @VerifySession({
     roles: [UserRole.ADMIN, UserRole.OWNER],
   })
   async updateFacility(
-    @Param('id') id: string,
-    @Body() updateFacilityDto: Partial<CreateFacilityDto>,
+    @Session() session: SessionContainer,
+    @Body() updateFacilityDto: UpdateFacilityDto,
   ): Promise<FacilityEntity> {
-    return await this.facilityService.updateFacility(id, updateFacilityDto);
+    return await this.facilityService.updateFacility(
+      session,
+      updateFacilityDto,
+    );
   }
 
   @Delete('/:id')
   @VerifySession({
     roles: [UserRole.ADMIN, UserRole.OWNER],
   })
-  async deleteFacility(@Param('id') id: string): Promise<void> {
-    return await this.facilityService.deleteFacility(id);
+  async deleteFacility(
+    @Param('id') id: string,
+    @Session() session: SessionContainer,
+  ): Promise<void> {
+    return await this.facilityService.deleteFacility(id, session);
   }
 }
