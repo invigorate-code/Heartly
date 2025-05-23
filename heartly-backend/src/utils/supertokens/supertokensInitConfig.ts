@@ -1,0 +1,297 @@
+import { SuperTokensModule } from 'supertokens-nestjs';
+import SuperTokens from 'supertokens-node';
+import { User } from 'supertokens-node/lib/build/types';
+import Dashboard from 'supertokens-node/recipe/dashboard';
+import EmailPassword from 'supertokens-node/recipe/emailpassword';
+import EmailVerification from 'supertokens-node/recipe/emailverification';
+import Session from 'supertokens-node/recipe/session';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
+import UserRoles from 'supertokens-node/recipe/userroles';
+import {
+  checkIfEmailAvailable,
+  createSubscriberProfileAndTenantRecord,
+  getEmailUsingUserId,
+  getUserUsingEmail,
+  isInputEmail,
+} from './supertokens-helper';
+
+export const SuperTokensInitModule = SuperTokensModule.forRoot({
+  framework: 'express',
+  supertokens: {
+    connectionURI: 'http://localhost:3567',
+    apiKey: process.env.SUPERTOKENS_API_KEY,
+  },
+  appInfo: {
+    appName: 'heartly',
+    apiDomain: 'http://localhost:3001',
+    websiteDomain: 'http://localhost:3000',
+    apiBasePath: '/auth',
+    websiteBasePath: '/auth',
+  },
+  recipeList: [
+    EmailPassword.init({
+      override: {
+        functions: (original) => {
+          return {
+            ...original,
+            signIn: async function (input) {
+              console.log('signIn', input);
+              if (isInputEmail(input.email)) {
+                const userId = (await getUserUsingEmail(input.email))?.id;
+                if (userId !== undefined) {
+                  const superTokensUser = await SuperTokens.getUser(userId);
+                  if (superTokensUser !== undefined) {
+                    // we find the right login method for this user
+                    // based on the user ID.
+                    const loginMethod = superTokensUser.loginMethods.find(
+                      (lM) =>
+                        lM.recipeUserId.getAsString() === userId &&
+                        lM.recipeId === 'emailpassword',
+                    );
+
+                    if (loginMethod !== undefined) {
+                      input.email = loginMethod.email!;
+                    }
+                  }
+                }
+              }
+              return original.signIn(input);
+            },
+          };
+        },
+        apis: (original) => {
+          return {
+            ...original,
+            generatePasswordResetTokenPOST: async function (input) {
+              const emailOrUsername = input.formFields.find(
+                (i) => i.id === 'email',
+              )!.value as string;
+              if (isInputEmail(emailOrUsername)) {
+                const userId = (await getUserUsingEmail(emailOrUsername))?.id;
+                if (userId !== undefined) {
+                  const superTokensUser = await SuperTokens.getUser(userId);
+                  if (superTokensUser !== undefined) {
+                    // we find the right login method for this user
+                    // based on the user ID.
+                    const loginMethod = superTokensUser.loginMethods.find(
+                      (lM) =>
+                        lM.recipeUserId.getAsString() === userId &&
+                        lM.recipeId === 'emailpassword',
+                    );
+                    if (loginMethod !== undefined) {
+                      // we replace the input form field's array item
+                      // to contain the username instead of the email.
+                      input.formFields = input.formFields.filter(
+                        (i) => i.id !== 'email',
+                      );
+                      input.formFields = [
+                        ...input.formFields,
+                        {
+                          id: 'email',
+                          value: loginMethod.email!,
+                        },
+                      ];
+                    }
+                  }
+                }
+              }
+
+              const username = input.formFields.find((i) => i.id === 'email')!
+                .value as string;
+              const superTokensUsers: User[] =
+                await SuperTokens.listUsersByAccountInfo(input.tenantId, {
+                  email: username,
+                });
+              // from the list of users that have this email, we now find the one
+              // that has this email with the email password login method.
+              const targetUser = superTokensUsers.find(
+                (u) =>
+                  u.loginMethods.find(
+                    (lM) =>
+                      lM.hasSameEmailAs(username) &&
+                      lM.recipeId === 'emailpassword',
+                  ) !== undefined,
+              );
+
+              if (targetUser !== undefined) {
+                if ((await getEmailUsingUserId(targetUser.id)) === undefined) {
+                  return {
+                    status: 'GENERAL_ERROR',
+                    message:
+                      'You need to add an email to your account for resetting your password. Please contact support.',
+                  };
+                }
+              }
+              return original.generatePasswordResetTokenPOST!(input);
+            },
+            signUpPOST: async function (input) {
+              const email = input.formFields.find((f) => f.id === 'actualEmail')
+                ?.value as string;
+              const isEmailAvailable = await checkIfEmailAvailable(email);
+              const response = await original.signUpPOST!(input);
+              if (isEmailAvailable && response.status === 'OK') {
+                // sign up successful
+                await createSubscriberProfileAndTenantRecord(
+                  input.formFields,
+                  response.user.id,
+                );
+              }
+              return response;
+            },
+            signInPOST: async function (input) {
+              if (
+                isInputEmail(
+                  input.formFields.find((f) => f.id === 'email')!
+                    .value as string,
+                )
+              ) {
+                const userId = (
+                  await getUserUsingEmail(
+                    input.formFields.find((f) => f.id === 'email')!
+                      .value as string,
+                  )
+                )?.id;
+                if (userId !== undefined) {
+                  const superTokensUser = await SuperTokens.getUser(userId);
+                  if (superTokensUser !== undefined) {
+                    // we find the right login method for this user
+                    // based on the user ID.
+                    const authProfile = superTokensUser.loginMethods.find(
+                      (profile) =>
+                        profile.recipeUserId.getAsString() === userId &&
+                        profile.recipeId === 'emailpassword',
+                    );
+
+                    if (authProfile !== undefined) {
+                      input.formFields = input.formFields.filter(
+                        (i) => i.id !== 'email',
+                      );
+                      input.formFields = [
+                        ...input.formFields,
+                        {
+                          id: 'email',
+                          value: authProfile.email!,
+                        },
+                      ];
+                    }
+                  }
+                }
+              }
+              return original.signInPOST!(input);
+            },
+          };
+        },
+      },
+      signUpFeature: {
+        formFields: [
+          {
+            id: 'email',
+            validate: async (value) => {
+              if (typeof value !== 'string') {
+                return 'Please provide a string input.';
+              }
+
+              // first we check for if it's an email
+              if (
+                value.match(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                ) !== null
+              ) {
+                return undefined;
+              }
+
+              // since it's not an email, we check for if it's a correct username
+              if (value.length < 3) {
+                return 'Usernames must be at least 3 characters long.';
+              }
+              if (!value.match(/^[a-z0-9_-]+$/)) {
+                return 'Username must contain only alphanumeric, underscore or hyphen characters.';
+              }
+            },
+          },
+          {
+            id: 'actualEmail',
+            validate: async (value) => {
+              if (value === '') {
+                console.log('value is empty');
+                // this means that the user did not provide an email
+                return undefined;
+              }
+              if (
+                value.match(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                ) === null
+              ) {
+                return 'Email is invalid';
+              }
+
+              if ((await getUserUsingEmail(value)) !== undefined) {
+                return 'Email already in use. Please sign in, or use another email';
+              }
+            },
+            optional: true,
+          },
+          {
+            id: 'firstName',
+            validate: async (value) => {
+              if (!value) return 'First name is required';
+            },
+          },
+          {
+            id: 'lastName',
+            validate: async (value) => {
+              if (!value) return 'Last name is required';
+            },
+          },
+          {
+            id: 'company',
+            validate: async (value) => {
+              if (!value) return 'Company is required';
+            },
+          },
+          {
+            id: 'password',
+            validate: async (value) => {
+              if (value.length < 8) {
+                return 'Password must be 8+ characters';
+              }
+            },
+          },
+        ],
+      },
+      emailDelivery: {
+        override: (original) => {
+          return {
+            ...original,
+            sendEmail: async function (input) {
+              input.user.email = (await getEmailUsingUserId(input.user.id))!;
+              return original.sendEmail(input);
+            },
+          };
+        },
+      },
+    }), // initializes signin / sign up features
+    Session.init({ getTokenTransferMethod: () => 'cookie' }), // initializes session features
+    EmailVerification.init({
+      mode: 'OPTIONAL', // or "OPTIONAL"
+      emailDelivery: {
+        override: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            sendEmail: async function (input) {
+              // TODO: create and send email verification email
+              input.user.email = (await getEmailUsingUserId(input.user.id))!;
+
+              // Or use the original implementation which calls the default service,
+              // or a service that you may have specified in the emailDelivery object.
+              return originalImplementation.sendEmail(input);
+            },
+          };
+        },
+      },
+    }),
+    UserRoles.init(),
+    Dashboard.init(),
+    UserMetadata.init(),
+  ],
+});
