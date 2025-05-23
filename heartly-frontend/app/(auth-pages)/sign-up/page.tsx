@@ -7,7 +7,7 @@ import { useState, Suspense } from "react";
 import { EyeFilledIcon } from "@/components/icons/eye.tsx";
 import { EyeSlashFilledIcon } from "@/components/icons/eyeSlash.tsx";
 import { useSearchParams } from "next/navigation";
-import { authApi } from "@/app/api/poc-api-using-api-util/auth";
+import { signUpUser } from "@/app/api/poc-api-using-api-util/auth";
 
 const SignUpForm = () => {
   const [showPasswordText, setShowPasswordText] = useState(false);
@@ -25,8 +25,10 @@ const SignUpForm = () => {
 
 function SignUpFormContent({ showPasswordText, toggleVisibility }) {
   const searchParams = useSearchParams();
-  const status = searchParams.get("status");
   const message = searchParams.get("message");
+
+  const [status, setStatus] = useState("");
+  const [user, setUser] = useState("");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -70,16 +72,20 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
         }
       ]
     };
-    const response = await authApi.signUpUser(formData);
-    if (response.status === "success") {
-      console.log("User created successfully");
+    const response = await signUpUser(formData);
+    if (response.status == "OK") {
+      console.log("User created successfully from signup page");
+      setStatus(response.status)
+      setUser(response.user)
     } else {
-      console.error("User creation failed");
+      console.error("User creation failed from signup page");
+      console.log("error response from signup page", response);
     }
-    console.log(response);
   };
 
-  if (status === "success") {
+
+
+  if (status === "OK") {
     return (
       <div className="flex w-full max-w-lg flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
         <p className="pb-2 text-2xl font-bold">Success!</p>
