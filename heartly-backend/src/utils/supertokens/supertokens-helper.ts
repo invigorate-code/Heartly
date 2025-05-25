@@ -20,18 +20,30 @@ export async function getUserUsingEmail(
   return user;
 }
 
-export async function checkIfEmailAvailable(email?: string): Promise<boolean> {
-  if (email === null) return true;
+export async function checkIfEmailAndCompanyNameAvailable(
+  email?: string,
+  companyName?: string,
+): Promise<string | null> {
+  if (email === null) return null;
   const userRepository = AppDataSource.getRepository(UserEntity);
-  const user = await userRepository.findOne({
+  const userEmailLookup = await userRepository.find({
     where: { email },
   });
+  const userCompanyLookup = await userRepository.find({
+    where: { company: companyName },
+  });
 
-  if (user) {
-    return false;
+  if (userEmailLookup.length > 0) {
+    console.log('found user in checkIfEmailAndCompanyNameAvailable', userEmailLookup);
+    return 'EMAIL_ALREADY_IN_USE';
   }
 
-  return true;
+  if (userCompanyLookup.length > 0) {
+    console.log('found user in checkIfEmailAndCompanyNameAvailable', userCompanyLookup);
+    return 'COMPANY_NAME_ALREADY_IN_USE';
+  }
+
+  return null;
 }
 
 export async function createSubscriberProfileAndTenantRecord(
@@ -73,6 +85,8 @@ export async function getEmailUsingUserId(
   const user = await userRepository.findOne({
     where: { id: userId },
   });
+
+  console.log('user found in getEmailUsingUserId', user);
 
   return user?.email;
 }

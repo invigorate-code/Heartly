@@ -8,7 +8,7 @@ import Session from 'supertokens-node/recipe/session';
 import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import {
-  checkIfEmailAvailable,
+  checkIfEmailAndCompanyNameAvailable,
   createSubscriberProfileAndTenantRecord,
   getEmailUsingUserId,
   getUserUsingEmail,
@@ -19,7 +19,7 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
   framework: 'express',
   supertokens: {
     connectionURI: 'http://localhost:3567',
-    apiKey: process.env.SUPERTOKENS_API_KEY,
+    apiKey: process.env.ST_API_KEY,
   },
   appInfo: {
     appName: 'heartly',
@@ -127,15 +127,28 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
             signUpPOST: async function (input) {
               const email = input.formFields.find((f) => f.id === 'actualEmail')
                 ?.value as string;
-              const isEmailAvailable = await checkIfEmailAvailable(email);
+              const companyName = input.formFields.find(
+                (f) => f.id === 'company',
+              )?.value as string;
+              const isEmailAndCompanyNameAvailable =
+                await checkIfEmailAndCompanyNameAvailable(email, companyName);
+
+              if (isEmailAndCompanyNameAvailable !== null) {
+                return {
+                  status: 'GENERAL_ERROR',
+                  message: isEmailAndCompanyNameAvailable,
+                };
+              }
+
               const response = await original.signUpPOST!(input);
-              if (isEmailAvailable && response.status === 'OK') {
-                // sign up successful
+
+              if (response.status === 'OK') {
                 await createSubscriberProfileAndTenantRecord(
                   input.formFields,
                   response.user.id,
                 );
               }
+
               return response;
             },
             signInPOST: async function (input) {
@@ -273,7 +286,7 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
     }), // initializes signin / sign up features
     Session.init({ getTokenTransferMethod: () => 'cookie' }), // initializes session features
     EmailVerification.init({
-      mode: 'OPTIONAL', // or "OPTIONAL"
+      mode: 'REQUIRED', // or "OPTIONAL"
       emailDelivery: {
         override: (originalImplementation) => {
           return {
@@ -284,7 +297,13 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
 
               // Or use the original implementation which calls the default service,
               // or a service that you may have specified in the emailDelivery object.
-              return originalImplementation.sendEmail(input);
+              return originalImplementation.sendEmail({
+                ...input,
+                emailVerifyLink: input.emailVerifyLink.replace(
+                  'http://localhost:3000/auth/verify-email',
+                  'http://localhost:3000/verify-email',
+                ),
+              });
             },
           };
         },
