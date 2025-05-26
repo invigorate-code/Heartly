@@ -18,6 +18,17 @@ export function LoginForm() {
   const [error, setError] = useState<SignInUserResponse>();
   const [confirmLinkSent, setConfirmLinkSent] = useState(false);
 
+  const errorMessageParser = (error: string) => {
+    switch(error) {
+      case "WRONG_CREDENTIALS_ERROR":
+        return "Invalid username or password";
+      case "EMAIL_NOT_VERIFIED_ERROR":
+        return "Email not verified";
+      default:
+        return error;
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = {
@@ -80,7 +91,7 @@ export function LoginForm() {
             : (error?.reason ?? "")
         }
         isVisible={error !== undefined}
-        title={error?.status}
+        title={errorMessageParser(error?.status ?? "")}
         variant="faded"
       />
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>

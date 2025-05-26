@@ -9,7 +9,7 @@ export async function updateSession(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   // Allow direct access to verification routes with tokens
-  if (path === "/auth/verify-email" && req.nextUrl.searchParams.has("token")) {
+  if (path === "/auth/verify-email") {
     return NextResponse.next();
   }
 

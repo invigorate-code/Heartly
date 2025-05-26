@@ -146,6 +146,18 @@ export const createResetPasswordLink = async (userId, email) => {
     });
   };
 
+  export const verifyEmail = async (token: string, tenantId: string) => {
+    return new Promise((resolve, reject) => {
+      api
+        .post("/api/auth/verify-email", { token, tenantId })
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          console.error("Error verifying email:", error);
+          reject(error);
+        });
+    });
+  };
+
 export const signOut = async () => {
     return new Promise((resolve, reject) => {
       api

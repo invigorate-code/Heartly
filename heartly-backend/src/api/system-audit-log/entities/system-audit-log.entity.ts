@@ -33,6 +33,6 @@ export class SystemAuditLogEntity extends AbstractEntity {
   type!: string;
 
   // Additional details stored as JSON (e.g., which PHI was accessed)
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   details?: Record<string, any>;
 }
