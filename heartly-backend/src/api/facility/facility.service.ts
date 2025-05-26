@@ -12,7 +12,7 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserEntity } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
-import { UpdateFacilityDto } from './dto/updateFacility.reg.dto';
+import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityEntity } from './entities/facility.entity';
 
 @Injectable()
@@ -149,7 +149,7 @@ export class FacilityService {
           FacilityEntity,
           {
             where: { id: updateFacilityDto.id },
-            relations: ['tenant', 'users'],
+            relations: { tenant: true, users: true },
           },
         );
 
@@ -183,7 +183,7 @@ export class FacilityService {
   async deleteFacility(id: string, session: SessionContainer): Promise<void> {
     const existingFacility = await this.facilityRepository.findOne({
       where: { id },
-      relations: ['tenant'],
+      relations: { tenant: true },
     });
 
     if (!existingFacility) {
@@ -202,11 +202,8 @@ export class FacilityService {
     }
 
     // Soft delete
-    // existingFacility.isDeleted = true;
-    // existingFacility.deletedAt = new Date();
-    // await this.facilityRepository.save(existingFacility);
-
-    // Hard delete
-    await this.facilityRepository.delete(id);
+    existingFacility.isDeleted = true;
+    existingFacility.deletedAt = new Date();
+    await this.facilityRepository.save(existingFacility);
   }
 }

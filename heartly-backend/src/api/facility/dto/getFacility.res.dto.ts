@@ -91,6 +91,21 @@ export class FacilityResDto {
   updatedAt: Date;
 
   @ApiProperty({
+    description: 'Indicates if the facility is deleted',
+    example: false,
+  })
+  @Expose()
+  isDeleted: boolean;
+
+  @ApiProperty({
+    description: 'Date when the facility was deleted, if applicable',
+    example: null,
+  })
+  @ClassField(() => Date, { nullable: true })
+  @Expose()
+  deletedAt?: Date | null;
+
+  @ApiProperty({
     description: 'Tenant details this facility belongs to',
     type: () => TenantEntity,
   })

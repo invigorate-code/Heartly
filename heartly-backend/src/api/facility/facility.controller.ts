@@ -18,7 +18,7 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
-import { UpdateFacilityDto } from './dto/updateFacility.reg.dto';
+import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityEntity } from './entities/facility.entity';
 import { FacilityService } from './facility.service';
 

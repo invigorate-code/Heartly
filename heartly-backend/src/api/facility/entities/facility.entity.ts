@@ -27,8 +27,11 @@ export class FacilityEntity extends AbstractEntity {
   @Column({ length: 10 })
   zip!: string;
 
-  @Column('int')
-  projected_client_count!: number;
+  @Column('int', { default: 0 })
+  projectedClientCount!: number;
+
+  @Column('boolean', { default: false })
+  isDeleted!: boolean;
 
   /** Which tenant (subscriber) this facility belongs to */
   @ManyToOne(() => TenantEntity, (t) => t.facilities, {
