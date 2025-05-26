@@ -52,7 +52,7 @@ export class FacilityService {
 
   async getFacilityById(id: string): Promise<FacilityResDto> {
     const facility = await this.facilityRepository.findOne({
-      where: { id },
+      where: { id, isDeleted: false },
       relations: { tenant: true, users: true },
     });
 
@@ -77,6 +77,7 @@ export class FacilityService {
     const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
       where: {
         tenant: { id: tenantId },
+        isDeleted: false,
       },
       relations: { tenant: true, users: true },
     });
@@ -120,13 +121,18 @@ export class FacilityService {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
 
-    if (userWithFacilities.facilities.length === 0) {
+    // Filter out soft-deleted facilities
+    const activeFacilities = userWithFacilities.facilities.filter(
+      (facility) => !facility.isDeleted,
+    );
+
+    if (activeFacilities.length === 0) {
       throw new NotFoundException(
         `No facilities found for user with id ${userId}`,
       );
     }
 
-    return userWithFacilities.facilities.map((facility) =>
+    return activeFacilities.map((facility) =>
       plainToInstance(FacilityResDto, facility),
     );
   }
@@ -179,7 +185,6 @@ export class FacilityService {
     );
   }
 
-  // Question(@thompson): Do we want to do a soft delete?
   async deleteFacility(id: string, session: SessionContainer): Promise<void> {
     const existingFacility = await this.facilityRepository.findOne({
       where: { id },
