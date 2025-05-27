@@ -7,8 +7,8 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { UserService } from './user.service';
 import { UserRole } from './entities/user.entity';
+import { UserService } from './user.service';
 @ApiTags('users')
 @Controller({ path: 'users' })
 export class UserController {
