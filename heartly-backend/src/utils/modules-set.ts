@@ -124,49 +124,17 @@ function generateModulesSet() {
     inject: [ConfigService],
   });
 
-  const modulesSet = process.env.MODULES_SET || 'monolith';
-
-  switch (modulesSet) {
-    case 'monolith':
-      customModules = [
-        SuperTokensInitModule,
-        ApiModule,
-        bullModule,
-        BackgroundModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-        MailModule,
-      ];
-      break;
-    case 'api':
-      customModules = [
-        SuperTokensInitModule,
-        ApiModule,
-        bullModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-        MailModule,
-      ];
-      break;
-    case 'background':
-      customModules = [
-        SuperTokensInitModule,
-        bullModule,
-        BackgroundModule,
-        cacheModule,
-        dbModule,
-        i18nModule,
-        loggerModule,
-      ];
-      break;
-    default:
-      console.error(`Unsupported modules set: ${modulesSet}`);
-      break;
-  }
+  customModules = [
+    SuperTokensInitModule,
+    ApiModule,
+    bullModule,
+    BackgroundModule,
+    cacheModule,
+    dbModule,
+    i18nModule,
+    loggerModule,
+    MailModule,
+  ];
 
   return imports.concat(customModules);
 }
