@@ -9,7 +9,7 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity, UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
@@ -50,9 +50,35 @@ export class FacilityService {
     return await this.facilityRepository.save(newFacility);
   }
 
-  async getFacilityById(id: string): Promise<FacilityResDto> {
+  async getFacilityById(
+    id: string,
+    session: SessionContainer,
+  ): Promise<FacilityResDto> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    // Get the user to check their role
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    // Build the where clause based on user role
+    const whereClause =
+      user.role === UserRole.OWNER
+        ? { id, tenant: { id: userTenantId } } // OWNER can see soft-deleted facilities
+        : { id, isDeleted: false, tenant: { id: userTenantId } }; // Others only see active facilities
+
     const facility = await this.facilityRepository.findOne({
-      where: { id, isDeleted: false },
+      where: whereClause,
       relations: { tenant: true, users: true },
     });
 
@@ -60,60 +86,29 @@ export class FacilityService {
       throw new NotFoundException(`Facility with id ${id} not found`);
     }
 
+    // Additional security check to ensure facility belongs to user's tenant
+    if (facility.tenant.id !== userTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to access this facility',
+      );
+    }
+
     return plainToInstance(FacilityResDto, facility);
   }
 
-  async getFacilitiesByTenantId(
+  async getLoggedInUserFacilities(
     session: SessionContainer,
   ): Promise<FacilityResDto[]> {
     const userId = session.getUserId();
     const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const tenantId = metadata.tenantId;
+    const userTenantId = metadata.tenantId;
 
-    if (!tenantId || typeof tenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user session');
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
     }
-
-    const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
-      where: {
-        tenant: { id: tenantId },
-        isDeleted: false,
-      },
-      relations: { tenant: true, users: true },
-    });
-
-    if (allFacilitiesEntitiesByTenantId.length === 0) {
-      throw new NotFoundException(
-        `Facilities with tenantId ${tenantId} not found`,
-      );
-    }
-
-    const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
-      (facility) => plainToInstance(FacilityResDto, facility),
-    );
-
-    return allFacilitiesByTenantId;
-  }
-
-  async getAllFacilities(): Promise<FacilityResDto[]> {
-    const allFacilityEntities = await this.facilityRepository.find();
-    if (allFacilityEntities.length === 0) {
-      throw new NotFoundException('No facilities found');
-    }
-    const allFacilities = allFacilityEntities.map((facility) =>
-      plainToInstance(FacilityResDto, facility),
-    );
-
-    return allFacilities;
-  }
-
-  async getLoggedInStaffFacilities(
-    session: SessionContainer,
-  ): Promise<FacilityResDto[]> {
-    const userId = session.getUserId();
 
     const userWithFacilities = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: userId, tenant: { id: userTenantId } },
       relations: { facilities: true },
     });
 
@@ -121,18 +116,22 @@ export class FacilityService {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
 
-    // Filter out soft-deleted facilities
-    const activeFacilities = userWithFacilities.facilities.filter(
-      (facility) => !facility.isDeleted,
-    );
+    // OWNER users can see both active and soft-deleted facilities
+    // Other users only see active facilities
+    const facilitiesToReturn =
+      userWithFacilities.role === UserRole.OWNER
+        ? userWithFacilities.facilities
+        : userWithFacilities.facilities.filter(
+            (facility) => !facility.isDeleted,
+          );
 
-    if (activeFacilities.length === 0) {
+    if (facilitiesToReturn.length === 0) {
       throw new NotFoundException(
         `No facilities found for user with id ${userId}`,
       );
     }
 
-    return activeFacilities.map((facility) =>
+    return facilitiesToReturn.map((facility) =>
       plainToInstance(FacilityResDto, facility),
     );
   }
@@ -154,10 +153,12 @@ export class FacilityService {
         const existingFacility = await transactionalEntityManager.findOne(
           FacilityEntity,
           {
-            where: { id: updateFacilityDto.id },
+            where: { id: updateFacilityDto.id, tenant: { id: userTenantId } },
             relations: { tenant: true, users: true },
           },
         );
+
+        // is this an owner
 
         if (!existingFacility) {
           throw new NotFoundException(
@@ -190,6 +191,8 @@ export class FacilityService {
       where: { id },
       relations: { tenant: true },
     });
+
+    // TODO: Check if the facility has PHI in it to soft delete otherwise hard delete
 
     if (!existingFacility) {
       throw new NotFoundException(`Facility with id ${id} not found`);
