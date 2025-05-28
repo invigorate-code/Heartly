@@ -30,6 +30,9 @@ export class FacilityEntity extends AbstractEntity {
   @Column('int', { default: 0 })
   projectedClientCount!: number;
 
+  @Column('int', { default: 0 })
+  roomCount?: number;
+
   @Column('boolean', { default: false })
   isDeleted!: boolean;
 

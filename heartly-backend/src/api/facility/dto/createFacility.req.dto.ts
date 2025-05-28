@@ -60,7 +60,15 @@ export class CreateFacilityDto {
   })
   @IsInt()
   @Min(0)
-  projected_client_count: number;
+  projectedClientCount: number;
+
+  @ApiProperty({
+    description: 'Projected number of clients at this facility',
+    example: 150,
+  })
+  @IsInt()
+  @Min(0)
+  roomCount: number;
 
   @ApiProperty({
     description: 'ID of the tenant this facility belongs to',

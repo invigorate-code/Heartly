@@ -64,7 +64,15 @@ export class FacilityResDto {
   })
   @NumberField()
   @Expose()
-  projected_client_count: number;
+  projectedClientCount: number;
+
+  @ApiProperty({
+    description: 'Projected number of rooms at this facility',
+    example: 150,
+  })
+  @NumberField()
+  @Expose()
+  roomCount: number;
 
   @ApiProperty({
     description: 'ID of the tenant this facility belongs to',
