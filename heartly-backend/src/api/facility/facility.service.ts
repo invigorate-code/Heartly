@@ -40,13 +40,16 @@ export class FacilityService {
       );
     }
 
-    const facilityWithTenantId = {
+    const facilityWithTenantId: Partial<FacilityEntity> = {
       ...facility,
       tenant: tenant,
-      // projected client count
     };
 
-    const newFacility = this.facilityRepository.create(facilityWithTenantId);
+    const newFacility = this.facilityRepository.create({
+      ...facilityWithTenantId,
+      users: [{ id: userId }],
+    });
+
     return await this.facilityRepository.save(newFacility);
   }
 

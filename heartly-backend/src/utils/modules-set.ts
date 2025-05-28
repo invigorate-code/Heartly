@@ -92,6 +92,8 @@ async function createSubscriberProfileAndTenantRecord(
 
   const savedTenant = await tenantRepository.save(tenant);
 
+  await UserMetadata.updateUserMetadata(userId, { tenantId: savedTenant.id });
+
   return savedTenant;
 }
 
