@@ -83,4 +83,15 @@ export class FacilityController {
   ): Promise<void> {
     return await this.facilityService.deleteFacility(id, session);
   }
+
+  @Patch('/:id/restore')
+  @VerifySession({
+    roles: [UserRole.OWNER],
+  })
+  async restoreFacility(
+    @Param('id') id: string,
+    @Session() session: SessionContainer,
+  ): Promise<FacilityEntity> {
+    return await this.facilityService.restoreFacility(id, session);
+  }
 }

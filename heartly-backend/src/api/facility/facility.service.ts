@@ -14,6 +14,7 @@ import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityEntity } from './entities/facility.entity';
+import { facilityHasPHI } from './facility.utils';
 
 @Injectable()
 export class FacilityService {
@@ -161,8 +162,6 @@ export class FacilityService {
           },
         );
 
-        // is this an owner
-
         if (!existingFacility) {
           throw new NotFoundException(
             `Facility with id ${updateFacilityDto.id} not found`,
@@ -190,21 +189,18 @@ export class FacilityService {
   }
 
   async deleteFacility(id: string, session: SessionContainer): Promise<void> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
     const existingFacility = await this.facilityRepository.findOne({
-      where: { id },
+      where: { id: id, tenant: { id: userTenantId } },
       relations: { tenant: true },
     });
-
-    // TODO: Check if the facility has PHI in it to soft delete otherwise hard delete
 
     if (!existingFacility) {
       throw new NotFoundException(`Facility with id ${id} not found`);
     }
-
-    // Check if user has permission to delete this facility
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
 
     if (existingFacility.tenant.id !== userTenantId) {
       throw new ForbiddenException(
@@ -212,9 +208,70 @@ export class FacilityService {
       );
     }
 
-    // Soft delete
-    existingFacility.isDeleted = true;
-    existingFacility.deletedAt = new Date();
-    await this.facilityRepository.save(existingFacility);
+    const hasPHI = await facilityHasPHI(id, this.facilityRepository);
+
+    if (hasPHI) {
+      // Soft delete - keep records for HIPAA compliance but mark as deleted
+      existingFacility.isDeleted = true;
+      existingFacility.deletedAt = new Date();
+      await this.facilityRepository.save(existingFacility);
+
+      console.log(`Facility ${id} was soft-deleted due to presence of PHI`);
+    } else {
+      // Hard delete - completely remove the facility as no PHI exists
+      await this.facilityRepository.remove(existingFacility);
+      console.log(`Facility ${id} was hard-deleted (no PHI detected)`);
+    }
+  }
+
+  async restoreFacility(
+    id: string,
+    session: SessionContainer,
+  ): Promise<FacilityEntity> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    // Only OWNER role should be able to undelete facilities
+    if (user.role !== UserRole.OWNER) {
+      throw new ForbiddenException(
+        'Only owners can restore deleted facilities',
+      );
+    }
+
+    const existingFacility = await this.facilityRepository.findOne({
+      where: { id, tenant: { id: userTenantId }, isDeleted: true },
+      relations: { tenant: true },
+    });
+
+    if (!existingFacility) {
+      throw new NotFoundException(`Deleted facility with id ${id} not found`);
+    }
+
+    if (existingFacility.tenant.id !== userTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to restore this facility',
+      );
+    }
+
+    existingFacility.isDeleted = false;
+    existingFacility.deletedAt = null;
+
+    const restoredFacility =
+      await this.facilityRepository.save(existingFacility);
+
+    return restoredFacility;
   }
 }
