@@ -30,17 +30,15 @@ export class UserActionAuditLogController {
     private readonly UserActionAuditLogService: UserActionAuditLogService,
   ) {}
 
-  // Only ADMIN and OWNER roles can view logs
   @Get()
   @VerifySession({ roles: [UserRole.ADMIN, UserRole.OWNER] })
   async getAllLogs(
     @Query() query: QueryUserActionAuditLogDto,
-    @Session() session: SessionContainer, // Optional: to access session data if needed
+    @Session() session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
     return this.UserActionAuditLogService.getLogs(query, session);
   }
 
-  // Optional: Endpoint to manually create an audit log
   @Post()
   @VerifySession({
     roles: [UserRole.ADMIN, UserRole.OWNER],
