@@ -1,8 +1,9 @@
 // audit-log.service.ts
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
 import { CreateUserActionAuditLogDto } from './dto/create-user-action-audit-log.dto';
 import { QueryUserActionAuditLogDto } from './dto/query-user-action-audit-log.dto';
@@ -22,7 +23,19 @@ export class UserActionAuditLogService {
     session: SessionContainer,
   ): Promise<UserActionAuditLogEntity> {
     try {
-      // const userId = session.getUserId();
+      const userId = session.getUserId();
+      const { metadata } = await UserMetadata.getUserMetadata(userId);
+      const userTenantId = metadata.tenantId;
+
+      if (!userTenantId || typeof userTenantId !== 'string') {
+        throw new Error('Valid tenant ID not found in user metadata');
+      }
+
+      if (userTenantId !== dto.targetTenantId) {
+        throw new ForbiddenException(
+          'You do not have permission to create audit logs for this tenant',
+        );
+      }
 
       const log = this.userActionAuditLogRepository.create({
         userId: dto.userId,
@@ -98,16 +111,41 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
+
     const entities = await this.buildLogQuery({}, query).getMany();
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
   /** Logs by actor */
   async getLogsByUser(
-    userId: string,
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
     const entities = await this.buildLogQuery({ userId }, query).getMany();
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
@@ -118,6 +156,18 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
     const entities = await this.buildLogQuery({ clientId }, query).getMany();
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
@@ -128,6 +178,18 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
     const entities = await this.buildLogQuery(
       { targetUserId },
       query,
@@ -141,6 +203,18 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
     const entities = await this.buildLogQuery(
       { targetFacilityId },
       query,
@@ -161,6 +235,18 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
+    const userId = session.getUserId();
+    const { metadata } = await UserMetadata.getUserMetadata(userId);
+    const userTenantId = metadata.tenantId;
+    if (!userTenantId || typeof userTenantId !== 'string') {
+      throw new Error('Valid tenant ID not found in user metadata');
+    }
+
+    if (userTenantId !== query.targetTenantId) {
+      throw new ForbiddenException(
+        'You do not have permission to read audit logs for this tenant',
+      );
+    }
     const entities = await this.buildLogQuery(filters, query).getMany();
     return plainToInstance(UserActionAuditLogResDto, entities);
   }

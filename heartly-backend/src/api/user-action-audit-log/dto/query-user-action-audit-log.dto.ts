@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class QueryUserActionAuditLogDto {
@@ -11,4 +11,11 @@ export class QueryUserActionAuditLogDto {
   @IsOptional()
   @IsString()
   keyword?: string;
+
+  @ApiProperty({
+    description: 'Unique identifier for the target tenant',
+    example: '11e9df6b-391c-4f74-8846-77c5083bee0f',
+  })
+  @IsString()
+  targetTenantId: string;
 }

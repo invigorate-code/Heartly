@@ -63,7 +63,7 @@ export class UserActionAuditLogController {
     @Query() query: QueryUserActionAuditLogDto,
     @Session() session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    return this.UserActionAuditLogService.getLogsByUser(userId, query, session);
+    return this.UserActionAuditLogService.getLogsByUser(query, session);
   }
 
   // Endpoint to get logs by client

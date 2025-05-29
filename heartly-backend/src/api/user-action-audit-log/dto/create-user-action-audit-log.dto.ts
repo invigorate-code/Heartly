@@ -22,11 +22,11 @@ export class CreateUserActionAuditLogDto {
   @IsString()
   targetUserId?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  targetFacilityId?: string;
+  targetFacilityId: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   targetTenantId?: string;
 }
