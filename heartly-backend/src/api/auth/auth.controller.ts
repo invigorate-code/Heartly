@@ -2,7 +2,6 @@ import { ApiPublic } from '@/decorators/http.decorators';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
-  PublicAccess,
   Session,
   SuperTokensAuthGuard,
   VerifySession,

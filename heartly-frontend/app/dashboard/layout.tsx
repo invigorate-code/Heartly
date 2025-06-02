@@ -1,7 +1,7 @@
-import Header from "@/shared/components/Header/Header";
-import Sidebar from "@/shared/components/sidebar/Sidebar";
+import Header from "@/components/Header/Header";
+import Sidebar from "@/components/sidebar/Sidebar";
 import { authApi } from "@/app/api/poc-api-using-api-util/auth";
-import PopoverDrawer from "@/shared/components/popoverActionButton/PopoverDrawer";
+import PopoverDrawer from "@/components/popoverActionButton/PopoverDrawer";
 
 export default async function DashboardLayout({
   children,

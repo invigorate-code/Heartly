@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import SidebarNavItems from "@/shared/components/sidebar/navitems.tsx";
+import SidebarNavItems from "@/components/sidebar/navitems.tsx";
 
 const Sidebar = () => {
   const [isScrolled, setIsScrolled] = useState(false);

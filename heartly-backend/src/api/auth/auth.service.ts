@@ -10,6 +10,7 @@ import { randomBytes } from 'crypto';
 import supertokens from 'supertokens-node';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import EmailVerification from 'supertokens-node/recipe/emailverification';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { CreateInvitedUserDto } from './dto/create-invite-user.dto';
@@ -61,6 +62,21 @@ export class AuthService {
 
     // Save the user to the database
     await this.userRepository.save(user);
+
+    // await UserMetadata.updateUserMetadata(user.id, { tenantId: user.tenantId });
+    console.log(
+      `About to update metadata for user ${user.id} with tenantId ${user.tenantId}`,
+    );
+
+    try {
+      const result = await UserMetadata.updateUserMetadata(user.id, {
+        tenantId: user.tenantId,
+      });
+      console.log('Metadata update result:', result);
+    } catch (error) {
+      console.error('Failed to update user metadata:', error);
+      // Continue execution even if metadata update fails
+    }
 
     // 4) Assign the user to the facility (this is the first facility)
     const facility = await this.facilityRepository.findOne({
