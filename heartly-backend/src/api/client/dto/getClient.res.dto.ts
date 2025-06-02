@@ -91,7 +91,14 @@ export class ClientResDto {
     example: '2023-06-15T14:30:00Z',
   })
   @ClassField(() => Date)
+  @Expose()
   createdAt: Date;
 
+  @ApiProperty({
+    description: 'When the client was last updated',
+    example: '2023-06-15T14:30:00Z',
+  })
+  @ClassField(() => Date)
+  @Expose()
   updatedAt: Date;
 }

@@ -1,13 +1,9 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
+import { BaseTenantService } from '../../common/base-tenant-service';
 import { FacilityService } from '../facility/facility.service';
 import { TenantService } from '../tenant/tenant.service';
 import { clientHasPHI } from './client.utils';
@@ -18,34 +14,28 @@ import { UpdateClientPhotoDto } from './dto/updateClientPhoto.req.dto';
 import { ClientEntity } from './entities/client.entity';
 
 @Injectable()
-export class ClientService {
+export class ClientService extends BaseTenantService {
   constructor(
     @InjectRepository(ClientEntity)
     private readonly clientRepository: Repository<ClientEntity>,
     private readonly tenantService: TenantService,
-    private readonly facilityService: FacilityService, // Assuming UserService is imported correctly
-  ) {}
+    private readonly facilityService: FacilityService,
+  ) {
+    super();
+  }
 
   async createClient(
     client: CreateClientDto,
     session: SessionContainer,
   ): Promise<ClientEntity> {
-    const userId = session.getUserId();
+    const userTenantId = await this.verifyTenantAccess(
+      session,
+      client.tenantId,
+    );
 
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-
-    const tenant = await this.tenantService.findTenantById(metadata.tenantId);
-
+    const tenant = await this.tenantService.findTenantById(userTenantId);
     if (!tenant) {
-      throw new NotFoundException(
-        `Tenant with id ${metadata.tenantId} not found`,
-      );
-    }
-
-    if (client.tenantId !== metadata.tenantId) {
-      throw new ForbiddenException(
-        `Client tenantId ${client.tenantId} does not match session tenantId ${metadata.tenantId}`,
-      );
+      throw new NotFoundException(`Tenant with id ${userTenantId} not found`);
     }
 
     const facility = await this.facilityService.getFacilityById(
@@ -56,13 +46,6 @@ export class ClientService {
     if (!facility) {
       throw new NotFoundException(
         `Facility with id ${client.facilityId} not found`,
-      );
-    }
-
-    // overkill?
-    if (facility.tenantId !== metadata.tenantId) {
-      throw new ForbiddenException(
-        `Facility with id ${client.facilityId} does not belong to tenant ${metadata.tenantId}`,
       );
     }
 
@@ -81,27 +64,15 @@ export class ClientService {
     id: string,
     session: SessionContainer,
   ): Promise<ClientResDto> {
-    const userId = session.getUserId();
-
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id: id },
+      where: { id: id, tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
-    }
-
-    if (client.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Client with id ${id} does not belong to tenant ${userTenantId}`,
-      );
     }
 
     return plainToInstance(ClientResDto, client);
@@ -111,13 +82,7 @@ export class ClientService {
     facilityId: string,
     session: SessionContainer,
   ): Promise<ClientResDto[]> {
-    const userId = session.getUserId();
-
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
     const facility = await this.facilityService.getFacilityById(
       facilityId,
@@ -126,12 +91,6 @@ export class ClientService {
 
     if (!facility) {
       throw new NotFoundException(`Facility with id ${facilityId} not found`);
-    }
-
-    if (facility.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Facility with id ${facilityId} does not belong to tenant ${userTenantId}`,
-      );
     }
 
     const clients = await this.clientRepository.find({
@@ -146,22 +105,10 @@ export class ClientService {
     tenantId: string,
     session: SessionContainer,
   ): Promise<ClientResDto[]> {
-    const userId = session.getUserId();
-
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
-
-    if (tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Tenant ID ${tenantId} does not match session tenant ID ${userTenantId}`,
-      );
-    }
+    const userTenantId = await this.verifyTenantAccess(session, tenantId);
 
     const clients = await this.clientRepository.find({
-      where: { tenantId: tenantId },
+      where: { tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
@@ -173,27 +120,15 @@ export class ClientService {
     updateClientNameDto: UpdateClientNameDto,
     session: SessionContainer,
   ): Promise<ClientEntity> {
-    const userId = session.getUserId();
-
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id },
+      where: { id, tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
-    }
-
-    if (client.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Client with id ${id} does not belong to tenant ${userTenantId}`,
-      );
     }
 
     Object.assign(client, updateClientNameDto);
@@ -206,25 +141,17 @@ export class ClientService {
     updateClientPhotoDto: UpdateClientPhotoDto,
     session: SessionContainer,
   ): Promise<ClientEntity> {
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
+
     const client = await this.clientRepository.findOne({
-      where: { id },
+      where: { id, tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
     }
-    if (client.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Client with id ${id} does not belong to tenant ${userTenantId}`,
-      );
-    }
+
     client.photo = updateClientPhotoDto.photo;
     return await this.clientRepository.save(client);
   }
@@ -234,14 +161,8 @@ export class ClientService {
     updateClientFacilityDto: { facilityId: string },
     session: SessionContainer,
   ): Promise<ClientEntity> {
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
-    // Verify the new facility exists and belongs to the same tenant
     const newFacility = await this.facilityService.getFacilityById(
       updateClientFacilityDto.facilityId,
       session,
@@ -254,18 +175,12 @@ export class ClientService {
     }
 
     const client = await this.clientRepository.findOne({
-      where: { id },
+      where: { id, tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
-    }
-
-    if (client.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Client with id ${id} does not belong to tenant ${userTenantId}`,
-      );
     }
 
     client.facilityId = updateClientFacilityDto.facilityId;
@@ -274,26 +189,15 @@ export class ClientService {
   }
 
   async deleteClient(id: string, session: SessionContainer): Promise<void> {
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id },
+      where: { id, tenantId: userTenantId },
       relations: { facility: true, tenant: true },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
-    }
-
-    if (client.tenantId !== userTenantId) {
-      throw new ForbiddenException(
-        `Client with id ${id} does not belong to tenant ${userTenantId}`,
-      );
     }
 
     // Check if client has PHI
@@ -305,12 +209,12 @@ export class ClientService {
       client.deletedAt = new Date();
       await this.clientRepository.save(client);
 
-      console.log(`Client ${id} was soft-deleted due to presence of PHI`);
+      this.logger.log(`Client ${id} was soft-deleted due to presence of PHI`);
     } else {
       // Hard delete - completely remove the client as no PHI exists
       await this.clientRepository.remove(client);
 
-      console.log(`Client ${id} was hard-deleted (no PHI detected)`);
+      this.logger.log(`Client ${id} was hard-deleted (no PHI detected)`);
     }
   }
 }
