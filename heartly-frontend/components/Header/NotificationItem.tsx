@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import { Avatar, Badge, Button } from "@heroui/react";
 import React from "react";
-import { cn } from "../../utils/cn";
+import { cn } from "../../../utils/cn";
 
 export type NotificationType = "default" | "request" | "file";
 

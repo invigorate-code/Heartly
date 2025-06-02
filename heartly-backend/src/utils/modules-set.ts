@@ -33,6 +33,7 @@ import Dashboard from 'supertokens-node/recipe/dashboard';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import EmailVerification from 'supertokens-node/recipe/emailverification';
 import Session from 'supertokens-node/recipe/session';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { v4 as uuid } from 'uuid';
@@ -90,6 +91,8 @@ async function createSubscriberProfileAndTenantRecord(
   });
 
   const savedTenant = await tenantRepository.save(tenant);
+
+  await UserMetadata.updateUserMetadata(userId, { tenantId: savedTenant.id });
 
   return savedTenant;
 }
@@ -413,6 +416,7 @@ function generateModulesSet() {
       }),
       UserRoles.init(),
       Dashboard.init(),
+      UserMetadata.init(),
     ],
   });
 

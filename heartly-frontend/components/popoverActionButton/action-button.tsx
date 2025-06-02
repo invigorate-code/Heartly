@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { Portal } from "@/shared/components/Portal";
+import { Portal } from "@/components/Portal";
 import { cn } from "@/shared/lib/utils";
 import { Plus } from "lucide-react";
 import type { ReactNode } from "react";

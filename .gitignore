@@ -51,6 +51,8 @@ lerna-debug.log*
 .env.production
 .env.production.local
 
+/heartly-backend/.env
+
 # temp directory
 .temp
 .tmp
@@ -70,3 +72,7 @@ docs/.vuepress/.temp
 docs/.vuepress/.cache
 # VuePress default build output directory
 docs/.vuepress/dist
+heartly-backend/.env.docker
+.env.docker
+.env.docker.example
+.env.example

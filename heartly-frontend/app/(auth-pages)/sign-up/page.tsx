@@ -1,11 +1,11 @@
 "use client";
 
 import { useAuthActions } from "@/app/(auth-pages)/actions";
-import { SubmitButton } from "@/shared/components/submit-button";
+import { SubmitButton } from "@/components/submit-button";
 import { Input, Button, Link, Divider } from "@heroui/react";
 import { useState, Suspense } from "react";
-import { EyeFilledIcon } from "@/shared/components/icons/eye.tsx";
-import { EyeSlashFilledIcon } from "@/shared/components/icons/eyeSlash.tsx";
+import { EyeFilledIcon } from "@/components/icons/eye.tsx";
+import { EyeSlashFilledIcon } from "@/components/icons/eyeSlash.tsx";
 import { useSearchParams } from "next/navigation";
 import { authApi } from "@/app/api/poc-api-using-api-util/auth";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { logger } from "@/shared/utils/logger";
+import { logger } from "@/utils/logger";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 
 export const useAuthActions = () => {

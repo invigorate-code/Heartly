@@ -43,9 +43,6 @@ export class UserEntity extends AbstractEntity {
   @Column({ default: 0 })
   onboarding_step?: number;
 
-  @Column('uuid')
-  tenantId!: string;
-
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -56,6 +53,9 @@ export class UserEntity extends AbstractEntity {
   // TODO: Add a column for dynamic permissions
   @Column({ type: 'jsonb', nullable: true })
   permissions?: Record<string, boolean>;
+
+  @Column('uuid')
+  tenantId!: string;
 
   /** Many users belong to one tenant */
   @ManyToOne('TenantEntity', 'users', {

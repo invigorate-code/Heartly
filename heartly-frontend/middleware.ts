@@ -1,4 +1,4 @@
-import { updateSession } from "@/shared/utils/supertokens/middleware.ts";
+import { updateSession } from "@/utils/supertokens/middleware";
 import { type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {

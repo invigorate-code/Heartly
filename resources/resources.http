@@ -1,0 +1,7 @@
+Create new Supertokens Dashboard User:
+
+curl --location --request POST 'http://localhost:3567/recipe/dashboard/user' \
+--header 'rid: dashboard' \
+--header 'api-key: XhYctM0oTC0yiWloI1xGbr0XBC' \
+--header 'Content-Type: application/json' \
+--data-raw '{"email": "testie@test.com","password": "testie123"}'

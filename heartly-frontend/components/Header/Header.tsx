@@ -25,9 +25,9 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import NotificationsCard from "./NotificationsCard";
-import { logger } from "@/shared/utils/logger";
+import { logger } from "@/utils/logger";
 import { redirect } from "next/navigation";
-import SidebarNavItems from "@/shared/components/sidebar/navitems.tsx";
+import SidebarNavItems from "@/components/sidebar/navitems.tsx";
 import { useUser } from "@/shared/context/UserContext";
 import { UserEntity } from "@/generated/types/UserEntity.js";
 import { signOut } from "@/app/api/poc-api-using-api-util/auth.ts";
