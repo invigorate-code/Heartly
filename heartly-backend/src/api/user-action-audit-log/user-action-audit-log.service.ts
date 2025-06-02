@@ -1,5 +1,5 @@
 // audit-log.service.ts
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
@@ -12,7 +12,7 @@ import { UserActionAuditLogEntity } from './entities/user-action-audit-log.entit
 
 @Injectable()
 export class UserActionAuditLogService {
-  private readonly logger = new Logger(UserActionAuditLogService.name);
+  private readonly logger = console; // Replace with a proper logger in production
   constructor(
     @InjectRepository(UserActionAuditLogEntity)
     private readonly userActionAuditLogRepository: Repository<UserActionAuditLogEntity>,
@@ -101,6 +101,16 @@ export class UserActionAuditLogService {
   ) {
     const qb = this.userActionAuditLogRepository.createQueryBuilder('log');
 
+    // Load related entities if requested
+    if (query.includeRelations) {
+      qb.leftJoinAndSelect('log.user', 'user')
+        .leftJoinAndSelect('log.targetUser', 'targetUser')
+        .leftJoinAndSelect('log.targetFacility', 'targetFacility')
+        .leftJoinAndSelect('log.targetTenant', 'targetTenant');
+      // Uncomment when client entity is active
+      // .leftJoinAndSelect('log.client', 'client');
+    }
+
     // Always filter by tenant ID for security
     qb.andWhere('log.targetTenantId = :tenantId', {
       tenantId: query.targetTenantId,
@@ -122,7 +132,30 @@ export class UserActionAuditLogService {
       qb.andWhere('log.action = :action', { action: query.action });
     if (query.keyword)
       qb.andWhere('log.details::text ILIKE :kw', { kw: `%${query.keyword}%` });
+
+    // Add pagination if page and pageSize are provided
+    if (query.page && query.pageSize) {
+      const skip = (query.page - 1) * query.pageSize;
+      qb.skip(skip).take(query.pageSize);
+    }
+
     return qb.orderBy('log.createdAt', 'DESC');
+  }
+
+  /**
+   * Add tenant verification to a query before execution
+   * @private
+   */
+  private async executeQueryWithTenantVerification(
+    query: ReturnType<typeof this.buildLogQuery>,
+    session: SessionContainer,
+    requestedTenantId: string,
+  ): Promise<UserActionAuditLogEntity[]> {
+    // Verify user has access to the requested tenant
+    await this.verifyTenantAccess(session, requestedTenantId);
+
+    // Execute the query
+    return await query.getMany();
   }
 
   /** Get all logs with optional filters */
@@ -130,10 +163,11 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    // Verify tenant access and continue only if authorized
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery({}, query).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery({}, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
@@ -143,9 +177,11 @@ export class UserActionAuditLogService {
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
     const userId = session.getUserId();
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery({ userId }, query).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery({ userId }, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
@@ -155,9 +191,11 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery({ clientId }, query).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery({ clientId }, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
@@ -167,12 +205,11 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery(
-      { targetUserId },
-      query,
-    ).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery({ targetUserId }, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
@@ -182,12 +219,11 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery(
-      { targetFacilityId },
-      query,
-    ).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery({ targetFacilityId }, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 
@@ -204,9 +240,11 @@ export class UserActionAuditLogService {
     query: QueryUserActionAuditLogDto,
     session: SessionContainer,
   ): Promise<UserActionAuditLogResDto[]> {
-    await this.verifyTenantAccess(session, query.targetTenantId);
-
-    const entities = await this.buildLogQuery(filters, query).getMany();
+    const entities = await this.executeQueryWithTenantVerification(
+      this.buildLogQuery(filters, query),
+      session,
+      query.targetTenantId,
+    );
     return plainToInstance(UserActionAuditLogResDto, entities);
   }
 }

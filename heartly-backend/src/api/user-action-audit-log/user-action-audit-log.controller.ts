@@ -18,6 +18,7 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserRole } from '../user/entities/user.entity';
 import { CreateUserActionAuditLogDto } from './dto/create-user-action-audit-log.dto';
 import { QueryUserActionAuditLogDto } from './dto/query-user-action-audit-log.dto';
+import { SearchAuditLogsDto } from './dto/search-audit-logs.req.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';
 import { UserActionAuditLogEntity } from './entities/user-action-audit-log.entity';
 import { UserActionAuditLogService } from './user-action-audit-log.service';
@@ -114,16 +115,10 @@ export class UserActionAuditLogController {
   @VerifySession({ roles: [UserRole.ADMIN, UserRole.OWNER] })
   async searchLogs(
     @Session() session: SessionContainer,
-    @Query()
-    params: {
-      userId?: string;
-      clientId?: string;
-      targetUserId?: string;
-      targetFacilityId?: string;
-    } & QueryUserActionAuditLogDto,
+    @Query() searchDto: SearchAuditLogsDto,
   ): Promise<UserActionAuditLogResDto[]> {
     const { userId, clientId, targetUserId, targetFacilityId, ...query } =
-      params;
+      searchDto;
     return this.UserActionAuditLogService.searchLogs(
       { userId, clientId, targetUserId, targetFacilityId },
       query,

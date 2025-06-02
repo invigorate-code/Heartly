@@ -2,7 +2,7 @@ import { FacilityEntity } from '@/api/facility/entities/facility.entity';
 import { TenantEntity } from '@/api/tenant/entities/tenant.entity';
 import { UserEntity } from '@/api/user/entities/user.entity';
 import { AbstractEntity } from '@/common/entities/abstract.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'user_action_audit_log' })
 export class UserActionAuditLogEntity extends AbstractEntity {
@@ -11,6 +11,7 @@ export class UserActionAuditLogEntity extends AbstractEntity {
   @JoinColumn({ name: 'userId' })
   user!: UserEntity;
   @Column()
+  @Index() // Add index for faster user filtering
   userId!: string;
 
   // // The client the action is performed on
@@ -39,6 +40,7 @@ export class UserActionAuditLogEntity extends AbstractEntity {
   @JoinColumn({ name: 'targetTenantId' })
   targetTenant!: TenantEntity;
   @Column()
+  @Index() // Add index to speed up tenant filtering
   targetTenantId!: string;
 
   // The action performed

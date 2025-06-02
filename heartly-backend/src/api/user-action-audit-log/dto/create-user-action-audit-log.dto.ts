@@ -28,5 +28,5 @@ export class CreateUserActionAuditLogDto {
 
   @IsNotEmpty()
   @IsString()
-  targetTenantId?: string;
+  targetTenantId: string;
 }
