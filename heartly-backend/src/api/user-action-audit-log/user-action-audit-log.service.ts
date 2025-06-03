@@ -1,46 +1,22 @@
 // audit-log.service.ts
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
+import { BaseTenantService } from '../../common/base-tenant-service';
 import { CreateUserActionAuditLogDto } from './dto/create-user-action-audit-log.dto';
 import { QueryUserActionAuditLogDto } from './dto/query-user-action-audit-log.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';
 import { UserActionAuditLogEntity } from './entities/user-action-audit-log.entity';
 
 @Injectable()
-export class UserActionAuditLogService {
-  private readonly logger = console; // Replace with a proper logger in production
+export class UserActionAuditLogService extends BaseTenantService {
   constructor(
     @InjectRepository(UserActionAuditLogEntity)
     private readonly userActionAuditLogRepository: Repository<UserActionAuditLogEntity>,
-  ) {}
-
-  /**
-   * Verifies user has access to the requested tenant and returns the user's tenantId
-   * @private
-   */
-  private async verifyTenantAccess(
-    session: SessionContainer,
-    requestedTenantId: string,
-  ): Promise<string> {
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
-
-    if (userTenantId !== requestedTenantId) {
-      throw new ForbiddenException(
-        'You do not have permission to access audit logs for this tenant',
-      );
-    }
-
-    return userTenantId;
+  ) {
+    super();
   }
 
   async createUserActionAuditLog(
@@ -55,7 +31,7 @@ export class UserActionAuditLogService {
         action: dto.action,
         targetFacilityId: dto.targetFacilityId,
         targetTenantId: dto.targetTenantId,
-        // clientId: dto.clientId,
+        clientId: dto.clientId,
         targetUserId: dto.targetUserId,
         details: dto.details,
       });
@@ -77,7 +53,7 @@ export class UserActionAuditLogService {
         action: dto.action,
         targetFacilityId: dto.targetFacilityId,
         targetTenantId: dto.targetTenantId,
-        // clientId: opts?.clientId,
+        clientId: dto.clientId,
         targetUserId: dto.targetUserId,
         details: dto.details,
       });
@@ -106,9 +82,8 @@ export class UserActionAuditLogService {
       qb.leftJoinAndSelect('log.user', 'user')
         .leftJoinAndSelect('log.targetUser', 'targetUser')
         .leftJoinAndSelect('log.targetFacility', 'targetFacility')
-        .leftJoinAndSelect('log.targetTenant', 'targetTenant');
-      // Uncomment when client entity is active
-      // .leftJoinAndSelect('log.client', 'client');
+        .leftJoinAndSelect('log.targetTenant', 'targetTenant')
+        .leftJoinAndSelect('log.client', 'client');
     }
 
     // Always filter by tenant ID for security
@@ -151,7 +126,7 @@ export class UserActionAuditLogService {
     session: SessionContainer,
     requestedTenantId: string,
   ): Promise<UserActionAuditLogEntity[]> {
-    // Verify user has access to the requested tenant
+    // Verify user has access to the requested tenant using the inherited method
     await this.verifyTenantAccess(session, requestedTenantId);
 
     // Execute the query

@@ -1,3 +1,4 @@
+import { ClientEntity } from '@/api/client/entities/client.entity';
 import { FacilityEntity } from '@/api/facility/entities/facility.entity';
 import { TenantEntity } from '@/api/tenant/entities/tenant.entity';
 import { UserEntity } from '@/api/user/entities/user.entity';
@@ -14,12 +15,12 @@ export class UserActionAuditLogEntity extends AbstractEntity {
   @Index() // Add index for faster user filtering
   userId!: string;
 
-  // // The client the action is performed on
-  // @ManyToOne(() => ClientEntity, { nullable: true })
-  // @JoinColumn({ name: 'clientId' })
-  // client?: ClientEntity;
-  // @Column({ nullable: true })
-  // clientId?: string;
+  // The client the action is performed on
+  @ManyToOne(() => ClientEntity, { nullable: true })
+  @JoinColumn({ name: 'clientId' })
+  client?: ClientEntity;
+  @Column({ nullable: true })
+  clientId?: string;
 
   // The user the action is performed for
   @ManyToOne(() => UserEntity, { nullable: true })
@@ -40,7 +41,7 @@ export class UserActionAuditLogEntity extends AbstractEntity {
   @JoinColumn({ name: 'targetTenantId' })
   targetTenant!: TenantEntity;
   @Column()
-  @Index() // Add index to speed up tenant filtering
+  @Index()
   targetTenantId!: string;
 
   // The action performed
