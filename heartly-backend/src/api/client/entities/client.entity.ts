@@ -6,38 +6,40 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 @Entity('client')
 export class ClientEntity extends AbstractEntity {
   @Column({ nullable: false })
-  firstName: string;
+  firstName!: string;
 
   @Column({ nullable: false })
-  lastName: string;
+  lastName!: string;
 
   @Column({ type: 'date', nullable: false })
-  birthDate: Date;
+  birthDate!: Date;
 
   @Column({ nullable: false })
-  uci: string;
+  uci!: string;
 
+  // Adding explicit foreign key column for facility
   @Column({ nullable: false })
-  facilityId: string;
+  facilityId!: string;
 
-  @ManyToOne(() => FacilityEntity)
+  @ManyToOne(() => FacilityEntity, { nullable: false })
   @JoinColumn({ name: 'facilityId' })
-  facility: FacilityEntity;
+  facility!: FacilityEntity;
 
+  // Adding explicit foreign key column for tenant
   @Column({ nullable: false })
-  tenantId: string;
+  tenantId!: string;
 
-  @ManyToOne(() => TenantEntity)
+  @ManyToOne(() => TenantEntity, { nullable: false })
   @JoinColumn({ name: 'tenantId' })
-  tenant: TenantEntity;
+  tenant!: TenantEntity;
 
   @Column({ default: false })
-  isDeleted: boolean;
+  isDeleted!: boolean;
 
   @Column({ nullable: true })
-  photo: string;
+  photo?: string;
 
   // @OneToOne(() => PhotoEntity, { nullable: true })
   // @JoinColumn({ name: 'photo' })
-  // photoEntity: PhotoEntity;
+  // photoEntity?: PhotoEntity;
 }

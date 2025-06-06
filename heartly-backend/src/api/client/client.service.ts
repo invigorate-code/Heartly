@@ -4,6 +4,7 @@ import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { BaseTenantService } from '../../common/base-tenant-service';
+import { FacilityEntity } from '../facility/entities/facility.entity';
 import { FacilityService } from '../facility/facility.service';
 import { TenantService } from '../tenant/tenant.service';
 import { clientHasPHI } from './client.utils';
@@ -20,6 +21,8 @@ export class ClientService extends BaseTenantService {
     private readonly clientRepository: Repository<ClientEntity>,
     private readonly tenantService: TenantService,
     private readonly facilityService: FacilityService,
+    @InjectRepository(FacilityEntity) // Add this line
+    private readonly facilityRepository: Repository<FacilityEntity>, // And this line
   ) {
     super();
   }
@@ -38,10 +41,12 @@ export class ClientService extends BaseTenantService {
       throw new NotFoundException(`Tenant with id ${userTenantId} not found`);
     }
 
-    const facility = await this.facilityService.getFacilityById(
-      client.facilityId,
-      session,
-    );
+    const facility = await this.facilityRepository.findOne({
+      where: {
+        id: client.facilityId,
+        tenant: { id: userTenantId },
+      },
+    });
 
     if (!facility) {
       throw new NotFoundException(
@@ -51,8 +56,11 @@ export class ClientService extends BaseTenantService {
 
     const clientWithMetadata: Partial<ClientEntity> = {
       ...client,
+      tenant,
+      facility,
+      // Ensure IDs are explicitly set to match the entities
       tenantId: tenant.id,
-      facilityId: client.facilityId,
+      facilityId: facility.id,
     };
 
     const newClient = this.clientRepository.create(clientWithMetadata);
@@ -67,7 +75,7 @@ export class ClientService extends BaseTenantService {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id: id, tenantId: userTenantId },
+      where: { id: id, tenant: { id: userTenantId } },
       relations: { facility: true, tenant: true },
     });
 
@@ -94,7 +102,7 @@ export class ClientService extends BaseTenantService {
     }
 
     const clients = await this.clientRepository.find({
-      where: { facilityId: facility.id, tenantId: userTenantId },
+      where: { facility: { id: facility.id }, tenant: { id: userTenantId } },
       relations: { facility: true, tenant: true },
     });
 
@@ -108,7 +116,7 @@ export class ClientService extends BaseTenantService {
     const userTenantId = await this.verifyTenantAccess(session, tenantId);
 
     const clients = await this.clientRepository.find({
-      where: { tenantId: userTenantId },
+      where: { tenant: { id: userTenantId } },
       relations: { facility: true, tenant: true },
     });
 
@@ -123,8 +131,7 @@ export class ClientService extends BaseTenantService {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id, tenantId: userTenantId },
-      relations: { facility: true, tenant: true },
+      where: { id, tenant: { id: userTenantId } },
     });
 
     if (!client) {
@@ -144,8 +151,7 @@ export class ClientService extends BaseTenantService {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id, tenantId: userTenantId },
-      relations: { facility: true, tenant: true },
+      where: { id, tenant: { id: userTenantId } },
     });
 
     if (!client) {
@@ -163,10 +169,12 @@ export class ClientService extends BaseTenantService {
   ): Promise<ClientEntity> {
     const userTenantId = await this.verifyTenantAccess(session);
 
-    const newFacility = await this.facilityService.getFacilityById(
-      updateClientFacilityDto.facilityId,
-      session,
-    );
+    const newFacility = await this.facilityRepository.findOne({
+      where: {
+        id: updateClientFacilityDto.facilityId,
+        tenant: { id: userTenantId },
+      },
+    });
 
     if (!newFacility) {
       throw new NotFoundException(
@@ -175,15 +183,16 @@ export class ClientService extends BaseTenantService {
     }
 
     const client = await this.clientRepository.findOne({
-      where: { id, tenantId: userTenantId },
-      relations: { facility: true, tenant: true },
+      where: { id, tenant: { id: userTenantId } },
     });
 
     if (!client) {
       throw new NotFoundException(`Client with id ${id} not found`);
     }
 
+    // Update both the facilityId and the facility relation
     client.facilityId = updateClientFacilityDto.facilityId;
+    client.facility = newFacility;
 
     return await this.clientRepository.save(client);
   }
@@ -192,8 +201,7 @@ export class ClientService extends BaseTenantService {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
-      where: { id, tenantId: userTenantId },
-      relations: { facility: true, tenant: true },
+      where: { id, tenant: { id: userTenantId } },
     });
 
     if (!client) {
