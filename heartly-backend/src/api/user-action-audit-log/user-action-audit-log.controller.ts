@@ -1,4 +1,3 @@
-// audit-log.controller.ts
 import {
   Body,
   Controller,
@@ -97,7 +96,7 @@ export class UserActionAuditLogController {
 
   // Endpoint to get logs by facility
   @Get('facilities/:targetFacilityId')
-  @VerifySession({ roles: [UserRole.ADMIN, UserRole.OWNER] })
+  @VerifySession()
   async getLogsByFacility(
     @Param('targetFacilityId') targetFacilityId: string,
     @Query() query: QueryUserActionAuditLogDto,
