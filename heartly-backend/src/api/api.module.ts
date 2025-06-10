@@ -3,10 +3,10 @@ import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
 import { FacilityModule } from './facility/facility.module';
 import { HealthModule } from './health/health.module';
-import { SystemAuditLogController } from './system-audit-log/system-audit-log.controller';
-import { SystemAuditLogModule } from './system-audit-log/system-audit-log.module';
-import { SystemAuditLogService } from './system-audit-log/system-audit-log.service';
 import { TenantModule } from './tenant/tenant.module';
+import { UserActionAuditLogController } from './user-action-audit-log/user-action-audit-log.controller';
+import { UserActionAuditLogModule } from './user-action-audit-log/user-action-audit-log.module';
+import { UserActionAuditLogService } from './user-action-audit-log/user-action-audit-log.service';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -16,10 +16,10 @@ import { UserModule } from './user/user.module';
     FacilityModule,
     TenantModule,
     UserModule,
-    SystemAuditLogModule,
     ClientModule,
+    UserActionAuditLogModule,
   ],
-  providers: [SystemAuditLogService],
-  controllers: [SystemAuditLogController],
+  providers: [UserActionAuditLogService],
+  controllers: [UserActionAuditLogController],
 })
 export class ApiModule {}
