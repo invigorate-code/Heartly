@@ -196,7 +196,7 @@ export class ClientService extends BaseTenantService {
     id: string,
     updateClientNameDto: UpdateClientNameDto,
     session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
@@ -209,14 +209,15 @@ export class ClientService extends BaseTenantService {
 
     Object.assign(client, updateClientNameDto);
 
-    return await this.clientRepository.save(client);
+    const savedClient = await this.clientRepository.save(client);
+    return plainToInstance(ClientResDto, savedClient);
   }
 
   async updateClientPhoto(
     id: string,
     updateClientPhotoDto: UpdateClientPhotoDto,
     session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const client = await this.clientRepository.findOne({
@@ -228,14 +229,15 @@ export class ClientService extends BaseTenantService {
     }
 
     client.photo = updateClientPhotoDto.photo;
-    return await this.clientRepository.save(client);
+    const savedClient = await this.clientRepository.save(client);
+    return plainToInstance(ClientResDto, savedClient);
   }
 
   async updateClientFacility(
     id: string,
     updateClientFacilityDto: { facilityId: string },
     session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     const userTenantId = await this.verifyTenantAccess(session);
 
     const newFacility = await this.facilityRepository.findOne({
@@ -263,7 +265,8 @@ export class ClientService extends BaseTenantService {
     client.facilityId = updateClientFacilityDto.facilityId;
     client.facility = newFacility;
 
-    return await this.clientRepository.save(client);
+    const savedClient = await this.clientRepository.save(client);
+    return plainToInstance(ClientResDto, savedClient);
   }
 
   async deleteClient(id: string, session: SessionContainer): Promise<void> {

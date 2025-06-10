@@ -31,7 +31,7 @@ export class FacilityService extends BaseTenantService {
   async createFacility(
     facility: CreateFacilityDto,
     session: SessionContainer,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     const userId = session.getUserId();
     const userTenantId = await this.verifyTenantAccess(session);
 
@@ -50,7 +50,8 @@ export class FacilityService extends BaseTenantService {
       users: [{ id: userId }],
     });
 
-    return await this.facilityRepository.save(newFacility);
+    const savedFacility = await this.facilityRepository.save(newFacility);
+    return plainToInstance(FacilityResDto, savedFacility);
   }
 
   async getFacilityById(
@@ -125,7 +126,7 @@ export class FacilityService extends BaseTenantService {
   async updateFacility(
     session: SessionContainer,
     updateFacilityDto: UpdateFacilityDto,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     const userTenantId = await this.verifyTenantAccess(session);
 
     return this.facilityRepository.manager.transaction(
@@ -150,10 +151,12 @@ export class FacilityService extends BaseTenantService {
           updateFacilityDto,
         );
 
-        return await transactionalEntityManager.save(
+        const savedFacility = await transactionalEntityManager.save(
           FacilityEntity,
           mergedFacility,
         );
+
+        return plainToInstance(FacilityResDto, savedFacility);
       },
     );
   }
@@ -189,7 +192,7 @@ export class FacilityService extends BaseTenantService {
   async restoreFacility(
     id: string,
     session: SessionContainer,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     const userId = session.getUserId();
     const userTenantId = await this.verifyTenantAccess(session);
 
@@ -223,6 +226,6 @@ export class FacilityService extends BaseTenantService {
     const restoredFacility =
       await this.facilityRepository.save(existingFacility);
 
-    return restoredFacility;
+    return plainToInstance(FacilityResDto, restoredFacility);
   }
 }

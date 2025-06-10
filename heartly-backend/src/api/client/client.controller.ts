@@ -21,7 +21,6 @@ import { CreateClientDto } from './dto/createClient.req.dto';
 import { ClientResDto } from './dto/getClient.res.dto';
 import { UpdateClientNameDto } from './dto/updateClientName.req.dto';
 import { UpdateClientPhotoDto } from './dto/updateClientPhoto.req.dto';
-import { ClientEntity } from './entities/client.entity';
 
 @ApiTags('client')
 @UseGuards(SuperTokensAuthGuard)
@@ -71,7 +70,7 @@ export class ClientController {
     @Param('id') id: string,
     @Body() updateClientNameDto: UpdateClientNameDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.updateClientName(
       id,
       updateClientNameDto,
@@ -85,7 +84,7 @@ export class ClientController {
     @Param('id') id: string,
     @Body() updateClientPhotoDto: UpdateClientPhotoDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.updateClientPhoto(
       id,
       updateClientPhotoDto,
