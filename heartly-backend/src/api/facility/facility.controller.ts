@@ -29,9 +29,7 @@ export class FacilityController {
   constructor(private readonly facilityService: FacilityService) {}
 
   @Post('/create')
-  @VerifySession({
-    roles: [UserRole.OWNER, UserRole.ADMIN],
-  })
+  @VerifySession()
   async createFacility(
     @Body() createFacilityDto: CreateFacilityDto,
     @Session() session: SessionContainer,
@@ -60,9 +58,7 @@ export class FacilityController {
   }
 
   @Patch('/updateFacility')
-  @VerifySession({
-    roles: [UserRole.ADMIN, UserRole.OWNER],
-  })
+  @VerifySession()
   async updateFacility(
     @Session() session: SessionContainer,
     @Body() updateFacilityDto: UpdateFacilityDto,

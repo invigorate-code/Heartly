@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateClientDto {
   @ApiProperty({
@@ -22,7 +22,8 @@ export class CreateClientDto {
     description: 'Birthdate of the client in ISO format',
     example: '2000-01-01T00:00:00Z',
   })
-  birthdate: Date;
+  @IsNotEmpty()
+  birthDate: Date;
 
   @ApiProperty({
     description: 'Unique Client Identifier (UCI)',
@@ -48,7 +49,7 @@ export class CreateClientDto {
   @IsNotEmpty()
   facilityId: string;
 
-  //   @IsOptional()
-  //   @IsString()
-  //   photo?: string;
+  @IsOptional()
+  @IsString()
+  photo?: string;
 }

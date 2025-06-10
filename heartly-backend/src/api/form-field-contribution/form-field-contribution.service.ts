@@ -10,18 +10,18 @@ export class FormFieldContributionService {
     private readonly formFieldContributionRepository: Repository<FormFieldContributionEntity>,
   ) {}
 
-  async trackFieldContribution(
-    fieldName: string,
-    contributorId: string,
-    placementInfoId: string,
-  ): Promise<FormFieldContributionEntity> {
-    const contribution = this.formFieldContributionRepository.create({
-      fieldName,
-      contributorId,
-      placementInfoId,
-    });
+  async trackFieldContributions(
+    contributions: Array<{
+      fieldName: string;
+      contributorId: string;
+      placementInfoId: string;
+    }>,
+  ): Promise<FormFieldContributionEntity[]> {
+    const contributionEntities = contributions.map((contribution) =>
+      this.formFieldContributionRepository.create(contribution),
+    );
 
-    return this.formFieldContributionRepository.save(contribution);
+    return this.formFieldContributionRepository.save(contributionEntities);
   }
 
   async getFieldContributionsByPlacementInfo(

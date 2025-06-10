@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SuperTokensAuthGuard } from 'supertokens-nestjs';
 import { FormFieldContributionEntity } from './entities/form-field-contribution.entity';
@@ -21,21 +13,21 @@ export class FormFieldContributionController {
     private readonly formFieldContributionService: FormFieldContributionService,
   ) {}
 
-  @Post()
-  async trackContribution(
-    @Body()
-    contributionData: {
-      fieldName: string;
-      contributorId: string;
-      placementInfoId: string;
-    },
-  ): Promise<FormFieldContributionEntity> {
-    return this.formFieldContributionService.trackFieldContribution(
-      contributionData.fieldName,
-      contributionData.contributorId,
-      contributionData.placementInfoId,
-    );
-  }
+  // @Post()
+  // async trackContribution(
+  //   @Body()
+  //   contributionData: {
+  //     fieldName: string;
+  //     contributorId: string;
+  //     placementInfoId: string;
+  //   },
+  // ): Promise<FormFieldContributionEntity> {
+  //   return this.formFieldContributionService.trackFieldContributions(
+  //     contributionData.fieldName,
+  //     contributionData.contributorId,
+  //     contributionData.placementInfoId,
+  //   );
+  // }
 
   @Get('placement/:id')
   async getByPlacementInfo(

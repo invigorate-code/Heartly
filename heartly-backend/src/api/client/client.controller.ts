@@ -34,14 +34,14 @@ export class ClientController {
   async createClient(
     @Body() client: CreateClientDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.createClient(client, session);
   }
 
   @Get('/getClientById/:id')
   @VerifySession()
   async getClientById(
-    @Param() id: string,
+    @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<ClientResDto> {
     return await this.clientService.getClientById(id, session);
@@ -94,7 +94,7 @@ export class ClientController {
   }
 
   @Delete('/deleteClient/:id')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async deleteClient(
     @Param('id') id: string,
     @Session() session: SessionContainer,

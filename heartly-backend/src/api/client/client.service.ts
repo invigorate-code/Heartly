@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
@@ -7,6 +11,7 @@ import { BaseTenantService } from '../../common/base-tenant-service';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { FacilityService } from '../facility/facility.service';
 import { TenantService } from '../tenant/tenant.service';
+import { UserEntity, UserRole } from '../user/entities/user.entity';
 import { clientHasPHI } from './client.utils';
 import { CreateClientDto } from './dto/createClient.req.dto';
 import { ClientResDto } from './dto/getClient.res.dto';
@@ -21,8 +26,10 @@ export class ClientService extends BaseTenantService {
     private readonly clientRepository: Repository<ClientEntity>,
     private readonly tenantService: TenantService,
     private readonly facilityService: FacilityService,
-    @InjectRepository(FacilityEntity) // Add this line
-    private readonly facilityRepository: Repository<FacilityEntity>, // And this line
+    @InjectRepository(FacilityEntity)
+    private readonly facilityRepository: Repository<FacilityEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {
     super();
   }
@@ -30,11 +37,30 @@ export class ClientService extends BaseTenantService {
   async createClient(
     client: CreateClientDto,
     session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
+    // Parse the birthDate string into a proper Date object if it's a string
+    if (typeof client.birthDate === 'string') {
+      client.birthDate = new Date(client.birthDate);
+    }
+
     const userTenantId = await this.verifyTenantAccess(
       session,
       client.tenantId,
     );
+
+    // Check for existing client with the same UCI in this tenant
+    const existingClient = await this.clientRepository.findOne({
+      where: {
+        uci: client.uci,
+        tenantId: client.tenantId,
+      },
+    });
+
+    if (existingClient) {
+      throw new ConflictException(
+        `Client with UCI ${client.uci} already exists in this tenant`,
+      );
+    }
 
     const tenant = await this.tenantService.findTenantById(userTenantId);
     if (!tenant) {
@@ -65,7 +91,11 @@ export class ClientService extends BaseTenantService {
 
     const newClient = this.clientRepository.create(clientWithMetadata);
 
-    return await this.clientRepository.save(newClient);
+    const savedClient = await this.clientRepository.save(newClient);
+
+    return plainToInstance(ClientResDto, savedClient, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async getClientById(
@@ -73,9 +103,21 @@ export class ClientService extends BaseTenantService {
     session: SessionContainer,
   ): Promise<ClientResDto> {
     const userTenantId = await this.verifyTenantAccess(session);
+    const userId = session.getUserId();
+
+    // Get user to determine role
+    const user = await this.userRepository.findOne({
+      where: { id: userId, tenant: { id: userTenantId } },
+    });
+
+    // Build the where clause based on user role
+    const whereClause =
+      user.role === UserRole.OWNER
+        ? { id, tenant: { id: userTenantId } } // OWNER can see soft-deleted clients
+        : { id, isDeleted: false, tenant: { id: userTenantId } }; // Others only see active clients
 
     const client = await this.clientRepository.findOne({
-      where: { id: id, tenant: { id: userTenantId } },
+      where: whereClause,
       relations: { facility: true, tenant: true },
     });
 
@@ -85,12 +127,17 @@ export class ClientService extends BaseTenantService {
 
     return plainToInstance(ClientResDto, client);
   }
-
   async getClientsByFacilityId(
     facilityId: string,
     session: SessionContainer,
   ): Promise<ClientResDto[]> {
     const userTenantId = await this.verifyTenantAccess(session);
+    const userId = session.getUserId();
+
+    // Get user to determine role
+    const user = await this.userRepository.findOne({
+      where: { id: userId, tenant: { id: userTenantId } },
+    });
 
     const facility = await this.facilityService.getFacilityById(
       facilityId,
@@ -101,8 +148,18 @@ export class ClientService extends BaseTenantService {
       throw new NotFoundException(`Facility with id ${facilityId} not found`);
     }
 
+    // Build the where clause based on user role
+    const whereClause =
+      user.role === UserRole.OWNER
+        ? { facility: { id: facility.id }, tenant: { id: userTenantId } } // OWNER can see soft-deleted clients
+        : {
+            facility: { id: facility.id },
+            tenant: { id: userTenantId },
+            isDeleted: false,
+          }; // Others only see active clients
+
     const clients = await this.clientRepository.find({
-      where: { facility: { id: facility.id }, tenant: { id: userTenantId } },
+      where: whereClause,
       relations: { facility: true, tenant: true },
     });
 
@@ -114,9 +171,21 @@ export class ClientService extends BaseTenantService {
     session: SessionContainer,
   ): Promise<ClientResDto[]> {
     const userTenantId = await this.verifyTenantAccess(session, tenantId);
+    const userId = session.getUserId();
+
+    // Get user to determine role
+    const user = await this.userRepository.findOne({
+      where: { id: userId, tenant: { id: userTenantId } },
+    });
+
+    // Build the where clause based on user role
+    const whereClause =
+      user.role === UserRole.OWNER
+        ? { tenant: { id: userTenantId } } // OWNER can see soft-deleted clients
+        : { tenant: { id: userTenantId }, isDeleted: false }; // Others only see active clients
 
     const clients = await this.clientRepository.find({
-      where: { tenant: { id: userTenantId } },
+      where: whereClause,
       relations: { facility: true, tenant: true },
     });
 
