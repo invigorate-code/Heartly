@@ -88,7 +88,7 @@ export function LoginForm() {
             ? emailNotVerifiedComponent()
             : (error?.reason ?? "")
         }
-        isVisible={error !== undefined}
+        isVisible={error?.status !== "OK"}
         title={errorMessageParser(error?.status ?? "")}
         variant="faded"
       />

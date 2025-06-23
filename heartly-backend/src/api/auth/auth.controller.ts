@@ -30,12 +30,32 @@ export class AuthController {
   @VerifySession()
   async getUserSession(@Session() session: SessionContainer) {
     const recipeUserId = session.getRecipeUserId();
-    // const isVerified = await EmailVerification.isEmailVerified(recipeUserId);
-    // const tenantId = session.getTenantId();
+    // Email verification is already enforced by @VerifySession() when EmailVerification mode is REQUIRED
     const user = await this.userService.findById(session.getUserId());
     return {
       session: session.getAccessTokenPayload(),
       userProfile: user,
+    };
+  }
+
+  @UseGuards(SuperTokensAuthGuard)
+  @Post('/getBasicUserInfo')
+  // No @VerifySession() here - this allows unverified users
+  async getBasicUserInfo(@Session() session: SessionContainer) {
+    const userId = session.getUserId();
+    const userInfo = await this.authService.getUserById(userId);
+
+    // Extract email and verification status from user info
+    const emailLoginMethod = userInfo.loginMethods.find(
+      method => method.recipeId === 'emailpassword'
+    );
+
+    return {
+      status: 'OK',
+      userId,
+      email: emailLoginMethod?.email || '',
+      isEmailVerified: emailLoginMethod?.verified || false,
+      tenantIds: userInfo.tenantIds,
     };
   }
 

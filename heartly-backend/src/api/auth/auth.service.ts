@@ -105,6 +105,16 @@ export class AuthService {
     };
   }
 
+  async getUserById(userId: string) {
+    try {
+      const userInfo = await supertokens.getUser(userId);
+      return userInfo;
+    } catch (error) {
+      console.error('Error getting user by ID:', error);
+      throw error;
+    }
+  }
+
   async createEmailVerificationLink(
     recipeUserId: supertokens.RecipeUserId,
     email: string,

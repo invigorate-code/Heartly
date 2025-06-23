@@ -31,7 +31,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const fetchUserData = async () => {
       getLoggedInUser()
-        .then((res) => setUser(res.userProfile))
+        .then((res) => {
+          setUser(res.userProfile);
+        })
         .catch((err) => {
           console.error(err);
         });

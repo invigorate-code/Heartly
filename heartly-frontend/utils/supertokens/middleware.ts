@@ -1,27 +1,31 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getLoggedInUser } from "@/app/api/poc-api-using-api-util/index";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/onboarding"];
 const authRoutes = ["/auth", "/login", "/sign-up", "/"];
 const verificationRoutes = ["/auth/verify-email"];
+const emailVerificationRequiredRoute = "/email-verification-required";
 
 export async function updateSession(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // Allow direct access to verification routes with tokens
-  if (path === "/auth/verify-email") {
+  // Allow direct access to verification routes with tokens and email verification required page
+  if (
+    path === "/auth/verify-email" ||
+    path === emailVerificationRequiredRoute
+  ) {
     return NextResponse.next();
   }
 
   // Check if the current route needs protection
   const isProtectedRoute = protectedRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
   const isAuthRoute = authRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
   const isVerificationRoute = verificationRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
 
   // Skip middleware for non-protected and non-auth routes
@@ -30,42 +34,88 @@ export async function updateSession(req: NextRequest) {
   }
 
   try {
-    // Use your dedicated endpoint to verify the session
-    // Forward the cookies from the incoming request
-    const loggedInUserResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getUserSession`,
+    // First try to get basic user info (works for unverified users)
+    const basicUserResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getBasicUserInfo`,
       {
         method: "POST",
         headers: {
           Cookie: req.headers.get("cookie") || "",
         },
         credentials: "include",
-      }
+      },
     );
-    const response = await loggedInUserResponse.json();
 
-    const isAuthenticated = response?.status === "OK";
-    console.log("isAuthenticated", isAuthenticated);
+    if (basicUserResponse.ok) {
+      const basicUserInfo = await basicUserResponse.json();
+      const isAuthenticated = basicUserInfo?.status === "OK";
+      const isEmailVerified = basicUserInfo?.isEmailVerified === true;
 
-    // check if the user is an owner and has completed onboarding
-    const isOnboardingCompleted =
-      response?.userProfile?.onboarding_completed_at != null;
-    const isOwner = response?.userProfile?.role === "OWNER";
-    const isOnboardingRequired = isOwner && !isOnboardingCompleted;
+      console.log("Basic user info:", {
+        isAuthenticated,
+        isEmailVerified,
+        email: basicUserInfo?.email,
+      });
 
-    // Redirect unauthenticated users from protected routes
-    if (isProtectedRoute && !isAuthenticated) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+      if (isAuthenticated) {
+        // User is authenticated, now check if email is verified for protected routes
+        if (isProtectedRoute && !isEmailVerified) {
+          return NextResponse.redirect(
+            new URL(emailVerificationRequiredRoute, req.url),
+          );
+        }
 
-    // Redirect authenticated users from auth routes (including "/")
-    if (isAuthRoute && isAuthenticated) {
-      // If user is an owner and hasn't completed onboarding, redirect to onboarding
-      if (isOnboardingRequired) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
+        // For verified users, get full user profile for onboarding check
+        if (isEmailVerified) {
+          try {
+            const fullUserResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getUserSession`,
+              {
+                method: "POST",
+                headers: {
+                  Cookie: req.headers.get("cookie") || "",
+                },
+                credentials: "include",
+              },
+            );
+
+            if (fullUserResponse.ok) {
+              const response = await fullUserResponse.json();
+              const isOnboardingCompleted =
+                response?.userProfile?.onboarding_completed_at != null;
+              const isOwner = response?.userProfile?.role === "OWNER";
+              const isOnboardingRequired = isOwner && !isOnboardingCompleted;
+
+              // Redirect authenticated users from auth routes (including "/")
+              if (isAuthRoute) {
+                if (isOnboardingRequired) {
+                  return NextResponse.redirect(new URL("/onboarding", req.url));
+                }
+                return NextResponse.redirect(new URL("/dashboard", req.url));
+              }
+            }
+          } catch (error) {
+            console.error("Error getting full user session:", error);
+          }
+        } else {
+          // User is authenticated but not verified
+          if (isAuthRoute) {
+            return NextResponse.redirect(
+              new URL(emailVerificationRequiredRoute, req.url),
+            );
+          }
+        }
+      } else {
+        // User is not authenticated
+        if (isProtectedRoute) {
+          return NextResponse.redirect(new URL("/login", req.url));
+        }
       }
-      // Otherwise redirect to dashboard
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    } else {
+      // User is not authenticated at all
+      if (isProtectedRoute) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
     }
   } catch (error) {
     console.error("Session verification error:", error);

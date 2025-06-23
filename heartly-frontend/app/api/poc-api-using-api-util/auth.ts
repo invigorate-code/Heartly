@@ -10,6 +10,14 @@ export type LoggedInUserResponse = {
   userProfile: UserEntity;
 };
 
+export type BasicUserInfoResponse = {
+  status: "OK";
+  userId: string;
+  email: string;
+  isEmailVerified: boolean;
+  tenantIds: string[];
+};
+
 type FormField = {
   id: string;
   value: string;
@@ -92,6 +100,18 @@ export const getLoggedInUser = async (): Promise<LoggedInUserResponse> => {
       .then((response) => resolve(response.data))
       .catch((error) => {
         console.error("Error getting logged in user:", error);
+        reject(error);
+      });
+  });
+};
+
+export const getBasicUserInfo = async (): Promise<BasicUserInfoResponse> => {
+  return new Promise((resolve, reject) => {
+    api
+      .post("/api/auth/getBasicUserInfo")
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error getting basic user info:", error);
         reject(error);
       });
   });
