@@ -2,13 +2,10 @@
 
 import { SubmitButton } from "@/components/submit-button";
 import { Input, Button, Link, Alert } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Icon } from "@iconify/react";
-import { Divider } from "@heroui/divider";
-import {
-  signInUser,
-  SignInUserResponse,
-} from "@/app/api/poc-api-using-api-util/index";
+import { Divider } from "@heroui/react";
+import { signInUser, SignInUserResponse } from "@/app/api/poc-api-using-api-util/index";
 import { redirect } from "next/navigation";
 
 export function LoginForm() {
@@ -45,6 +42,7 @@ export function LoginForm() {
     };
     signInUser(formData)
       .then((response) => {
+        console.log("response", response);
         redirect("/dashboard");
       })
       .catch((error) => {

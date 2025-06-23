@@ -1,4 +1,5 @@
 {
+	"name": "heartly-frontend",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",

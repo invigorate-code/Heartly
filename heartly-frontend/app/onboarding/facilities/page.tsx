@@ -20,16 +20,16 @@ import {
   TableRow,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
-import PencilIcon from "@/components/icons/Pencil.tsx";
-import TrashIcon from "@/components/icons/TrashIcon.tsx";
-import { validateFacility } from "@/app/onboarding/facilities/utils.ts";
+import PencilIcon from "@/components/icons/Pencil";
+import TrashIcon from "@/components/icons/TrashIcon";
+import { validateFacility } from "@/app/onboarding/facilities/utils";
 import {
   facilityTableColumns,
   componentFacility,
   FacilityWithoutId,
-} from "@/app/onboarding/facilities/model.ts";
+} from "@/app/onboarding/facilities/model";
 import { redirect } from "next/navigation";
-import { useUser } from "@/shared/context/UserContext.tsx";
+import { useUser } from "@/shared/context/UserContext";
 const FacilitiesPage = () => {
   const [facilitiesState, setFacilitiesState] = useState<componentFacility[]>(
     []
@@ -51,29 +51,23 @@ const FacilitiesPage = () => {
 
   useEffect(() => {
     const getUserAndFacilities = async () => {
-      
+      try {
+        const response = await fetch('/api/getUserAndFacilities');
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error('Error fetching user and facilities:', data.error);
+          return;
+        }
+
+        // For now, set empty data until API is properly implemented
+        setTenantId(null);
+        setOwner(null);
+        setFacilitiesState([]);
+
+      } catch (error) {
+        console.error('Error calling API:', error);
       }
-
-      console.log("userFacilityReturn", userFacilityReturn);
-
-      const { tenant_id, facilities, user_email, up_user_id, user_auth_id } =
-        userFacilityFunctionReturn;
-
-      setTenantId(tenant_id);
-      setOwner({ id: up_user_id, email: user_email, auth_id: user_auth_id });
-
-      const allFacilities = facilities.map((facility) => ({
-        id: facility.facility_id,
-        name: facility.facility_name,
-        address: facility.facility_address,
-        city: facility.facility_city,
-        state: facility.facility_state,
-        zip: facility.facility_zip,
-        tenant_id: tenant_id,
-        projected_client_count: facility.facility_projected_client_count,
-      }));
-
-      setFacilitiesState(allFacilities);
     };
 
     getUserAndFacilities();
@@ -95,66 +89,34 @@ const FacilitiesPage = () => {
   };
 
   const handleDelete = async (facilityId: string) => {
-    const { data: deletedData, error } = await supabase
-      .schema("api")
-      .from("facility")
-      .delete()
-      .eq("id", facilityId)
-      .select()
-      .single();
+    // TODO: Implement facility deletion API call
+    console.log("Deleting facility:", facilityId);
 
     setFacilitiesState(
       facilitiesState.filter((facility) => facility.id !== facilityId)
     );
   };
 
-  const handleSubmit = async (onClose: () => void) => {
-    const errors = validateFacility(formData as Facility);
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      return;
-    }
-
     if (isEditing) {
-      // Update existing facility
-      const { data: updatedData, error } = await supabase
-        .schema("api")
-        .from("facility")
-        .update(formData)
-        .eq("id", formData.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error updating facility:", JSON.stringify(error));
-        return;
-      }
+      // TODO: Implement facility update API call
+      console.log("Updating facility:", formData);
 
       setFacilitiesState(
         facilitiesState.map((facility) =>
-          facility.id === formData.id ? updatedData : facility
+          facility.id === formData.id ? formData : facility
         )
       );
     } else {
-      // Insert new facility
-      const newFacility: FacilityWithoutId = {
+      // TODO: Implement facility creation API call
+      const newFacility = {
         ...formData,
+        id: Date.now().toString(), // Temporary ID
         tenant_id: tenantId as string,
       };
 
-      const { data: insertedData, error } = await supabase
-        .schema("api")
-        .from("facility")
-        .insert(newFacility)
-        .select()
-        .single();
+      console.log("Creating facility:", newFacility);
 
-      if (error) {
-        console.error("Error inserting facility:", JSON.stringify(error));
-        return;
-      }
-
-      setFacilitiesState([...facilitiesState, insertedData]);
+      setFacilitiesState([...facilitiesState, newFacility]);
     }
 
     setFormData({} as componentFacility);
@@ -163,23 +125,8 @@ const FacilitiesPage = () => {
   };
 
   const completeFacilityOnboarding = async () => {
-    // update user metadata to indicate facility onboarding is complete
-    const { data: updatedUser, error } = await supabase
-      .schema("api")
-      .from("user_profile")
-      .update({
-        onboarding_step: 2,
-      })
-      .eq("id", owner?.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error updating user metadata:", JSON.stringify(error));
-      return;
-    }
-
-    console.log("Updated user metadata:", updatedUser);
+    // TODO: Implement user onboarding step update API call
+    console.log("Completing facility onboarding for user:", owner?.id);
 
     redirect("/onboarding/staff-invite");
   };

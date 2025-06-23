@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Button, PopoverContent, PopoverTrigger } from "@heroui/react";
 import { Popover } from "@heroui/react";
 import { useDrawer } from "@/shared/context/DrawerContext";
-import { ActionButton } from "@/components/popoverActionButton/action-button.tsx";
+import { ActionButton } from "@/components/popoverActionButton/action-button";
 interface PopoverContent {
   title: string;
   icon: React.ReactNode;

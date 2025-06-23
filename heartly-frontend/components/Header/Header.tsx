@@ -27,10 +27,10 @@ import {
 import NotificationsCard from "./NotificationsCard";
 import { logger } from "@/utils/logger";
 import { redirect } from "next/navigation";
-import SidebarNavItems from "@/components/sidebar/navitems.tsx";
+import SidebarNavItems from "@/components/sidebar/navitems";
 import { useUser } from "@/shared/context/UserContext";
 import { UserEntity } from "@/generated/types/UserEntity.js";
-import { signOut } from "@/app/api/poc-api-using-api-util/auth.ts";
+import { signOut } from "@/app/api/poc-api-using-api-util/auth";
 
 type HeaderProps = {
   headerPurpose: "onboarding" | "dashboard";
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ headerPurpose }) => {
   const { userDisplayName } = useUser();
   const userName = userDisplayName();
   const { user } = useUser();
-  
+
   useEffect(() => {
     // Simulate fetching data
     setNotificationCount(5);
@@ -52,9 +52,13 @@ const Header: React.FC<HeaderProps> = ({ headerPurpose }) => {
   }, [user]);
 
   async function handleSignOut() {
-    signOut().then((response) => logger.info("User signed out successfully")).catch((error) => logger.error(
-          `User Sign Out Error: ${error instanceof Error ? error.message : "Unknown error"}`
-        ));
+    signOut()
+      .then((response) => logger.info("User signed out successfully"))
+      .catch((error) =>
+        logger.error(
+          `User Sign Out Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        ),
+      );
   }
 
   return (

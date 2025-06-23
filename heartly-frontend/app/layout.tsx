@@ -1,7 +1,7 @@
 import { Metadata, Viewport } from "next";
 import "@/app/globals.css";
-import Providers from "@/app/providers.tsx";
-import { SuperTokensInit } from "@/components/supertokens/superTokensInit.tsx";
+import Providers from "@/app/providers";
+import { SuperTokensInit } from "@/components/supertokens/superTokensInit";
 
 export const metadata: Metadata = {
   title: "Heartly",

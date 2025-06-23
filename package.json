@@ -9,9 +9,13 @@
   "scripts": {
     "generate:types": "node --loader ts-node/esm scripts/generate-types.js",
     "build:backend": "pnpm --filter heartly-backend run build",
-    "sync-types": "pnpm run build:backend && pnpm run generate:types"
+    "sync-types": "pnpm run build:backend && pnpm run generate:types",
+    "dev": "concurrently \"pnpm start:frontend\" \"pnpm start:backend\"",
+    "start:frontend": "pnpm --filter heartly-frontend dev",
+    "start:backend": "pnpm --filter heartly-backend start:dev"
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "glob": "^11.0.2",
     "json-schema-ref-parser": "^9.0.9",
     "json-schema-to-typescript": "^15.0.4",

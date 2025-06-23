@@ -4,8 +4,8 @@ import { useAuthActions } from "@/app/(auth-pages)/actions";
 import { SubmitButton } from "@/components/submit-button";
 import { Input, Button, Link, Divider, Alert } from "@heroui/react";
 import { useState, Suspense } from "react";
-import { EyeFilledIcon } from "@/components/icons/eye.tsx";
-import { EyeSlashFilledIcon } from "@/components/icons/eyeSlash.tsx";
+import { EyeFilledIcon } from "@/components/icons/eye";
+import { EyeSlashFilledIcon } from "@/components/icons/eyeSlash";
 import { useSearchParams } from "next/navigation";
 import { signUpUser } from "@/app/api/poc-api-using-api-util/auth";
 
@@ -128,7 +128,9 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
   return (
     <div className="flex w-full max-w-lg flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
       <p className="pb-2 text-2xl font-bold">Get Started with Heartly</p>
-      {errorMessage && <Alert color="danger" title={handleError(errorMessage)} />}
+      {errorMessage && (
+        <Alert color="danger" title={handleError(errorMessage)} />
+      )}
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <div className="flex gap-3">
           <Input
