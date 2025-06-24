@@ -8,14 +8,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PHIService } from 'src/phi/phi.service';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
-import { CreateAddressDto } from '../address/dto/create-address.dto';
 import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
-import { CreateMedicationDto } from '../medication/dto/CreateMedication.req.dto';
-import { CreateSpecialistDto } from '../specialist/dto/CreateSpecialist.dto';
 import { TenantService } from '../tenant/tenant.service';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
+import {
+  addTenantToAddress,
+  processMedications,
+  processSpecialistObject,
+  processSpecialists,
+} from './placement-info.utils';
 
 @Injectable()
 export class PlacementInfoService extends BaseTenantService {
@@ -37,89 +40,29 @@ export class PlacementInfoService extends BaseTenantService {
   }
 
   async findOne(id: string): Promise<PlacementInfoEntity> {
+    // Load only the minimal essential relations for now
     const placementInfo = await this.placementInfoRepository.findOne({
       where: { id },
-      relations: [
-        'client',
-        'facility',
-        'previousPlacement',
-        'placementAgency',
-        'otherAgency',
-        'legalRep',
-        'otherRep',
-        'metadata',
-        'primaryPhysician',
-        'dentist',
-        'otherSpecialists',
-        'medications',
-      ],
+      relations: ['client', 'facility', 'metadata'],
     });
 
     if (!placementInfo) {
       throw new NotFoundException(`Placement info with id ${id} not found`);
     }
 
-    // Decrypt the main placementInfo fields
+    // Decrypt the main placementInfo fields only
     const decryptedPlacementInfo = this.phiService.decryptPHIFields(
       placementInfo,
       'placementInfo',
     );
 
-    // Decrypt related specialists
-    if (decryptedPlacementInfo.primaryPhysician) {
-      decryptedPlacementInfo.primaryPhysician =
-        this.phiService.decryptPHIFields(
-          decryptedPlacementInfo.primaryPhysician,
-          'specialist',
-        );
-    }
-
-    if (decryptedPlacementInfo.dentist) {
-      decryptedPlacementInfo.dentist = this.phiService.decryptPHIFields(
-        decryptedPlacementInfo.dentist,
-        'specialist',
-      );
-    }
-
-    // Decrypt other specialists if present
-    if (decryptedPlacementInfo.otherSpecialists) {
-      if (Array.isArray(decryptedPlacementInfo.otherSpecialists)) {
-        decryptedPlacementInfo.otherSpecialists =
-          decryptedPlacementInfo.otherSpecialists.map((specialist) =>
-            this.phiService.decryptPHIFields(specialist, 'specialist'),
-          );
-      } else {
-        decryptedPlacementInfo.otherSpecialists =
-          this.phiService.decryptPHIFields(
-            decryptedPlacementInfo.otherSpecialists,
-            'specialist',
-          );
-      }
-    }
-
-    // Decrypt medications if present
-    if (decryptedPlacementInfo.medications) {
-      if (Array.isArray(decryptedPlacementInfo.medications)) {
-        decryptedPlacementInfo.medications =
-          decryptedPlacementInfo.medications.map((medication) =>
-            this.phiService.decryptPHIFields(medication, 'medication'),
-          );
-      } else {
-        decryptedPlacementInfo.medications = this.phiService.decryptPHIFields(
-          decryptedPlacementInfo.medications,
-          'medication',
-        );
-      }
-    }
-
-    // Return the decrypted entity
     return decryptedPlacementInfo;
   }
 
   async createPlacementInfo(
     placementInfo: CreatePlacementInfoDto,
     session: SessionContainer,
-  ): Promise<PlacementInfoEntity> {
+  ): Promise<string> {
     const userTenantId = await this.verifyTenantAccess(session);
     const userId = session.getUserId();
 
@@ -176,73 +119,6 @@ export class PlacementInfoService extends BaseTenantService {
       (key) => !excludedFields.includes(key),
     );
 
-    const addTenantToAddress = (
-      address?: CreateAddressDto,
-    ): CreateAddressDto | undefined => {
-      if (!address) return undefined;
-      return { ...address, tenantId: tenant.id };
-    };
-
-    // Use the PHI service's processEntityWithPHI method
-    const processEntityWithPHI = <T>(
-      data: any,
-      entityType: string,
-      additionalFields?: Record<string, any>,
-    ): T | undefined => {
-      return this.phiService.processEntityWithPHI<T>(
-        data,
-        entityType,
-        tenant.id,
-        additionalFields,
-        addTenantToAddress,
-      );
-    };
-
-    const processSpecialistObject = (specialist?: CreateSpecialistDto) => {
-      return processEntityWithPHI(specialist, 'specialist');
-    };
-
-    const processSpecialists = (specialists?: CreateSpecialistDto[]) => {
-      if (!specialists || specialists.length === 0) return undefined;
-
-      return specialists.map((specialist) => ({
-        type: specialist.type
-          ? this.phiService.encryptToBuffer(specialist.type)
-          : null,
-        name: specialist.name
-          ? this.phiService.encryptToBuffer(specialist.name)
-          : null,
-        address: specialist.address
-          ? addTenantToAddress(specialist.address)
-          : undefined,
-        tenantId: tenant.id,
-      }));
-    };
-
-    const processMedications = (medications?: CreateMedicationDto[]) => {
-      if (!medications || medications.length === 0) return undefined;
-
-      return medications.map((medication) => ({
-        name: medication.name
-          ? this.phiService.encryptToBuffer(medication.name)
-          : null,
-        requiredDosage: medication.requiredDosage
-          ? this.phiService.encryptToBuffer(medication.requiredDosage)
-          : null,
-        timeFrequency: medication.timeFrequency
-          ? this.phiService.encryptToBuffer(medication.timeFrequency)
-          : null,
-        prescribingMd: medication.prescribingMd
-          ? this.phiService.encryptToBuffer(medication.prescribingMd)
-          : null,
-        isPrescription: medication.isPrescription,
-        filledDate: medication.filledDate,
-        refillsRemaining: medication.refillsRemaining,
-        isDailyMed: medication.isDailyMed,
-        tenantId: tenant.id,
-      }));
-    };
-
     const placementInfoObj = {
       ...encryptedPlacementInfo,
       client,
@@ -262,20 +138,43 @@ export class PlacementInfoService extends BaseTenantService {
         })),
       },
       // Address relationships with tenant ID
-      previousPlacement: addTenantToAddress(placementInfo.previousPlacement),
-      placementAgency: addTenantToAddress(placementInfo.placementAgency),
-      otherAgency: addTenantToAddress(placementInfo.otherAgency),
-      legalRep: addTenantToAddress(placementInfo.legalRep),
-      otherRep: addTenantToAddress(placementInfo.otherRep),
+      previousPlacement: addTenantToAddress(
+        placementInfo.previousPlacement,
+        tenant.id,
+      ),
+      placementAgency: addTenantToAddress(
+        placementInfo.placementAgency,
+        tenant.id,
+      ),
+      otherAgency: addTenantToAddress(placementInfo.otherAgency, tenant.id),
+      legalRep: addTenantToAddress(placementInfo.legalRep, tenant.id),
+      otherRep: addTenantToAddress(placementInfo.otherRep, tenant.id),
       religiousPrefAddress: addTenantToAddress(
         placementInfo.religiousPrefAddress,
+        tenant.id,
       ),
       // Handle individual specialist objects
-      primaryPhysician: processSpecialistObject(placementInfo.primaryPhysician),
-      dentist: processSpecialistObject(placementInfo.dentist),
-      // Handle arrays
-      specialists: processSpecialists(placementInfo.specialists),
-      medications: processMedications(placementInfo.medications),
+      primaryPhysician: processSpecialistObject(
+        placementInfo.primaryPhysician,
+        tenant.id,
+        this.phiService,
+      ),
+      dentist: processSpecialistObject(
+        placementInfo.dentist,
+        tenant.id,
+        this.phiService,
+      ),
+      // Handle arrays - change this line to match your entity
+      otherSpecialists: processSpecialists(
+        placementInfo.otherSpecialists,
+        tenant.id,
+        this.phiService,
+      ),
+      medications: processMedications(
+        placementInfo.medications,
+        tenant.id,
+        this.phiService,
+      ),
     };
 
     const newPlacementInfo =
@@ -292,7 +191,7 @@ export class PlacementInfoService extends BaseTenantService {
     }
 
     // Return the complete entity with relations
-    return this.findOne(savedPlacementInfo.id);
+    return savedPlacementInfo.id;
   }
 
   async delete(id: string): Promise<void> {

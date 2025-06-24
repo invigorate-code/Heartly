@@ -1,7 +1,7 @@
 import { CreateAddressDto } from '@/api/address/dto/create-address.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateSpecialistDto {
   @ApiProperty({
@@ -9,12 +9,12 @@ export class CreateSpecialistDto {
       'Type of specialist (e.g. "Primary Physician", "Dentist", etc.)',
   })
   @IsString()
-  @IsNotEmpty()
-  type!: string;
+  @IsOptional()
+  type?: string;
 
   @ApiProperty({ description: 'Name of specialist' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name?: string;
 
   @ApiPropertyOptional({ description: 'Address information of the specialist' })

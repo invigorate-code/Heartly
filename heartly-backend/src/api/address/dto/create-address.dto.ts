@@ -9,15 +9,15 @@ export class CreateAddressDto {
   @IsString()
   relation?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   streetAddress?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   city?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   zipCode?: string;
 

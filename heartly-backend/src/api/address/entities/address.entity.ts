@@ -9,13 +9,13 @@ export class AddressEntity extends AbstractEntity {
   @Column({ length: 100, nullable: true })
   relation?: string;
 
-  @Column({ length: 200, nullable: false })
+  @Column({ length: 200, nullable: true })
   streetAddress?: string;
 
-  @Column({ length: 100, nullable: false })
+  @Column({ length: 100, nullable: true })
   city?: string;
 
-  @Column({ length: 20, nullable: false })
+  @Column({ length: 20, nullable: true })
   zipCode?: string;
 
   @Column({ length: 20, nullable: true })

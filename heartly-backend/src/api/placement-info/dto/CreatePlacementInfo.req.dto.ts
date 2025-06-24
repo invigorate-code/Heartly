@@ -199,7 +199,7 @@ export class CreatePlacementInfoDto {
   })
   @Type(() => CreateSpecialistDto)
   @IsOptional()
-  specialists?: CreateSpecialistDto[];
+  otherSpecialists?: CreateSpecialistDto[];
 
   @ApiPropertyOptional({
     description: 'Client communicable conditions information',

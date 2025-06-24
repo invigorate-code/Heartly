@@ -1,3 +1,7 @@
+import { PHIService } from 'src/phi/phi.service';
+import { CreateAddressDto } from '../address/dto/create-address.dto';
+import { CreateMedicationDto } from '../medication/dto/CreateMedication.req.dto';
+import { CreateSpecialistDto } from '../specialist/dto/CreateSpecialist.dto';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
 
 /**
@@ -63,3 +67,80 @@ export function isPlacementInfoCompleted(
 ): boolean {
   return calculateCompletionPercentage(placementInfo, requiredFields) === 100;
 }
+
+/**
+ * Adds tenant ID to address and validates required fields
+ */
+export const addTenantToAddress = (
+  address?: CreateAddressDto,
+  tenantId?: string,
+): CreateAddressDto | undefined => {
+  if (!address || !address.streetAddress || !address.city || !address.zipCode) {
+    return undefined;
+  }
+  return { ...address, tenantId };
+};
+
+/**
+ * Process a single specialist object
+ */
+export const processSpecialistObject = (
+  specialist: CreateSpecialistDto | undefined,
+  tenantId: string,
+  phiService: PHIService,
+): any | undefined => {
+  if (!specialist) return undefined;
+
+  return {
+    type: specialist.type ? phiService.encryptToBuffer(specialist.type) : null,
+    name: specialist.name ? phiService.encryptToBuffer(specialist.name) : null,
+    address: specialist.address
+      ? addTenantToAddress(specialist.address, tenantId)
+      : undefined,
+    tenantId,
+  };
+};
+
+/**
+ * Process an array of specialists
+ */
+export const processSpecialists = (
+  specialists: CreateSpecialistDto[] | undefined,
+  tenantId: string,
+  phiService: PHIService,
+): any[] => {
+  if (!specialists || specialists.length === 0) return [];
+
+  return specialists.map((specialist) =>
+    processSpecialistObject(specialist, tenantId, phiService),
+  );
+};
+
+/**
+ * Process an array of medications
+ */
+export const processMedications = (
+  medications: CreateMedicationDto[] | undefined,
+  tenantId: string,
+  phiService: PHIService,
+): any[] => {
+  if (!medications || medications.length === 0) return [];
+
+  return medications.map((medication) => ({
+    name: medication.name ? phiService.encryptToBuffer(medication.name) : null,
+    requiredDosage: medication.requiredDosage
+      ? phiService.encryptToBuffer(medication.requiredDosage)
+      : null,
+    timeFrequency: medication.timeFrequency
+      ? phiService.encryptToBuffer(medication.timeFrequency)
+      : null,
+    prescribingMd: medication.prescribingMd
+      ? phiService.encryptToBuffer(medication.prescribingMd)
+      : null,
+    isPrescription: medication.isPrescription,
+    filledDate: medication.filledDate,
+    refillsRemaining: medication.refillsRemaining,
+    isDailyMed: medication.isDailyMed,
+    tenantId,
+  }));
+};

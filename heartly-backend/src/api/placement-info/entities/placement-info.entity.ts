@@ -8,6 +8,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -130,11 +132,12 @@ export class PlacementInfoEntity extends AbstractEntity {
   @JoinColumn({ name: 'dentistId' })
   dentist?: SpecialistEntity;
 
-  @ManyToOne(() => SpecialistEntity, {
+  @ManyToMany(() => SpecialistEntity, {
     cascade: ['insert', 'update'],
-    nullable: true,
   })
-  @JoinColumn({ name: 'otherSpecialistsId' })
+  @JoinTable({
+    name: 'placement_info_specialists',
+  })
   otherSpecialists?: SpecialistEntity[];
 
   @OneToMany(
@@ -165,7 +168,7 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: ['insert', 'update'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'previousPlacement' })
+  @JoinColumn({ name: 'previousPlacementId' })
   previousPlacement?: AddressEntity;
 
   @OneToOne(() => AddressEntity, {
@@ -173,7 +176,7 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: ['insert', 'update'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'placementAgency' })
+  @JoinColumn({ name: 'placementAgencyId' })
   placementAgency?: AddressEntity;
 
   @OneToOne(() => AddressEntity, {
@@ -181,7 +184,7 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: ['insert', 'update'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'otherAgency' })
+  @JoinColumn({ name: 'otherAgencyId' })
   otherAgency?: AddressEntity;
 
   @OneToOne(() => AddressEntity, {
@@ -189,7 +192,7 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: ['insert', 'update'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'legalRep' })
+  @JoinColumn({ name: 'legalRepId' })
   legalRep?: AddressEntity;
 
   @OneToOne(() => AddressEntity, {
@@ -197,7 +200,7 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: ['insert', 'update'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'otherRep' })
+  @JoinColumn({ name: 'otherRepId' })
   otherRep?: AddressEntity;
 
   @Column({ length: 1000, nullable: true })
