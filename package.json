@@ -9,7 +9,10 @@
   "scripts": {
     "generate:types": "node --loader ts-node/esm scripts/generate-types.js",
     "build:backend": "pnpm --filter heartly-backend run build",
-    "sync-types": "pnpm run build:backend && pnpm run generate:types"
+    "sync-types": "pnpm run build:backend && pnpm run generate:types",
+    "dev": "cd heartly-frontend && pnpm run dev",
+    "dev:frontend": "cd heartly-frontend && pnpm run dev",
+    "dev:backend": "cd heartly-backend && pnpm run start:dev"
   },
   "devDependencies": {
     "glob": "^11.0.2",
