@@ -3,6 +3,7 @@
 import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
 import { RecentActivityCard } from "@/components/cards/RecentActivityCard";
+import { AllergyTrackerCard } from "@/components/cards/AllergyTrackerCard";
 import {
   Button,
   Card,
@@ -20,6 +21,7 @@ import {
   Heart,
   BookOpen,
   Activity,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -69,6 +71,7 @@ export default function ComponentsShowcase() {
             "weight-chart",
             "symptoms-card",
             "recent-activity",
+            "allergy-tracker",
           ]}
           className="gap-4"
         >
@@ -687,6 +690,225 @@ export default function ComponentsShowcase() {
   timestamp: string;
 }`}
                     </pre>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </AccordionItem>
+
+          {/* Allergy Tracker Card Accordion */}
+          <AccordionItem
+            key="allergy-tracker"
+            aria-label="Allergy Tracker Card"
+            title={
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Allergy Tracker Card
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Compact card for displaying patient allergies and
+                    sensitivities
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-8 p-4">
+              {/* Component Examples */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Examples
+                </h3>
+                <div className="grid gap-8 lg:grid-cols-3">
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Default Allergies
+                    </h4>
+                    <AllergyTrackerCard
+                      onLinkClick={() => console.log("See More clicked")}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Food Allergies
+                    </h4>
+                    <AllergyTrackerCard
+                      title="Food Allergies"
+                      allergies={[
+                        "Shellfish",
+                        "Gluten",
+                        "Dairy",
+                        "Nuts",
+                        "Eggs",
+                      ]}
+                      linkText="View All"
+                      onLinkClick={() => console.log("View All food allergies")}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Medication Allergies
+                    </h4>
+                    <AllergyTrackerCard
+                      title="Drug Allergies"
+                      allergies={["Penicillin", "Aspirin", "Ibuprofen"]}
+                      onLinkClick={() =>
+                        console.log("See medication allergies")
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Example */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Usage
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`import { AllergyTrackerCard } from "@/components/cards/AllergyTrackerCard";
+
+// Basic usage
+<AllergyTrackerCard />
+
+// Custom configuration
+<AllergyTrackerCard
+  title="Food Allergies"
+  allergies={["Shellfish", "Gluten", "Dairy", "Nuts"]}
+  linkText="View All"
+  onLinkClick={() => navigate('/allergies')}
+/>`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Props Documentation */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Props
+                </h3>
+                <Card>
+                  <CardBody>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 font-semibold">
+                              Prop
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Type
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Default
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Description
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              title
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">"Allergic to"</td>
+                            <td className="py-2">
+                              Header text for the allergy section
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              allergies
+                            </td>
+                            <td className="py-2">string[]</td>
+                            <td className="py-2">["Peanuts", "Lactose"]</td>
+                            <td className="py-2">
+                              Array of allergy names to display
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              moreCount
+                            </td>
+                            <td className="py-2">number</td>
+                            <td className="py-2">10</td>
+                            <td className="py-2">
+                              Fallback number for "See X More" text
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              linkText
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">"See 10 More"</td>
+                            <td className="py-2">Text for the action link</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              onLinkClick
+                            </td>
+                            <td className="py-2">{"() => void"}</td>
+                            <td className="py-2">undefined</td>
+                            <td className="py-2">
+                              Callback when action link is clicked
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              className
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">""</td>
+                            <td className="py-2">
+                              Additional CSS classes for styling
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Design Notes */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Design Notes
+                </h3>
+                <Card>
+                  <CardBody>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>
+                        • Fixed dimensions (206x185px) to match design
+                        specifications
+                      </li>
+                      <li>
+                        • Displays maximum of 2 allergies in the main view
+                      </li>
+                      <li>
+                        • Automatically calculates remaining count for "See X
+                        More" link
+                      </li>
+                      <li>• Uses Avenir font family to match design system</li>
+                      <li>
+                        • Red color (#FF5757) for allergy text to indicate
+                        urgency
+                      </li>
+                      <li>
+                        • Blue action link (#1C376F) with hover animations
+                      </li>
+                    </ul>
                   </CardBody>
                 </Card>
               </div>
