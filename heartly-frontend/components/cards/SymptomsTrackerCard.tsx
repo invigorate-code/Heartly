@@ -20,61 +20,80 @@ export const SymptomsTrackerCard: React.FC<SymptomsTrackerCardProps> = ({
   className = "",
 }) => {
   return (
-    <Card
-      className={`w-52 h-46 bg-white shadow-sm border-0 ${className}`}
-      radius="lg"
+    <div
+      className={`w-[204px] h-[185px] bg-white rounded-xl shadow-sm relative ${className}`}
     >
-      <CardBody className="p-4 flex flex-col justify-between h-full">
-        {/* Header */}
-        <div className="mb-4">
-          <p
-            className="text-sm font-medium opacity-70"
-            style={{
-              fontFamily:
-                "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
-              color: "rgba(34,34,34,1)",
-            }}
-          >
-            {title}
-          </p>
-        </div>
+      {/* Header */}
+      <div className="absolute left-4 top-6">
+        <p
+          className="text-sm font-medium"
+          style={{
+            fontFamily: "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
+            color: "rgba(34,34,34,0.7)",
+            fontSize: "14px",
+            fontWeight: "500",
+          }}
+        >
+          {title}
+        </p>
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex items-center">
-          <h3
-            className="text-2xl font-extrabold leading-none"
-            style={{
-              fontFamily:
-                "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
-              color: "rgba(111,127,210,1)",
-              fontSize: "32px",
-            }}
-          >
-            {mainText}
-          </h3>
-        </div>
+      {/* Main Content */}
+      <div className="absolute left-4 top-16">
+        <h3
+          className="font-extrabold leading-none"
+          style={{
+            fontFamily: "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
+            color: "rgba(111,127,210,1)",
+            fontSize: "32px",
+            fontWeight: "800",
+          }}
+        >
+          {mainText}
+        </h3>
+      </div>
 
-        {/* Footer Link */}
-        <div className="mt-4">
-          <button
-            onClick={onLinkClick}
-            className="flex items-center gap-3 text-base font-medium hover:opacity-80 transition-opacity group"
-            style={{
-              fontFamily:
-                "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
-              color: "rgba(28,55,111,1)",
-            }}
+      {/* Footer Link */}
+      <div className="absolute left-5 bottom-6">
+        <button
+          onClick={onLinkClick}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
+          style={{
+            fontFamily: "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
+            color: "rgba(28,55,111,1)",
+            fontSize: "16px",
+            fontWeight: "500",
+          }}
+        >
+          <span>{linkText}</span>
+          <svg
+            className="group-hover:translate-x-1 transition-transform"
+            width="13"
+            height="12"
+            viewBox="0 0 14 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <span>{linkText}</span>
-            <ChevronRight
-              size={12}
-              className="group-hover:translate-x-1 transition-transform"
-              style={{ color: "rgba(28,55,111,1)" }}
-            />
-          </button>
-        </div>
-      </CardBody>
-    </Card>
+            <g clipPath="url(#clip0_1_26979)">
+              <path
+                d="M9.48643 1.90815C9.31427 1.73895 9.02775 1.73895 8.84958 1.90815C8.67743 2.07163 8.67743 2.34371 8.84958 2.50681L12.0788 5.57331H1.42289C1.17449 5.57369 0.977051 5.76118 0.977051 5.99706C0.977051 6.23295 1.17449 6.42653 1.42289 6.42653H12.0788L8.84958 9.48732C8.67743 9.65651 8.67743 9.92898 8.84958 10.0921C9.02775 10.2613 9.31468 10.2613 9.48643 10.0921L13.4801 6.29964C13.6582 6.13616 13.6582 5.86407 13.4801 5.70097L9.48643 1.90815Z"
+                fill="#1C376F"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_1_26979">
+                <rect
+                  width="12.6367"
+                  height="12"
+                  fill="white"
+                  transform="translate(0.977051)"
+                />
+              </clipPath>
+            </defs>
+          </svg>
+        </button>
+      </div>
+    </div>
   );
 };
 
