@@ -140,6 +140,23 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
                 }}
               />
 
+              {/* Gradient definition */}
+              <defs>
+                <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ff6b35" stopOpacity={0.3} />
+                  <stop offset="50%" stopColor="#ff6b35" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#ff6b35" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              {/* Area fill under the line */}
+              <Area
+                type="monotone"
+                dataKey="weight"
+                stroke="none"
+                fill="url(#areaGradient)"
+              />
+
               {/* Main weight tracking line */}
               <Line
                 type="monotone"
@@ -153,7 +170,6 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
                   strokeWidth: 2,
                   fill: "#fff",
                 }}
-                fill="url(#gradient)"
               />
 
               {/* Custom dots for highlighted points */}
@@ -163,14 +179,6 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
                 stroke="transparent"
                 dot={<CustomDot />}
               />
-
-              {/* Gradient definition */}
-              <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ff6b35" stopOpacity={0.1} />
-                  <stop offset="100%" stopColor="#ff6b35" stopOpacity={0} />
-                </linearGradient>
-              </defs>
             </LineChart>
           </ResponsiveContainer>
         </div>
