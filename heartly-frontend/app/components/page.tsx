@@ -198,13 +198,16 @@ export default function ComponentsShowcase() {
               </p>
             </div>
 
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-semibold">Basic Implementation</h3>
-              </CardHeader>
-              <CardBody>
-                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                  {`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">
+                    Weight Tracking Chart
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                    {`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 
 // Basic usage
 <WeightTrackingChart />
@@ -218,13 +221,37 @@ export default function ComponentsShowcase() {
     { month: "Jan", weight: 45 },
     { month: "Feb", weight: 48 },
     { month: "Mar", weight: 52, isHighlight: true },
-    // ... more data points
   ]}
-  emergencyNote="Custom emergency instructions"
+  emergencyNote="Custom instructions"
 />`}
-                </pre>
-              </CardBody>
-            </Card>
+                  </pre>
+                </CardBody>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">
+                    Symptoms Tracker Card
+                  </h3>
+                </CardHeader>
+                <CardBody>
+                  <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                    {`import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
+
+// Basic usage
+<SymptomsTrackerCard />
+
+// Custom configuration
+<SymptomsTrackerCard
+  title="Behavioral Tracker"
+  mainText="Physical"
+  linkText="View Details"
+  onLinkClick={() => console.log('Clicked')}
+/>`}
+                  </pre>
+                </CardBody>
+              </Card>
+            </div>
           </section>
 
           {/* Props Documentation */}
