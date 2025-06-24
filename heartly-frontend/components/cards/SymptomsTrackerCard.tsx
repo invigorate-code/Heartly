@@ -56,7 +56,13 @@ export const SymptomsTrackerCard: React.FC<SymptomsTrackerCardProps> = ({
       {/* Footer Link */}
       <div className="absolute left-5 bottom-6">
         <button
-          onClick={onLinkClick}
+          onClick={() => {
+            try {
+              onLinkClick?.();
+            } catch (error) {
+              console.error("Error in onLinkClick handler:", error);
+            }
+          }}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity group"
           style={{
             fontFamily: "Avenir, -apple-system, Roboto, Helvetica, sans-serif",
