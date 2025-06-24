@@ -1,26 +1,22 @@
 import { AddressEntity } from '@/api/address/entities/address.entity';
 import { ClientEntity } from '@/api/client/entities/client.entity';
 import { FacilityEntity } from '@/api/facility/entities/facility.entity';
-import { FormFieldContributionEntity } from '@/api/form-field-contribution/entities/form-field-contribution.entity';
-import { UserEntity } from '@/api/user/entities/user.entity';
-// import { MetadataEntity } from '@/api/metadata/entities/metadata.entity';
+import { MedicationEntity } from '@/api/medication/entities/medication.entity';
+import { SpecialistEntity } from '@/api/specialist/entities/specialist.entity';
 import { AbstractEntity } from '@/common/entities/abstract.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { MetadataEntity } from './metadata.entity';
+import { MetadataEntity } from '../../../common/entities/form-metadata.entity';
 
 @Entity('placement_info')
 export class PlacementInfoEntity extends AbstractEntity {
   @OneToOne(() => ClientEntity, {
-    nullable: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'clientId' })
@@ -35,8 +31,8 @@ export class PlacementInfoEntity extends AbstractEntity {
   @Column({ length: 50, nullable: true })
   maritalStatus?: string;
 
-  @Column({ length: 500, nullable: true })
-  distinguisingMarks?: string;
+  @Column({ type: 'bytea', nullable: true })
+  distinguishingMarks?: Buffer;
 
   @Column({ length: 200, nullable: true })
   languages?: string;
@@ -93,22 +89,63 @@ export class PlacementInfoEntity extends AbstractEntity {
   otherInsurance?: Buffer;
 
   @Column({ type: 'bytea', nullable: true })
+  religiousPreference?: Buffer;
+
+  @Column({ type: 'bytea', nullable: true })
   religiousPrefAdvisor?: Buffer;
 
-  @Column({ type: 'bytea', nullable: true })
-  religiouPrefAddress?: Buffer;
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'religiousPrefAddressId' })
+  religiousPrefAddress?: AddressEntity;
 
   @Column({ type: 'bytea', nullable: true })
-  dangerouPropensities?: Buffer;
+  dangerousPropensities?: Buffer;
 
   @Column({ type: 'bytea', nullable: true })
-  dangerouPropensitiesDescription?: Buffer;
+  dangerousPropensitiesDescription?: Buffer;
 
   @Column({ type: 'bytea', nullable: true })
   diagnosis?: Buffer;
 
   @Column({ type: 'bytea', nullable: true })
   medicalNeeds?: Buffer;
+
+  @OneToOne(() => SpecialistEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'primaryPhysicianId' })
+  primaryPhysician?: SpecialistEntity;
+
+  @OneToOne(() => SpecialistEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'dentistId' })
+  dentist?: SpecialistEntity;
+
+  @ManyToOne(() => SpecialistEntity, {
+    cascade: ['insert', 'update'],
+    nullable: true,
+  })
+  @JoinColumn({ name: 'otherSpecialistsId' })
+  otherSpecialists?: SpecialistEntity[];
+
+  @OneToMany(
+    () => MedicationEntity,
+    (medication) => medication.placementInfoId,
+    {
+      cascade: ['insert', 'update'],
+      nullable: true,
+    },
+  )
+  medications?: MedicationEntity[];
 
   @Column({ type: 'bytea', nullable: true })
   communicableConditions?: Buffer;
@@ -117,30 +154,50 @@ export class PlacementInfoEntity extends AbstractEntity {
   dateOfPlacement?: Date;
 
   @ManyToOne(() => FacilityEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'facility' })
+  @JoinColumn({ name: 'facilityId' })
   facility?: FacilityEntity;
 
   @Column({ length: 500, nullable: true })
   burialArrangements?: string;
 
-  @OneToOne(() => FacilityEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'previous_placement' })
-  previousPlacement?: FacilityEntity;
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'previousPlacement' })
+  previousPlacement?: AddressEntity;
 
-  @OneToOne(() => AddressEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'placement_agency' })
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'placementAgency' })
   placementAgency?: AddressEntity;
 
-  @OneToOne(() => AddressEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'other_agency' })
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'otherAgency' })
   otherAgency?: AddressEntity;
 
-  @OneToOne(() => AddressEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'legal_rep' })
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'legalRep' })
   legalRep?: AddressEntity;
 
-  @OneToOne(() => AddressEntity, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'other_rep' })
+  @OneToOne(() => AddressEntity, {
+    nullable: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'otherRep' })
   otherRep?: AddressEntity;
 
   @Column({ length: 1000, nullable: true })
@@ -168,26 +225,6 @@ export class PlacementInfoEntity extends AbstractEntity {
     cascade: true,
     eager: true,
   })
-  @JoinColumn({ name: 'metadata' })
+  @JoinColumn({ name: 'metadataId' })
   metadata!: MetadataEntity;
-
-  @ManyToMany(() => UserEntity)
-  @JoinTable({
-    name: 'placement_info_contributors',
-    joinColumn: {
-      name: 'placementInfoId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'userId',
-      referencedColumnName: 'id',
-    },
-  })
-  contributors!: UserEntity[];
-
-  @OneToMany(
-    () => FormFieldContributionEntity,
-    (formFieldContribution) => formFieldContribution.placementInfo,
-  )
-  formFieldContributions?: FormFieldContributionEntity[];
 }

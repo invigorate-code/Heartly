@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
-import { BaseTenantService } from '../../common/base-tenant-service';
+import { BaseTenantService } from '../../common/services/base-tenant.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserEntity, UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';

@@ -17,17 +17,9 @@ export class ClientEntity extends AbstractEntity {
   @Column({ nullable: false })
   uci!: string;
 
-  // Adding explicit foreign key column for facility
-  @Column({ nullable: false })
-  facilityId!: string;
-
   @ManyToOne(() => FacilityEntity, { nullable: false })
   @JoinColumn({ name: 'facilityId' })
   facility!: FacilityEntity;
-
-  // Adding explicit foreign key column for tenant
-  @Column({ nullable: false })
-  tenantId!: string;
 
   @ManyToOne(() => TenantEntity, { nullable: false })
   @JoinColumn({ name: 'tenantId' })

@@ -15,7 +15,6 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { UserRole } from '../user/entities/user.entity';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/createClient.req.dto';
 import { ClientResDto } from './dto/getClient.res.dto';
@@ -29,7 +28,7 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Post('/create')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async createClient(
     @Body() client: CreateClientDto,
     @Session() session: SessionContainer,
@@ -56,7 +55,7 @@ export class ClientController {
   }
 
   @Get('/getClientsByTenantId/:tenantId')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async getClientsByTenantId(
     @Param('tenantId') tenantId: string,
     @Session() session: SessionContainer,

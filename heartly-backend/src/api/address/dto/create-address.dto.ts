@@ -11,17 +11,21 @@ export class CreateAddressDto {
 
   @IsNotEmpty()
   @IsString()
-  streetAddress!: string;
+  streetAddress?: string;
 
   @IsNotEmpty()
   @IsString()
-  city!: string;
+  city?: string;
 
   @IsNotEmpty()
   @IsString()
-  zipCode!: string;
+  zipCode?: string;
 
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  tenantId!: string;
 }

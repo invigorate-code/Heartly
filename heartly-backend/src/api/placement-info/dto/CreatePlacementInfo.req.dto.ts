@@ -1,3 +1,5 @@
+import { CreateAddressDto } from '@/api/address/dto/create-address.dto';
+import { CreateMedicationDto } from '@/api/medication/dto/CreateMedication.req.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -8,6 +10,7 @@ import {
   IsUUID,
   MaxLength,
 } from 'class-validator';
+import { CreateSpecialistDto } from '../../specialist/dto/CreateSpecialist.dto';
 
 export class CreatePlacementInfoDto {
   @ApiPropertyOptional({
@@ -50,7 +53,7 @@ export class CreatePlacementInfoDto {
   @IsString()
   @MaxLength(500)
   @IsOptional()
-  distinguisingMarks?: string;
+  distinguishingMarks?: string;
 
   @ApiPropertyOptional({
     description: 'Languages spoken by the client',
@@ -65,107 +68,144 @@ export class CreatePlacementInfoDto {
     description: 'Client UCI (Universal Client Identifier)',
   })
   @IsOptional()
-  uci?: Buffer;
+  uci?: string;
 
   @ApiPropertyOptional({ description: 'Client height' })
   @IsOptional()
-  height?: Buffer;
+  height?: string;
 
   @ApiPropertyOptional({ description: 'Client weight' })
   @IsOptional()
-  weight?: Buffer;
+  weight?: string;
 
   @ApiPropertyOptional({ description: 'Client eye color' })
   @IsOptional()
-  eyes?: Buffer;
+  eyes?: string;
 
   @ApiPropertyOptional({ description: 'Client hair color/type' })
   @IsOptional()
-  hair?: Buffer;
+  hair?: string;
 
   @ApiPropertyOptional({ description: 'Client allergies information' })
   @IsOptional()
-  allergies?: Buffer;
+  allergies?: string;
 
   @ApiPropertyOptional({ description: 'Client dietary sensitivities' })
   @IsOptional()
-  dietarySensitivities?: Buffer;
+  dietarySensitivities?: string;
 
   @ApiPropertyOptional({ description: 'Client social security information' })
   @IsOptional()
-  socialSecurity?: Buffer;
+  socialSecurity?: string;
 
   @ApiPropertyOptional({ description: 'Client SSI information' })
   @IsOptional()
-  ssi?: Buffer;
+  ssi?: string;
 
   @ApiPropertyOptional({ description: 'Client SSI payee information' })
   @IsOptional()
-  ssiPayee?: Buffer;
+  ssiPayee?: string;
 
   @ApiPropertyOptional({ description: 'Client SSA information' })
   @IsOptional()
-  ssa?: Buffer;
+  ssa?: string;
 
   @ApiPropertyOptional({ description: 'Client SSA payee information' })
   @IsOptional()
-  ssaPayee?: Buffer;
+  ssaPayee?: string;
 
   @ApiPropertyOptional({ description: 'Other benefits information' })
   @IsOptional()
-  otherBenefits?: Buffer;
+  otherBenefits?: string;
 
   @ApiPropertyOptional({ description: 'Other benefits payee information' })
   @IsOptional()
-  otherBenefitsPayee?: Buffer;
+  otherBenefitsPayee?: string;
 
   @ApiPropertyOptional({ description: 'Client medical information' })
   @IsOptional()
-  medical?: Buffer;
+  medical?: string;
 
   @ApiPropertyOptional({ description: 'Client medicare information' })
   @IsOptional()
-  medicare?: Buffer;
+  medicare?: string;
 
   @ApiPropertyOptional({ description: 'Client other insurance information' })
   @IsOptional()
-  otherInsurance?: Buffer;
+  otherInsurance?: string;
 
   @ApiPropertyOptional({
-    description: 'Religious preference and advisor information',
+    description: 'Religious preference',
   })
   @IsOptional()
-  religiousPrefAdvisor?: Buffer;
+  religiousPreference?: string;
+
+  @ApiPropertyOptional({
+    description: 'Religious advisor information',
+  })
+  @IsOptional()
+  religiousPrefAdvisor?: string;
 
   @ApiPropertyOptional({
     description: 'Religious preference address information',
   })
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  religiouPrefAddress?: Buffer;
+  religiousPrefAddress?: CreateAddressDto;
 
   @ApiPropertyOptional({
     description: 'Client dangerous propensities information',
   })
   @IsOptional()
-  dangerouPropensities?: Buffer;
+  dangerousPropensities?: boolean;
 
   @ApiPropertyOptional({ description: 'Description of dangerous propensities' })
   @IsOptional()
-  dangerouPropensitiesDescription?: Buffer;
+  dangerousPropensitiesDescription?: string;
 
   @ApiPropertyOptional({ description: 'Client diagnosis information' })
   @IsOptional()
-  diagnosis?: Buffer;
+  diagnosis?: string;
 
   @ApiPropertyOptional({ description: 'Client medical needs information' })
   @IsOptional()
-  medicalNeeds?: Buffer;
+  medicalNeeds?: string;
+
+  @ApiPropertyOptional({
+    description: 'Primary physician information',
+  })
+  @Type(() => CreateSpecialistDto)
+  @IsOptional()
+  primaryPhysician?: CreateSpecialistDto;
+
+  @ApiPropertyOptional({
+    description: 'Dentist information',
+  })
+  @Type(() => CreateSpecialistDto)
+  @IsOptional()
+  dentist?: CreateSpecialistDto;
+
+  @ApiPropertyOptional({
+    description: 'Client medications',
+    type: [CreateMedicationDto],
+  })
+  @Type(() => CreateMedicationDto)
+  @IsOptional()
+  medications?: CreateMedicationDto[];
+
+  @ApiPropertyOptional({
+    description: 'Client specialists',
+    type: [CreateSpecialistDto],
+  })
+  @Type(() => CreateSpecialistDto)
+  @IsOptional()
+  specialists?: CreateSpecialistDto[];
 
   @ApiPropertyOptional({
     description: 'Client communicable conditions information',
   })
   @IsOptional()
-  communicableConditions?: Buffer;
+  communicableConditions?: string;
 
   @ApiPropertyOptional({ description: 'Date when client was placed' })
   @IsDate()
@@ -187,30 +227,30 @@ export class CreatePlacementInfoDto {
   @IsOptional()
   burialArrangements?: string;
 
-  @ApiPropertyOptional({ description: 'Previous placement facility ID' })
-  @IsUUID()
+  @ApiPropertyOptional({ description: 'Previous Placement Address' })
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  previousPlacementId?: string;
+  previousPlacement?: CreateAddressDto;
 
   @ApiPropertyOptional({ description: 'Placement agency address ID' })
-  @IsUUID()
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  placementAgencyId?: string;
+  placementAgency?: CreateAddressDto;
 
   @ApiPropertyOptional({ description: 'Other agency address ID' })
-  @IsUUID()
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  otherAgencyId?: string;
+  otherAgency?: CreateAddressDto;
 
   @ApiPropertyOptional({ description: 'Legal representative address ID' })
-  @IsUUID()
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  legalRepId?: string;
+  legalRep?: CreateAddressDto;
 
   @ApiPropertyOptional({ description: 'Other representative address ID' })
-  @IsUUID()
+  @Type(() => CreateAddressDto)
   @IsOptional()
-  otherRepId?: string;
+  otherRep?: CreateAddressDto;
 
   @ApiPropertyOptional({
     description: 'Special instructions for client',

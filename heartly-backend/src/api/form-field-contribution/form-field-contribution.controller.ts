@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SuperTokensAuthGuard } from 'supertokens-nestjs';
-import { FormFieldContributionEntity } from './entities/form-field-contribution.entity';
-import { FormFieldContributionService } from './form-field-contribution.service';
+import { FormFieldContributionEntity } from '../../common/entities/form-field-contribution.entity';
+import { FormFieldContributionService } from '../../common/services/form-field-contribution.service';
 
 @Controller('form-field-contributions')
 @ApiTags('form-field-contributions')
@@ -13,48 +13,43 @@ export class FormFieldContributionController {
     private readonly formFieldContributionService: FormFieldContributionService,
   ) {}
 
-  // @Post()
-  // async trackContribution(
-  //   @Body()
-  //   contributionData: {
-  //     fieldName: string;
-  //     contributorId: string;
-  //     placementInfoId: string;
-  //   },
-  // ): Promise<FormFieldContributionEntity> {
-  //   return this.formFieldContributionService.trackFieldContributions(
-  //     contributionData.fieldName,
-  //     contributionData.contributorId,
-  //     contributionData.placementInfoId,
+  @Get('entity/:formType/:entityId')
+  async getByFormEntity(
+    @Param('formType') formType: string,
+  ): Promise<FormFieldContributionEntity[]> {
+    return this.formFieldContributionService.getFieldContributions(formType);
+  }
+
+  // @Get('contributor/:id')
+  // async getByContributor(
+  //   @Param('id') contributorId: string,
+  // ): Promise<FormFieldContributionEntity[]> {
+  //   return this.formFieldContributionService.getFieldContributionsByContributor(
+  //     contributorId,
   //   );
   // }
 
-  @Get('placement/:id')
-  async getByPlacementInfo(
-    @Param('id') placementInfoId: string,
-  ): Promise<FormFieldContributionEntity[]> {
-    return this.formFieldContributionService.getFieldContributionsByPlacementInfo(
-      placementInfoId,
-    );
-  }
+  // @Get('field')
+  // async getFieldContribution(
+  //   @Query('formType') formType: string,
+  //   @Query('entityId') entityId: string,
+  //   @Query('fieldName') fieldName: string,
+  // ): Promise<FormFieldContributionEntity | null> {
+  //   return this.formFieldContributionService.getFieldContributions(
+  //     formType,
+  //     entityId,
+  //     fieldName,
+  //   );
+  // }
 
-  @Get('contributor/:id')
-  async getByContributor(
-    @Param('id') contributorId: string,
-  ): Promise<FormFieldContributionEntity[]> {
-    return this.formFieldContributionService.getFieldContributionsByContributor(
-      contributorId,
-    );
-  }
-
-  @Get('field')
-  async getFieldContribution(
-    @Query('placementInfoId') placementInfoId: string,
-    @Query('fieldName') fieldName: string,
-  ): Promise<FormFieldContributionEntity | null> {
-    return this.formFieldContributionService.getFieldContribution(
-      placementInfoId,
-      fieldName,
-    );
-  }
+  // @Get('summary/:formType/:entityId')
+  // async getContributorSummary(
+  //   @Param('formType') formType: string,
+  //   @Param('entityId') entityId: string,
+  // ) {
+  //   return this.formFieldContributionService.getContributorSummary(
+  //     formType,
+  //     entityId,
+  //   );
+  // }
 }

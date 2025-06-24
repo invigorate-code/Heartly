@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
-import { BaseTenantService } from '../../common/base-tenant-service';
+import { BaseTenantService } from '../../common/services/base-tenant.service';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { FacilityService } from '../facility/facility.service';
 import { TenantService } from '../tenant/tenant.service';
@@ -52,7 +52,7 @@ export class ClientService extends BaseTenantService {
     const existingClient = await this.clientRepository.findOne({
       where: {
         uci: client.uci,
-        tenantId: client.tenantId,
+        tenant: { id: userTenantId },
       },
     });
 
@@ -84,9 +84,6 @@ export class ClientService extends BaseTenantService {
       ...client,
       tenant,
       facility,
-      // Ensure IDs are explicitly set to match the entities
-      tenantId: tenant.id,
-      facilityId: facility.id,
     };
 
     const newClient = this.clientRepository.create(clientWithMetadata);
@@ -261,8 +258,6 @@ export class ClientService extends BaseTenantService {
       throw new NotFoundException(`Client with id ${id} not found`);
     }
 
-    // Update both the facilityId and the facility relation
-    client.facilityId = updateClientFacilityDto.facilityId;
     client.facility = newFacility;
 
     const savedClient = await this.clientRepository.save(client);
