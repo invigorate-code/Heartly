@@ -1,3 +1,5 @@
+"use client";
+
 import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
 import { Button, Card, CardHeader, CardBody, Chip } from "@heroui/react";
