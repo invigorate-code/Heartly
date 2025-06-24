@@ -24,6 +24,14 @@ export async function updateSession(req: NextRequest) {
   const isVerificationRoute = verificationRoutes.some(
     (route) => path === route || path.startsWith(`${route}/`),
   );
+  const isUnprotectedRoute = unprotectedRoutes.some(
+    (route) => path === route || path.startsWith(`${route}/`),
+  );
+
+  // Skip middleware for unprotected routes
+  if (isUnprotectedRoute) {
+    return NextResponse.next();
+  }
 
   // Skip middleware for non-protected and non-auth routes
   if (!isProtectedRoute && !isAuthRoute && !isVerificationRoute) {
