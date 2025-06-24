@@ -4,6 +4,7 @@ import { getLoggedInUser } from "@/app/api/poc-api-using-api-util/index";
 const protectedRoutes = ["/dashboard"];
 const authRoutes = ["/auth", "/login", "/sign-up", "/"];
 const verificationRoutes = ["/auth/verify-email"];
+const unprotectedRoutes = ["/components", "/showcase"];
 
 export async function updateSession(req: NextRequest) {
   const path = req.nextUrl.pathname;
