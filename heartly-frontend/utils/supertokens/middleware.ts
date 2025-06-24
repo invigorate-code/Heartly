@@ -15,13 +15,13 @@ export async function updateSession(req: NextRequest) {
 
   // Check if the current route needs protection
   const isProtectedRoute = protectedRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
   const isAuthRoute = authRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
   const isVerificationRoute = verificationRoutes.some(
-    (route) => path === route || path.startsWith(`${route}/`)
+    (route) => path === route || path.startsWith(`${route}/`),
   );
 
   // Skip middleware for non-protected and non-auth routes
@@ -30,6 +30,14 @@ export async function updateSession(req: NextRequest) {
   }
 
   try {
+    // Check if backend API URL is configured
+    if (!process.env.NEXT_PUBLIC_NEST_API_URL) {
+      console.warn(
+        "NEXT_PUBLIC_NEST_API_URL not configured. Skipping authentication check.",
+      );
+      throw new Error("Backend API URL not configured");
+    }
+
     // Use your dedicated endpoint to verify the session
     // Forward the cookies from the incoming request
     const loggedInUserResponse = await fetch(
@@ -40,8 +48,13 @@ export async function updateSession(req: NextRequest) {
           Cookie: req.headers.get("cookie") || "",
         },
         credentials: "include",
-      }
+      },
     );
+
+    if (!loggedInUserResponse.ok) {
+      throw new Error(`Backend responded with ${loggedInUserResponse.status}`);
+    }
+
     const response = await loggedInUserResponse.json();
 
     const isAuthenticated = response?.status === "OK";
@@ -70,9 +83,16 @@ export async function updateSession(req: NextRequest) {
   } catch (error) {
     console.error("Session verification error:", error);
 
-    // On error, allow access to auth routes but redirect from protected routes
+    // On error during development, allow access to auth routes but redirect from protected routes
+    // In production, you might want to handle this differently
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    // If we're trying to access the root path and backend is not available,
+    // allow it to proceed (this will show the landing page)
+    if (path === "/") {
+      return NextResponse.next();
     }
   }
 
