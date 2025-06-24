@@ -13,16 +13,28 @@ export default function ComponentsShowcase() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link href="/">
-                <Button variant="ghost" size="sm" startContent={<ArrowLeft className="w-4 h-4" />}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  startContent={<ArrowLeft className="w-4 h-4" />}
+                >
                   Back to Home
                 </Button>
               </Link>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Component Library</h1>
-                <p className="text-sm text-gray-500">Reusable UI components for Heartly</p>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  Component Library
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Reusable UI components for Heartly
+                </p>
               </div>
             </div>
-            <Chip color="primary" variant="flat" startContent={<Code className="w-3 h-3" />}>
+            <Chip
+              color="primary"
+              variant="flat"
+              startContent={<Code className="w-3 h-3" />}
+            >
               UI Showcase
             </Chip>
           </div>
@@ -32,26 +44,32 @@ export default function ComponentsShowcase() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-12">
-
           {/* Weight Tracking Chart Section */}
           <section>
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Weight Tracking Chart</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Weight Tracking Chart
+              </h2>
               <p className="text-gray-600">
-                Interactive weight monitoring chart with baseline indicators and emergency notifications.
+                Interactive weight monitoring chart with baseline indicators and
+                emergency notifications.
               </p>
             </div>
 
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Default Chart */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Default Configuration</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Default Configuration
+                </h3>
                 <WeightTrackingChart />
               </div>
 
               {/* Active Status Chart */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Active Status</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Active Status
+                </h3>
                 <WeightTrackingChart
                   title="Patient Weight Monitoring"
                   assignedDate="5 days ago"
@@ -72,7 +90,9 @@ export default function ComponentsShowcase() {
 
               {/* Completed Status Chart */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Completed Status</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Completed Status
+                </h3>
                 <WeightTrackingChart
                   title="Weight Assessment Complete"
                   assignedDate="1 month ago"
@@ -92,7 +112,9 @@ export default function ComponentsShowcase() {
 
               {/* Critical Alert Chart */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Critical Weight Fluctuation</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Critical Weight Fluctuation
+                </h3>
                 <WeightTrackingChart
                   title="Critical Monitoring"
                   assignedDate="2 days ago"
@@ -116,40 +138,49 @@ export default function ComponentsShowcase() {
           {/* Symptoms Tracker Card Section */}
           <section>
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Symptoms Tracker Card</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Symptoms Tracker Card
+              </h2>
               <p className="text-gray-600">
-                Clean, modern card component for tracking emotional and physical symptoms with actionable links.
+                Clean, modern card component for tracking emotional and physical
+                symptoms with actionable links.
               </p>
             </div>
 
             <div className="grid gap-8 lg:grid-cols-3">
               {/* Default Emotional Card */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Emotional Symptoms</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Emotional Symptoms
+                </h3>
                 <SymptomsTrackerCard
-                  onLinkClick={() => console.log('See History clicked')}
+                  onLinkClick={() => console.log("See History clicked")}
                 />
               </div>
 
               {/* Physical Symptoms Card */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Physical Symptoms</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Physical Symptoms
+                </h3>
                 <SymptomsTrackerCard
                   title="Symptoms Tracker"
                   mainText="Physical"
                   linkText="View Details"
-                  onLinkClick={() => console.log('View Details clicked')}
+                  onLinkClick={() => console.log("View Details clicked")}
                 />
               </div>
 
               {/* Behavioral Symptoms Card */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Behavioral Symptoms</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Behavioral Symptoms
+                </h3>
                 <SymptomsTrackerCard
                   title="Behavioral Tracker"
                   mainText="Behavioral"
                   linkText="Analyze Trends"
-                  onLinkClick={() => console.log('Analyze Trends clicked')}
+                  onLinkClick={() => console.log("Analyze Trends clicked")}
                 />
               </div>
             </div>
@@ -158,20 +189,25 @@ export default function ComponentsShowcase() {
           {/* Component Usage Section */}
           <section className="border-t border-gray-200 pt-12">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Usage Examples</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Usage Examples
+              </h2>
               <p className="text-gray-600">
-                Code examples for implementing these components in your application.
+                Code examples for implementing these components in your
+                application.
               </p>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <h3 className="text-lg font-semibold">Weight Tracking Chart</h3>
+                  <h3 className="text-lg font-semibold">
+                    Weight Tracking Chart
+                  </h3>
                 </CardHeader>
                 <CardBody>
                   <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
+                    {`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 
 // Basic usage
 <WeightTrackingChart />
@@ -194,11 +230,13 @@ export default function ComponentsShowcase() {
 
               <Card>
                 <CardHeader>
-                  <h3 className="text-lg font-semibold">Symptoms Tracker Card</h3>
+                  <h3 className="text-lg font-semibold">
+                    Symptoms Tracker Card
+                  </h3>
                 </CardHeader>
                 <CardBody>
                   <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
+                    {`import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
 
 // Basic usage
 <SymptomsTrackerCard />
@@ -219,7 +257,9 @@ export default function ComponentsShowcase() {
           {/* Props Documentation */}
           <section className="border-t border-gray-200 pt-12">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Component Props</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Component Props
+              </h2>
               <p className="text-gray-600">
                 Available props and their descriptions for all components.
               </p>
@@ -228,55 +268,91 @@ export default function ComponentsShowcase() {
             <div className="space-y-8">
               {/* WeightTrackingChart Props */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">WeightTrackingChart</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  WeightTrackingChart
+                </h3>
                 <Card>
                   <CardBody>
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-gray-200">
-                            <th className="text-left py-2 font-semibold">Prop</th>
-                            <th className="text-left py-2 font-semibold">Type</th>
-                            <th className="text-left py-2 font-semibold">Default</th>
-                            <th className="text-left py-2 font-semibold">Description</th>
+                            <th className="text-left py-2 font-semibold">
+                              Prop
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Type
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Default
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Description
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">title</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              title
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">"Weight"</td>
-                            <td className="py-2">Chart title displayed in header</td>
+                            <td className="py-2">
+                              Chart title displayed in header
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">assignedDate</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              assignedDate
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">"12 days ago"</td>
-                            <td className="py-2">When the tracking was assigned</td>
+                            <td className="py-2">
+                              When the tracking was assigned
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">status</td>
-                            <td className="py-2">"Waiting" | "Active" | "Completed"</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              status
+                            </td>
+                            <td className="py-2">
+                              "Waiting" | "Active" | "Completed"
+                            </td>
                             <td className="py-2">"Waiting"</td>
-                            <td className="py-2">Current status of the tracking</td>
+                            <td className="py-2">
+                              Current status of the tracking
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">baselineWeight</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              baselineWeight
+                            </td>
                             <td className="py-2">number</td>
                             <td className="py-2">50</td>
-                            <td className="py-2">Reference line for baseline weight</td>
+                            <td className="py-2">
+                              Reference line for baseline weight
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">data</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              data
+                            </td>
                             <td className="py-2">WeightDataPoint[]</td>
                             <td className="py-2">Default dataset</td>
-                            <td className="py-2">Array of weight measurements over time</td>
+                            <td className="py-2">
+                              Array of weight measurements over time
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">emergencyNote</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              emergencyNote
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">Default note</td>
-                            <td className="py-2">Emergency or important information</td>
+                            <td className="py-2">
+                              Emergency or important information
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -287,49 +363,77 @@ export default function ComponentsShowcase() {
 
               {/* SymptomsTrackerCard Props */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">SymptomsTrackerCard</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  SymptomsTrackerCard
+                </h3>
                 <Card>
                   <CardBody>
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-gray-200">
-                            <th className="text-left py-2 font-semibold">Prop</th>
-                            <th className="text-left py-2 font-semibold">Type</th>
-                            <th className="text-left py-2 font-semibold">Default</th>
-                            <th className="text-left py-2 font-semibold">Description</th>
+                            <th className="text-left py-2 font-semibold">
+                              Prop
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Type
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Default
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Description
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">title</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              title
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">"Symptoms Tracker"</td>
-                            <td className="py-2">Header text displayed at top of card</td>
+                            <td className="py-2">
+                              Header text displayed at top of card
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">mainText</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              mainText
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">"Emotional"</td>
-                            <td className="py-2">Large prominent text in the center</td>
+                            <td className="py-2">
+                              Large prominent text in the center
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">linkText</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              linkText
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">"See History"</td>
                             <td className="py-2">Text for the action link</td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">onLinkClick</td>
-                            <td className="py-2">() => void</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              onLinkClick
+                            </td>
+                            <td className="py-2">{"() => void"}</td>
                             <td className="py-2">undefined</td>
-                            <td className="py-2">Callback when action link is clicked</td>
+                            <td className="py-2">
+                              Callback when action link is clicked
+                            </td>
                           </tr>
                           <tr>
-                            <td className="py-2 font-mono text-purple-600">className</td>
+                            <td className="py-2 font-mono text-purple-600">
+                              className
+                            </td>
                             <td className="py-2">string</td>
                             <td className="py-2">""</td>
-                            <td className="py-2">Additional CSS classes for styling</td>
+                            <td className="py-2">
+                              Additional CSS classes for styling
+                            </td>
                           </tr>
                         </tbody>
                       </table>
