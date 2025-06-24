@@ -135,6 +135,57 @@ export default function ComponentsShowcase() {
             </div>
           </section>
 
+          {/* Symptoms Tracker Card Section */}
+          <section>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Symptoms Tracker Card
+              </h2>
+              <p className="text-gray-600">
+                Clean, modern card component for tracking emotional and physical
+                symptoms with actionable links.
+              </p>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* Default Emotional Card */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Emotional Symptoms
+                </h3>
+                <SymptomsTrackerCard
+                  onLinkClick={() => console.log("See History clicked")}
+                />
+              </div>
+
+              {/* Physical Symptoms Card */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Physical Symptoms
+                </h3>
+                <SymptomsTrackerCard
+                  title="Symptoms Tracker"
+                  mainText="Physical"
+                  linkText="View Details"
+                  onLinkClick={() => console.log("View Details clicked")}
+                />
+              </div>
+
+              {/* Behavioral Symptoms Card */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Behavioral Symptoms
+                </h3>
+                <SymptomsTrackerCard
+                  title="Behavioral Tracker"
+                  mainText="Behavioral"
+                  linkText="Analyze Trends"
+                  onLinkClick={() => console.log("Analyze Trends clicked")}
+                />
+              </div>
+            </div>
+          </section>
+
           {/* Component Usage Section */}
           <section className="border-t border-gray-200 pt-12">
             <div className="mb-6">
