@@ -60,171 +60,121 @@ export default function ComponentsShowcase() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-12">
-          {/* Weight Tracking Chart Section */}
-          <section>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Weight Tracking Chart
-              </h2>
-              <p className="text-gray-600">
-                Interactive weight monitoring chart with baseline indicators and
-                emergency notifications.
-              </p>
-            </div>
-
-            <div className="grid gap-8 lg:grid-cols-2">
-              {/* Default Chart */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Default Configuration
-                </h3>
-                <WeightTrackingChart />
-              </div>
-
-              {/* Active Status Chart */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Active Status
-                </h3>
-                <WeightTrackingChart
-                  title="Patient Weight Monitoring"
-                  assignedDate="5 days ago"
-                  status="Active"
-                  baselineWeight={45}
-                  data={[
-                    { month: "Jan", weight: 40 },
-                    { month: "Feb", weight: 42 },
-                    { month: "Mar", weight: 38 },
-                    { month: "Apr", weight: 65, isHighlight: true },
-                    { month: "May", weight: 48 },
-                    { month: "Jun", weight: 44 },
-                    { month: "Jul", weight: 46 },
-                  ]}
-                  emergencyNote="Contact physician if weight exceeds 60kg or drops below 35kg"
-                />
-              </div>
-
-              {/* Completed Status Chart */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Completed Status
-                </h3>
-                <WeightTrackingChart
-                  title="Weight Assessment Complete"
-                  assignedDate="1 month ago"
-                  status="Completed"
-                  baselineWeight={55}
-                  data={[
-                    { month: "Jan", weight: 52 },
-                    { month: "Feb", weight: 54 },
-                    { month: "Mar", weight: 53 },
-                    { month: "Apr", weight: 55 },
-                    { month: "May", weight: 56 },
-                    { month: "Jun", weight: 57 },
-                  ]}
-                  emergencyNote="Assessment completed successfully. Regular monitoring recommended."
-                />
-              </div>
-
-              {/* Critical Alert Chart */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Critical Weight Fluctuation
-                </h3>
-                <WeightTrackingChart
-                  title="Critical Monitoring"
-                  assignedDate="2 days ago"
-                  status="Waiting"
-                  baselineWeight={50}
-                  data={[
-                    { month: "Jan", weight: 45 },
-                    { month: "Feb", weight: 42 },
-                    { month: "Mar", weight: 38 },
-                    { month: "Apr", weight: 72, isHighlight: true },
-                    { month: "May", weight: 68, isHighlight: true },
-                    { month: "Jun", weight: 35 },
-                    { month: "Jul", weight: 33 },
-                  ]}
-                  emergencyNote="⚠️ URGENT: Significant weight fluctuations detected. Immediate medical attention required."
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Symptoms Tracker Card Section */}
-          <section>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Symptoms Tracker Card
-              </h2>
-              <p className="text-gray-600">
-                Clean, modern card component for tracking emotional and physical
-                symptoms with actionable links.
-              </p>
-            </div>
-
-            <div className="grid gap-8 lg:grid-cols-3">
-              {/* Default Emotional Card */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Emotional Symptoms
-                </h3>
-                <SymptomsTrackerCard
-                  onLinkClick={() => console.log("See History clicked")}
-                />
-              </div>
-
-              {/* Physical Symptoms Card */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Physical Symptoms
-                </h3>
-                <SymptomsTrackerCard
-                  title="Symptoms Tracker"
-                  mainText="Physical"
-                  linkText="View Details"
-                  onLinkClick={() => console.log("View Details clicked")}
-                />
-              </div>
-
-              {/* Behavioral Symptoms Card */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Behavioral Symptoms
-                </h3>
-                <SymptomsTrackerCard
-                  title="Behavioral Tracker"
-                  mainText="Behavioral"
-                  linkText="Analyze Trends"
-                  onLinkClick={() => console.log("Analyze Trends clicked")}
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Component Usage Section */}
-          <section className="border-t border-gray-200 pt-12">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Usage Examples
-              </h2>
-              <p className="text-gray-600">
-                Code examples for implementing these components in your
-                application.
-              </p>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <h3 className="text-lg font-semibold">
+        <Accordion
+          variant="splitted"
+          selectionMode="multiple"
+          defaultExpandedKeys={["weight-chart", "symptoms-card"]}
+          className="gap-4"
+        >
+          {/* Weight Tracking Chart Accordion */}
+          <AccordionItem
+            key="weight-chart"
+            aria-label="Weight Tracking Chart"
+            title={
+              <div className="flex items-center gap-3">
+                <BarChart3 className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
                     Weight Tracking Chart
-                  </h3>
-                </CardHeader>
-                <CardBody>
-                  <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                    {`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Interactive weight monitoring with baseline indicators
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-8 p-4">
+              {/* Component Examples */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Examples
+                </h3>
+                <div className="grid gap-8 lg:grid-cols-2">
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Default Configuration
+                    </h4>
+                    <WeightTrackingChart />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Active Status
+                    </h4>
+                    <WeightTrackingChart
+                      title="Patient Weight Monitoring"
+                      assignedDate="5 days ago"
+                      status="Active"
+                      baselineWeight={45}
+                      data={[
+                        { month: "Jan", weight: 40 },
+                        { month: "Feb", weight: 42 },
+                        { month: "Mar", weight: 38 },
+                        { month: "Apr", weight: 65, isHighlight: true },
+                        { month: "May", weight: 48 },
+                        { month: "Jun", weight: 44 },
+                        { month: "Jul", weight: 46 },
+                      ]}
+                      emergencyNote="Contact physician if weight exceeds 60kg or drops below 35kg"
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Completed Status
+                    </h4>
+                    <WeightTrackingChart
+                      title="Weight Assessment Complete"
+                      assignedDate="1 month ago"
+                      status="Completed"
+                      baselineWeight={55}
+                      data={[
+                        { month: "Jan", weight: 52 },
+                        { month: "Feb", weight: 54 },
+                        { month: "Mar", weight: 53 },
+                        { month: "Apr", weight: 55 },
+                        { month: "May", weight: 56 },
+                        { month: "Jun", weight: 57 },
+                      ]}
+                      emergencyNote="Assessment completed successfully. Regular monitoring recommended."
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Critical Weight Fluctuation
+                    </h4>
+                    <WeightTrackingChart
+                      title="Critical Monitoring"
+                      assignedDate="2 days ago"
+                      status="Waiting"
+                      baselineWeight={50}
+                      data={[
+                        { month: "Jan", weight: 45 },
+                        { month: "Feb", weight: 42 },
+                        { month: "Mar", weight: 38 },
+                        { month: "Apr", weight: 72, isHighlight: true },
+                        { month: "May", weight: 68, isHighlight: true },
+                        { month: "Jun", weight: 35 },
+                        { month: "Jul", weight: 33 },
+                      ]}
+                      emergencyNote="⚠️ URGENT: Significant weight fluctuations detected. Immediate medical attention required."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Example */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Usage
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 
 // Basic usage
 <WeightTrackingChart />
@@ -241,52 +191,15 @@ export default function ComponentsShowcase() {
   ]}
   emergencyNote="Custom instructions"
 />`}
-                  </pre>
-                </CardBody>
-              </Card>
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
 
-              <Card>
-                <CardHeader>
-                  <h3 className="text-lg font-semibold">
-                    Symptoms Tracker Card
-                  </h3>
-                </CardHeader>
-                <CardBody>
-                  <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                    {`import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
-
-// Basic usage
-<SymptomsTrackerCard />
-
-// Custom configuration
-<SymptomsTrackerCard
-  title="Behavioral Tracker"
-  mainText="Physical"
-  linkText="View Details"
-  onLinkClick={() => console.log('Clicked')}
-/>`}
-                  </pre>
-                </CardBody>
-              </Card>
-            </div>
-          </section>
-
-          {/* Props Documentation */}
-          <section className="border-t border-gray-200 pt-12">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Component Props
-              </h2>
-              <p className="text-gray-600">
-                Available props and their descriptions for all components.
-              </p>
-            </div>
-
-            <div className="space-y-8">
-              {/* WeightTrackingChart Props */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  WeightTrackingChart
+              {/* Props Documentation */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Props
                 </h3>
                 <Card>
                   <CardBody>
@@ -377,11 +290,99 @@ export default function ComponentsShowcase() {
                   </CardBody>
                 </Card>
               </div>
+            </div>
+          </AccordionItem>
 
-              {/* SymptomsTrackerCard Props */}
+          {/* Symptoms Tracker Card Accordion */}
+          <AccordionItem
+            key="symptoms-card"
+            aria-label="Symptoms Tracker Card"
+            title={
+              <div className="flex items-center gap-3">
+                <Heart className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Symptoms Tracker Card
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Clean cards for tracking emotional and physical symptoms
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-8 p-4">
+              {/* Component Examples */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  SymptomsTrackerCard
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Examples
+                </h3>
+                <div className="grid gap-8 lg:grid-cols-3">
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Emotional Symptoms
+                    </h4>
+                    <SymptomsTrackerCard
+                      onLinkClick={() => console.log("See History clicked")}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Physical Symptoms
+                    </h4>
+                    <SymptomsTrackerCard
+                      title="Symptoms Tracker"
+                      mainText="Physical"
+                      linkText="View Details"
+                      onLinkClick={() => console.log("View Details clicked")}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Behavioral Symptoms
+                    </h4>
+                    <SymptomsTrackerCard
+                      title="Behavioral Tracker"
+                      mainText="Behavioral"
+                      linkText="Analyze Trends"
+                      onLinkClick={() => console.log("Analyze Trends clicked")}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Example */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Usage
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
+
+// Basic usage
+<SymptomsTrackerCard />
+
+// Custom configuration
+<SymptomsTrackerCard
+  title="Behavioral Tracker"
+  mainText="Physical"
+  linkText="View Details"
+  onLinkClick={() => console.log('Clicked')}
+/>`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Props Documentation */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Props
                 </h3>
                 <Card>
                   <CardBody>
@@ -459,8 +460,92 @@ export default function ComponentsShowcase() {
                 </Card>
               </div>
             </div>
-          </section>
-        </div>
+          </AccordionItem>
+
+          {/* Getting Started Accordion */}
+          <AccordionItem
+            key="getting-started"
+            aria-label="Getting Started"
+            title={
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Getting Started
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Installation and setup guide for using these components
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-6 p-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Installation
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`# Install required dependencies
+pnpm add recharts @heroui/react lucide-react
+
+# For development
+pnpm add -D @types/react @types/node`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Project Structure
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`components/
+├── charts/
+│   ├── WeightTrackingChart.tsx
+│   └── index.ts
+├── cards/
+│   ├── SymptomsTrackerCard.tsx
+│   └── index.ts
+└── ...`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Basic Setup
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`// Import components in your app
+import { WeightTrackingChart } from "@/components/charts";
+import { SymptomsTrackerCard } from "@/components/cards";
+
+// Use in your components
+export function Dashboard() {
+  return (
+    <div className="grid gap-6">
+      <WeightTrackingChart />
+      <SymptomsTrackerCard />
+    </div>
+  );
+}`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   );
