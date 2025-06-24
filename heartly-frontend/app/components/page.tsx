@@ -2,6 +2,7 @@
 
 import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
+import { RecentActivityCard } from "@/components/cards/RecentActivityCard";
 import {
   Button,
   Card,
@@ -18,6 +19,7 @@ import {
   BarChart3,
   Heart,
   BookOpen,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -63,7 +65,11 @@ export default function ComponentsShowcase() {
         <Accordion
           variant="splitted"
           selectionMode="multiple"
-          defaultExpandedKeys={["weight-chart", "symptoms-card"]}
+          defaultExpandedKeys={[
+            "weight-chart",
+            "symptoms-card",
+            "recent-activity",
+          ]}
           className="gap-4"
         >
           {/* Weight Tracking Chart Accordion */}
@@ -456,6 +462,231 @@ export default function ComponentsShowcase() {
                         </tbody>
                       </table>
                     </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </AccordionItem>
+
+          {/* Recent Activity Card Accordion */}
+          <AccordionItem
+            key="recent-activity"
+            aria-label="Recent Activity Card"
+            title={
+              <div className="flex items-center gap-3">
+                <Activity className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Recent Activity Card
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Activity feed with status indicators and user interactions
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-8 p-4">
+              {/* Component Examples */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Examples
+                </h3>
+                <div className="grid gap-8 lg:grid-cols-2">
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Default Activity Feed
+                    </h4>
+                    <RecentActivityCard
+                      onSeeAllClick={() => console.log("See All clicked")}
+                      onAddClick={() => console.log("Add clicked")}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Custom Activity Feed
+                    </h4>
+                    <RecentActivityCard
+                      title="Patient Updates"
+                      seeAllText="View All"
+                      activities={[
+                        {
+                          id: "1",
+                          type: "blood-report",
+                          title: "Lab Results",
+                          description:
+                            "New blood work results available for Sarah Johnson",
+                          status: "completed",
+                          userName: "Sarah Johnson",
+                          timestamp: "2:15 PM Today",
+                        },
+                        {
+                          id: "2",
+                          type: "intake-form",
+                          title: "Assessment",
+                          description:
+                            "Initial health assessment form submitted by Michael Chen",
+                          status: "pending",
+                          userName: "Michael Chen",
+                          timestamp: "11:30 AM Today",
+                        },
+                      ]}
+                      onSeeAllClick={() => console.log("View All clicked")}
+                      onAddClick={() => console.log("Add new activity")}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Example */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Usage
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`import { RecentActivityCard } from "@/components/cards/RecentActivityCard";
+
+// Basic usage
+<RecentActivityCard />
+
+// Custom configuration
+<RecentActivityCard
+  title="Patient Updates"
+  seeAllText="View All"
+  activities={[
+    {
+      id: '1',
+      type: 'blood-report',
+      title: 'Lab Results',
+      description: 'New blood work results available',
+      status: 'completed',
+      userName: 'Sarah Johnson',
+      timestamp: '2:15 PM Today'
+    }
+  ]}
+  onSeeAllClick={() => navigate('/activities')}
+  onAddClick={() => openCreateModal()}
+/>`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Props Documentation */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Props
+                </h3>
+                <Card>
+                  <CardBody>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 font-semibold">
+                              Prop
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Type
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Default
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Description
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              title
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">"Recent Activity"</td>
+                            <td className="py-2">
+                              Header title for the activity feed
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              seeAllText
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">"See All"</td>
+                            <td className="py-2">
+                              Text for the header action link
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              activities
+                            </td>
+                            <td className="py-2">ActivityItem[]</td>
+                            <td className="py-2">Default dataset</td>
+                            <td className="py-2">
+                              Array of activity items to display
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              onSeeAllClick
+                            </td>
+                            <td className="py-2">{"() => void"}</td>
+                            <td className="py-2">undefined</td>
+                            <td className="py-2">
+                              Callback when "See All" link is clicked
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              onAddClick
+                            </td>
+                            <td className="py-2">{"() => void"}</td>
+                            <td className="py-2">undefined</td>
+                            <td className="py-2">
+                              Callback when floating action button is clicked
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              className
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">""</td>
+                            <td className="py-2">
+                              Additional CSS classes for styling
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Activity Item Interface */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  ActivityItem Interface
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`interface ActivityItem {
+  id: string;
+  type: 'intake-form' | 'blood-report';
+  title: string;
+  description: string;
+  status: 'pending' | 'completed';
+  userName: string;
+  timestamp: string;
+}`}
+                    </pre>
                   </CardBody>
                 </Card>
               </div>
