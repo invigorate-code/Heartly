@@ -1,4 +1,5 @@
 import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
+import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
 import { Button, Card, CardHeader, CardBody, Chip } from "@heroui/react";
 import { ArrowLeft, Github, Code } from "lucide-react";
 import Link from "next/link";
