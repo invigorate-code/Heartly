@@ -30,6 +30,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const fetchUserData = async () => {
+      // Skip API call if backend URL is not configured
+      if (!process.env.NEXT_PUBLIC_NEST_API_URL) {
+        console.warn(
+          "Backend API URL not configured. Skipping user authentication.",
+        );
+        setUser(null);
+        return;
+      }
+
       try {
         const res = await getLoggedInUser();
         setUser(res.userProfile);
