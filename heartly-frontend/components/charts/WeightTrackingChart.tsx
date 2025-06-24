@@ -2,7 +2,7 @@
 
 import React from "react";
 import {
-  LineChart,
+  ComposedChart,
   Line,
   Area,
   XAxis,
