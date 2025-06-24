@@ -7,7 +7,6 @@ import {
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
-import { PlacementInfoEntity } from './entities/placement-info.entity';
 import { PlacementInfoService } from './placement-info.service';
 
 @ApiTags('placementInfo')
@@ -21,7 +20,7 @@ export class PlacementInfoController {
   async createPlacementInfo(
     @Body() createPlacementInfoDto: CreatePlacementInfoDto,
     @Session() session: SessionContainer,
-  ): Promise<PlacementInfoEntity> {
+  ): Promise<string> {
     return await this.placementInfoService.createPlacementInfo(
       createPlacementInfoDto,
       session,
