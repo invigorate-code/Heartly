@@ -51,9 +51,7 @@ const statusColors = {
 const CustomDot = (props: any) => {
   const { cx, cy, payload } = props;
   if (payload.isHighlight) {
-    return (
-      <Dot cx={cx} cy={cy} r={6} fill="#ff6b35" stroke="#fff" strokeWidth={2} />
-    );
+    return <Dot cx={cx} cy={cy} r={6} fill="#ff6b35" stroke="#fff" strokeWidth={2} />;
   }
   return null;
 };
@@ -67,7 +65,7 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
   emergencyNote = "Please note the for emergency needs take a new measurements",
   className = "",
 }) => {
-  const maxWeight = Math.max(...data.map((d) => d.weight));
+  const maxWeight = Math.max(...data.map(d => d.weight));
   const yAxisMax = Math.ceil(maxWeight / 10) * 10;
 
   return (
@@ -98,7 +96,7 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
       <CardBody className="pt-2">
         <div className="h-80 w-full mb-4">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
+            <ComposedChart
               data={data}
               margin={{
                 top: 20,
@@ -136,7 +134,7 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
                 label={{
                   value: "Baseline weight",
                   position: "insideTopLeft",
-                  style: { fontSize: "12px", fill: "#6b7280" },
+                  style: { fontSize: "12px", fill: "#6b7280" }
                 }}
               />
 
@@ -164,12 +162,7 @@ export const WeightTrackingChart: React.FC<WeightTrackingChartProps> = ({
                 stroke="#ff6b35"
                 strokeWidth={3}
                 dot={false}
-                activeDot={{
-                  r: 6,
-                  stroke: "#ff6b35",
-                  strokeWidth: 2,
-                  fill: "#fff",
-                }}
+                activeDot={{ r: 6, stroke: "#ff6b35", strokeWidth: 2, fill: "#fff" }}
               />
 
               {/* Custom dots for highlighted points */}
