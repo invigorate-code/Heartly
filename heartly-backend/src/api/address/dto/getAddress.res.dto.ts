@@ -13,9 +13,6 @@ export class AddressResponseDto {
   @ApiProperty({ description: 'City' })
   city: string;
 
-  @ApiProperty({ description: 'State' })
-  state: string;
-
   @ApiProperty({ description: 'Zip code' })
   zipCode: string;
 

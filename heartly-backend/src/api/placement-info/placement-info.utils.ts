@@ -3,18 +3,18 @@ import { AddressEntity } from '@/api/address/entities/address.entity';
 import { MedicationResponseDto } from '@/api/medication/dto/getMedication.res.dto';
 import { SpecialistResponseDto } from '@/api/specialist/dto/getSpecialist.res.dto';
 import { MetadataResponseDto } from '@/common/dto/getFormMetadata.res.dto';
+import { MetadataEntity } from '@/common/entities/form-metadata.entity';
 import { EntityRelationshipRequirement } from '@/common/interfaces/form-definitions.interface';
 import { PHIService } from 'src/phi/phi.service';
 import { CreateAddressDto } from '../address/dto/createAddress.req.dto';
 import { CreateMedicationDto } from '../medication/dto/createMedication.req.dto';
+import { MedicationEntity } from '../medication/entities/medication.entity';
 import { CreateSpecialistDto } from '../specialist/dto/createSpecialist.req.dto';
+import { SpecialistEntity } from '../specialist/entities/specialist.entity';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
-import { PlacementInfoResponseDto } from './dto/getPlacementInfo.req.dto';
+import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 
-/**
- * List of fields required for a placement info form to be considered complete
- */
 /**
  * List of fields required for a placement info form to be considered complete
  */
@@ -355,48 +355,70 @@ export const addTenantToAddress = (
 };
 
 /**
- * Process a single specialist object
+ * Process a single specialist object for encryption
+ * Converts string fields to Buffer for PHI data
  */
 export const processSpecialistObject = (
   specialist: CreateSpecialistDto | undefined,
   tenantId: string,
   phiService: PHIService,
-): any | undefined => {
+): Record<string, any> | undefined => {
   if (!specialist) return undefined;
+
+  // Process address if it exists
+  const processedAddress = specialist.address
+    ? addTenantToAddress(specialist.address, tenantId)
+    : undefined;
 
   return {
     type: specialist.type ? phiService.encryptToBuffer(specialist.type) : null,
     name: specialist.name ? phiService.encryptToBuffer(specialist.name) : null,
-    address: specialist.address
-      ? addTenantToAddress(specialist.address, tenantId)
-      : undefined,
     tenantId,
+    address: processedAddress,
   };
 };
 
 /**
- * Process an array of specialists
+ * Process an array of specialists for encryption
+ * Converts string fields to Buffer for PHI data
  */
 export const processSpecialists = (
   specialists: CreateSpecialistDto[] | undefined,
   tenantId: string,
   phiService: PHIService,
-): any[] => {
+): Record<string, any>[] => {
   if (!specialists || specialists.length === 0) return [];
 
-  return specialists.map((specialist) =>
-    processSpecialistObject(specialist, tenantId, phiService),
-  );
+  return specialists
+    .map((specialist) =>
+      processSpecialistObject(specialist, tenantId, phiService),
+    )
+    .filter(Boolean) as Record<string, any>[];
 };
 
 /**
- * Process an array of medications
+ * Process an array of medications for encryption
+ * Converts string fields to Buffer for PHI data
+ * Links medications to both the client and placement info
+ */
+/**
+ * Processes medication DTOs into entities ready to be saved
+ * Encrypts sensitive fields using PHIService and adds necessary metadata like tenantId
+ *
+ * @param medications The medication DTOs to process
+ * @param tenantId The tenant ID to assign to the medications
+ * @param phiService The service to handle PHI encryption
+ * @param clientId Optional client ID to associate with the medications
+ * @param placementInfoId Optional placement info ID to associate with the medications
+ * @returns An array of processed medication objects ready to be saved to the database
  */
 export const processMedications = (
   medications: CreateMedicationDto[] | undefined,
   tenantId: string,
   phiService: PHIService,
-): any[] => {
+  clientId?: string,
+  placementInfoId?: string,
+): Record<string, any>[] => {
   if (!medications || medications.length === 0) return [];
 
   return medications.map((medication) => ({
@@ -415,17 +437,44 @@ export const processMedications = (
     refillsRemaining: medication.refillsRemaining,
     isDailyMed: medication.isDailyMed,
     tenantId,
+    client: clientId ? { id: clientId } : undefined,
+    placementInfoId,
   }));
 };
 
-// --- Placement Info Decryption and Mapping Utilities ---
+/**
+ * Updates an array of medication objects with a placement info ID
+ * @param medications Array of medication objects to update
+ * @param placementInfoId The ID of the placement info to set
+ * @returns The updated medication objects
+ */
+/**
+ * Updates an array of medication objects with a placement info ID
+ * This function efficiently adds the placementInfoId to each medication object
+ * without creating unnecessary object copies when possible
+ *
+ * @param medications Array of medication objects to update
+ * @param placementInfoId The ID of the placement info to set
+ * @returns The updated medication objects
+ */
+export const updateMedicationsWithPlacementInfoId = (
+  medications: Record<string, any>[] | undefined,
+  placementInfoId: string,
+): Record<string, any>[] => {
+  if (!medications || medications.length === 0) return [];
+
+  // Map each medication to include the placementInfoId
+  return medications.map((medication) => ({
+    ...medication,
+    placementInfoId,
+  }));
+};
 
 export function getPlacementInfoRelations(): string[] {
   return [
     'client',
     'facility',
     'metadata',
-    'metadata.lastUpdatedBy',
     'previousPlacement',
     'placementAgency',
     'otherAgency',
@@ -438,67 +487,243 @@ export function getPlacementInfoRelations(): string[] {
     'dentist.address',
     'otherSpecialists',
     'otherSpecialists.address',
-    'medications',
+    // 'medications',
   ];
 }
 
+/**
+ * Decrypts a PlacementInfoEntity and all its related entities containing PHI data
+ *
+ * @param placementInfo - The placement info entity with encrypted PHI fields (Buffer type)
+ * @param phiService - The PHI service used to decrypt the data
+ * @returns The decrypted placement info with all PHI fields as strings
+ */
 export function decryptPlacementInfoData(
   placementInfo: PlacementInfoEntity,
   phiService: PHIService,
-): PlacementInfoEntity {
-  const decrypted = phiService.decryptPHIFields(placementInfo, 'placementInfo');
+): DecryptedPlacementInfoEntity {
+  let decrypted: DecryptedPlacementInfoEntity;
+
+  try {
+    decrypted = phiService.decryptPHIFields(
+      placementInfo,
+      'placementInfo',
+    ) as unknown as DecryptedPlacementInfoEntity;
+  } catch (error) {
+    console.error('Error decrypting placement info fields:', error);
+    // Create a fallback with the original entity
+    decrypted = { ...placementInfo } as unknown as DecryptedPlacementInfoEntity;
+  }
+
   if (placementInfo.primaryPhysician) {
-    decrypted.primaryPhysician = phiService.decryptPHIFields(
-      placementInfo.primaryPhysician,
-      'specialist',
-    );
+    try {
+      // Decrypt the specialist data
+      decrypted.primaryPhysician = phiService.decryptPHIFields(
+        placementInfo.primaryPhysician,
+        'specialist',
+      ) as unknown as DecryptedSpecialistEntity;
+
+      // Preserve the address relationship
+      if (placementInfo.primaryPhysician.address) {
+        decrypted.primaryPhysician.address =
+          placementInfo.primaryPhysician.address;
+      }
+    } catch (error) {
+      console.error('Error decrypting primaryPhysician:', error);
+      decrypted.primaryPhysician = {
+        ...placementInfo.primaryPhysician,
+      } as unknown as DecryptedSpecialistEntity;
+    }
   }
+
   if (placementInfo.dentist) {
-    decrypted.dentist = phiService.decryptPHIFields(
-      placementInfo.dentist,
-      'specialist',
-    );
+    try {
+      // Decrypt the dentist data
+      decrypted.dentist = phiService.decryptPHIFields(
+        placementInfo.dentist,
+        'specialist',
+      ) as unknown as DecryptedSpecialistEntity;
+
+      // Preserve the address relationship
+      if (placementInfo.dentist.address) {
+        decrypted.dentist.address = placementInfo.dentist.address;
+      }
+    } catch (error) {
+      console.error('Error decrypting dentist:', error);
+      decrypted.dentist = {
+        ...placementInfo.dentist,
+      } as unknown as DecryptedSpecialistEntity;
+    }
   }
+
   if (placementInfo.otherSpecialists?.length) {
-    decrypted.otherSpecialists = placementInfo.otherSpecialists.map((s) =>
-      phiService.decryptPHIFields(s, 'specialist'),
-    );
+    try {
+      decrypted.otherSpecialists = placementInfo.otherSpecialists.map((s) => {
+        try {
+          // Decrypt the specialist
+          const decryptedSpecialist = phiService.decryptPHIFields(
+            s,
+            'specialist',
+          ) as unknown as DecryptedSpecialistEntity;
+
+          // Preserve the address relationship
+          if (s.address) {
+            decryptedSpecialist.address = s.address;
+          }
+
+          return decryptedSpecialist;
+        } catch (error) {
+          console.error('Error decrypting specialist:', error);
+          return { ...s } as unknown as DecryptedSpecialistEntity;
+        }
+      });
+    } catch (error) {
+      console.error('Error processing specialists array:', error);
+      decrypted.otherSpecialists = [];
+    }
   }
+
   if (placementInfo.medications?.length) {
-    decrypted.medications = placementInfo.medications.map((m) =>
-      phiService.decryptPHIFields(m, 'medication'),
-    );
+    try {
+      decrypted.medications = placementInfo.medications.map((m) => {
+        try {
+          return phiService.decryptPHIFields(
+            m,
+            'medication',
+          ) as unknown as DecryptedMedicationEntity;
+        } catch (error) {
+          console.error('Error decrypting medication:', error);
+          return { ...m } as unknown as DecryptedMedicationEntity;
+        }
+      });
+    } catch (error) {
+      console.error('Error processing medications array:', error);
+      decrypted.medications = [];
+    }
   }
+
   return decrypted;
 }
-
-// Function removed - no longer needed as PHI fields are already decrypted
 
 export function mapAddressToDto(
   address: AddressEntity | undefined,
 ): AddressResponseDto | undefined {
   if (!address) return undefined;
 
-  // Note: AddressEntity doesn't have a state field, but it's required in the DTO
   return {
     id: address.id,
     name: address.name ?? '',
     streetAddress: address.streetAddress ?? '',
     city: address.city ?? '',
-    state: '', // AddressEntity doesn't have state field
     zipCode: address.zipCode ?? '',
     phone: address.phone ?? '',
     relation: address.relation ?? '',
   };
 }
 
+/**
+ * Type for PlacementInfoEntity with PHI fields decrypted from Buffer to string
+ *
+ * This preserves the optional/required nature of fields from the original entity
+ * but changes the type of PHI fields from Buffer to string
+ */
+type DecryptedPlacementInfoEntity = Omit<
+  PlacementInfoEntity,
+  | 'nickname'
+  | 'gender'
+  | 'maritalStatus'
+  | 'height'
+  | 'weight'
+  | 'eyes'
+  | 'hair'
+  | 'distinguishingMarks'
+  | 'allergies'
+  | 'dietarySensitivities'
+  | 'diagnosis'
+  | 'medicalNeeds'
+  | 'communicableConditions'
+  | 'socialSecurity'
+  | 'ssi'
+  | 'ssiPayee'
+  | 'medical'
+  | 'medicare'
+  | 'otherInsurance'
+  | 'religiousPreference'
+  | 'religiousPrefAdvisor'
+  | 'specialInstructions'
+  | 'visitationRestrictions'
+  | 'personsAuthorizedClientFromHome'
+  | 'burialArrangements'
+  | 'dangerousPropensitiesDescription'
+  | 'otherSignificantInfo'
+  | 'languages'
+  | 'primaryPhysician'
+  | 'dentist'
+  | 'otherSpecialists'
+  | 'medications'
+> & {
+  // Using the same optional/required status as in the original entity
+  nickname?: string;
+  gender?: string;
+  maritalStatus?: string;
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  hair?: string;
+  distinguishingMarks?: string;
+  allergies?: string;
+  dietarySensitivities?: string;
+  diagnosis?: string;
+  medicalNeeds?: string;
+  communicableConditions?: string;
+  socialSecurity?: string;
+  ssi?: string;
+  ssiPayee?: string;
+  medical?: string;
+  medicare?: string;
+  otherInsurance?: string;
+  religiousPreference?: string;
+  religiousPrefAdvisor?: string;
+  specialInstructions?: string;
+  visitationRestrictions?: string;
+  personsAuthorizedClientFromHome?: string;
+  burialArrangements?: string;
+  dangerousPropensitiesDescription?: string;
+  otherSignificantInfo?: string;
+  languages?: string;
+  // Relations
+  primaryPhysician?: DecryptedSpecialistEntity;
+  dentist?: DecryptedSpecialistEntity;
+  otherSpecialists?: DecryptedSpecialistEntity[];
+  medications?: DecryptedMedicationEntity[];
+};
+
+/**
+ * Create decrypted entity types that have string properties instead of Buffer
+ * We preserve the optional/nullable nature of the original properties
+ */
+type DecryptedSpecialistEntity = Omit<SpecialistEntity, 'name' | 'type'> & {
+  name?: string;
+  type?: string;
+  address?: AddressEntity;
+};
+
+type DecryptedMedicationEntity = Omit<
+  MedicationEntity,
+  'name' | 'requiredDosage' | 'timeFrequency' | 'prescribingMd'
+> & {
+  name?: string;
+  requiredDosage?: string;
+  timeFrequency?: string;
+  prescribingMd?: string;
+};
+
 export function mapSpecialistToDto(
-  specialist: any,
+  specialist: DecryptedSpecialistEntity | undefined,
 ): SpecialistResponseDto | undefined {
   if (!specialist) return undefined;
   return {
     id: specialist.id,
-    // PHI fields (name, type) are already decrypted to string by decryptPlacementInfoData
     name: specialist.name ?? '',
     type: specialist.type ?? '',
     address: mapAddressToDto(specialist.address),
@@ -506,12 +731,11 @@ export function mapSpecialistToDto(
 }
 
 export function mapMedicationToDto(
-  medication: any,
+  medication: DecryptedMedicationEntity | undefined,
 ): MedicationResponseDto | undefined {
   if (!medication) return undefined;
   return {
     id: medication.id,
-    // PHI fields are already decrypted to string by decryptPlacementInfoData
     name: medication.name ?? '',
     requiredDosage: medication.requiredDosage ?? '',
     timeFrequency: medication.timeFrequency ?? '',
@@ -522,32 +746,44 @@ export function mapMedicationToDto(
   };
 }
 
+/**
+ * Maps decrypted metadata to a DTO format
+ * Handles cases where the metadata entity may not have been properly decrypted
+ */
 export function mapMetadataToDto(
-  metadata: any,
+  metadata: MetadataEntity | undefined,
 ): MetadataResponseDto | undefined {
   if (!metadata) return undefined;
+
+  // Handle case where the metadata might be the original entity or a decrypted entity
+  const formType =
+    'formType' in metadata && typeof metadata.formType === 'string'
+      ? metadata.formType
+      : '';
+
   return {
     id: metadata.id,
-    formType: metadata.formType ?? '',
+    formType: formType ?? '',
     entityId: metadata.entityId ?? '',
     lastUpdatedBy: metadata.lastUpdatedBy
-      ? {
-          id: metadata.lastUpdatedBy.id,
-          name: metadata.lastUpdatedBy.name ?? '',
-        }
+      ? metadata.lastUpdatedBy.id
       : undefined,
     createdAt: metadata.createdAt,
     updatedAt: metadata.updatedAt,
   };
 }
 
+/**
+ * Maps a decrypted PlacementInfo entity to a PlacementInfoResponseDto
+ * Handles nullable/optional fields by providing empty string defaults for PHI fields
+ */
 export function mapPlacementInfoToDto(
-  decrypted: PlacementInfoEntity,
+  decrypted: DecryptedPlacementInfoEntity,
 ): PlacementInfoResponseDto {
   const dto = new PlacementInfoResponseDto();
   Object.assign(dto, {
     id: decrypted.id,
-    // PHI fields are already decrypted to string
+    // PHI fields are already decrypted to string but might be null/undefined
     nickname: decrypted.nickname ?? '',
     gender: decrypted.gender ?? '',
     maritalStatus: decrypted.maritalStatus ?? '',
@@ -585,19 +821,8 @@ export function mapPlacementInfoToDto(
     createdAt: decrypted.createdAt,
     updatedAt: decrypted.updatedAt,
   });
-  if (decrypted.client) {
-    dto.client = {
-      id: decrypted.client.id,
-      // Create full name from firstName and lastName
-      name: `${decrypted.client.firstName ?? ''} ${decrypted.client.lastName ?? ''}`.trim(),
-    };
-  }
-  if (decrypted.facility) {
-    dto.facility = {
-      id: decrypted.facility.id,
-      name: decrypted.facility.name ?? '',
-    };
-  }
+  dto.client = decrypted.client.id as string;
+  dto.facility = decrypted.facility.id as string;
   dto.previousPlacement = mapAddressToDto(decrypted.previousPlacement);
   dto.placementAgency = mapAddressToDto(decrypted.placementAgency);
   dto.otherAgency = mapAddressToDto(decrypted.otherAgency);
@@ -606,10 +831,12 @@ export function mapPlacementInfoToDto(
   dto.religiousPrefAddress = mapAddressToDto(decrypted.religiousPrefAddress);
   dto.primaryPhysician = mapSpecialistToDto(decrypted.primaryPhysician);
   dto.dentist = mapSpecialistToDto(decrypted.dentist);
-  dto.otherSpecialists = (decrypted.otherSpecialists || []).map(
-    mapSpecialistToDto,
-  );
-  dto.medications = (decrypted.medications || []).map(mapMedicationToDto);
+  dto.otherSpecialists = (decrypted.otherSpecialists || [])
+    .map(mapSpecialistToDto)
+    .filter(Boolean) as SpecialistResponseDto[];
+  dto.medications = (decrypted.medications || [])
+    .map(mapMedicationToDto)
+    .filter(Boolean) as MedicationResponseDto[];
   dto.metadata = mapMetadataToDto(decrypted.metadata);
   return dto;
 }

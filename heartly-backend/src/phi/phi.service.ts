@@ -94,7 +94,7 @@ export class PHIService {
    * @returns Decrypted string
    */
   decryptPHI(encryptedData: Buffer): string {
-    if (!encryptedData) return null;
+    if (!encryptedData) return ''; // Return empty string instead of null
 
     try {
       const iv = encryptedData.subarray(0, 16);
@@ -111,7 +111,7 @@ export class PHIService {
       return decrypted.toString('utf8');
     } catch (error) {
       this.logger.error(`Error decrypting PHI: ${error.message}`);
-      return null; // Return null on decryption error
+      return ''; // Return empty string instead of null for better error handling
     }
   }
 
@@ -121,10 +121,7 @@ export class PHIService {
    * @param entityType Type of entity to identify PHI fields
    * @returns Copy of the object with PHI fields encrypted
    */
-  encryptPHIFields<T extends Record<string, any>>(
-    data: T,
-    entityType: string,
-  ): T {
+  encryptPHIFields<T extends object>(data: T, entityType: string): T {
     if (!data) return null;
 
     // Get PHI fields for this entity type

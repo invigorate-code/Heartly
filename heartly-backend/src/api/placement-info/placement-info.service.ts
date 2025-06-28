@@ -10,14 +10,14 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
+import { MedicationEntity } from '../medication/entities/medication.entity';
 import { TenantService } from '../tenant/tenant.service';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
-import { PlacementInfoResponseDto } from './dto/getPlacementInfo.req.dto';
+import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import {
   addTenantToAddress,
   decryptPlacementInfoData,
-  getPlacementInfoRelations,
   mapPlacementInfoToDto,
   processMedications,
   processSpecialistObject,
@@ -31,6 +31,8 @@ export class PlacementInfoService extends BaseTenantService {
     private readonly placementInfoRepository: Repository<PlacementInfoEntity>,
     @InjectRepository(MetadataEntity)
     private readonly metadataRepository: Repository<MetadataEntity>,
+    @InjectRepository(MedicationEntity)
+    private readonly medicationRepository: Repository<MedicationEntity>,
     private readonly formFieldContributionService: FormFieldContributionService,
     @InjectRepository(FacilityEntity)
     private readonly facilityRepository: Repository<FacilityEntity>,
@@ -178,13 +180,31 @@ export class PlacementInfoService extends BaseTenantService {
         placementInfo.medications,
         tenant.id,
         this.phiService,
+        client.id, // Pass client ID for medication-client relationship
       ),
     };
 
+    // Create the placement info object first to get its ID
     const newPlacementInfo =
       this.placementInfoRepository.create(placementInfoObj);
     const savedPlacementInfo =
       await this.placementInfoRepository.save(newPlacementInfo);
+
+    // If we have medications, process and save them efficiently using medicationRepository
+    if (placementInfo.medications?.length) {
+      // Process medications with the saved placement info ID
+      const processedMedications = processMedications(
+        placementInfo.medications,
+        tenant.id,
+        this.phiService,
+        client.id,
+        savedPlacementInfo.id,
+      );
+
+      // Save medications directly through the medication repository
+      // This is more efficient than saving via placementInfo.medications
+      await this.medicationRepository.save(processedMedications);
+    }
 
     // Update the entityId in metadata to match the placement info id
     if (savedPlacementInfo.metadata) {
@@ -203,10 +223,28 @@ export class PlacementInfoService extends BaseTenantService {
     session: SessionContainer,
   ): Promise<PlacementInfoResponseDto> {
     const userTenantId = await this.verifyTenantAccess(session);
-    const relations = getPlacementInfoRelations();
+
     const placementInfo = await this.placementInfoRepository.findOne({
       where: { id, tenantId: userTenantId },
-      relations,
+      relations: [
+        'client',
+        'facility',
+        'metadata',
+        // 'medications',
+        'metadata.lastUpdatedBy',
+        'previousPlacement',
+        'placementAgency',
+        'otherAgency',
+        'legalRep',
+        'otherRep',
+        'religiousPrefAddress',
+        'primaryPhysician',
+        'primaryPhysician.address',
+        'dentist',
+        'dentist.address',
+        'otherSpecialists',
+        'otherSpecialists.address',
+      ],
     });
 
     if (!placementInfo) {

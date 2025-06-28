@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PHIModule } from 'src/phi/phi.module';
 import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
+import { MedicationEntity } from '../medication/entities/medication.entity';
 import { TenantModule } from '../tenant/tenant.module';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import { PlacementInfoController } from './placement-info.controller';
@@ -17,8 +18,9 @@ import { PlacementInfoService } from './placement-info.service';
       PlacementInfoEntity,
       FacilityEntity,
       ClientEntity,
-      MetadataEntity, // Add this line
+      MetadataEntity,
       FormFieldContributionEntity,
+      MedicationEntity,
     ]),
     CommonModule,
     TenantModule,

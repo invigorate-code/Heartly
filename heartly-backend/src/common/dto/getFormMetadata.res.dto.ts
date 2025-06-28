@@ -11,10 +11,7 @@ export class MetadataResponseDto {
   entityId: string;
 
   @ApiProperty({ description: 'User who last updated the form' })
-  lastUpdatedBy: {
-    id: string;
-    name?: string;
-  };
+  lastUpdatedBy: string;
 
   @ApiProperty({ description: 'Creation timestamp' })
   createdAt: Date;

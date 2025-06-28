@@ -9,16 +9,10 @@ export class PlacementInfoResponseDto {
   id: string;
 
   @ApiProperty({ description: 'Client information' })
-  client: {
-    id: string;
-    name: string;
-  };
+  client: string;
 
   @ApiProperty({ description: 'Facility information' })
-  facility: {
-    id: string;
-    name: string;
-  };
+  facility: string;
 
   @ApiPropertyOptional({ description: 'Client nickname' })
   nickname?: string;
