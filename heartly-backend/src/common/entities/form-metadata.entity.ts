@@ -14,7 +14,6 @@ import { FormFieldContributionEntity } from './form-field-contribution.entity';
 
 @Entity('metadata')
 export class MetadataEntity extends AbstractEntity {
-  // Add formType and entityId to make it universal
   @Column({ name: 'formType', nullable: false })
   formType!: string;
 
@@ -31,13 +30,12 @@ export class MetadataEntity extends AbstractEntity {
   @OneToMany(
     () => FormFieldContributionEntity,
     (formFieldContribution) => formFieldContribution.metadata,
-    { cascade: true }, // Add this
+    { cascade: true },
   )
   formFieldContributions!: FormFieldContributionEntity[];
 
-  // Add cascade: true to contributors
   @ManyToMany(() => UserEntity, {
-    cascade: true, // Add this
+    cascade: true,
   })
   @JoinTable({
     name: 'contributor',

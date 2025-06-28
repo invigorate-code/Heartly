@@ -1,5 +1,5 @@
-// filepath: /Users/thompsonmac/Professional/Heartly/heartly-backend/src/common/services/form-registry.service.ts
 import {
+  PLACEMENT_INFO_ENTITY_RELATIONSHIPS,
   REQUIRED_PLACEMENT_INFO_FIELDS,
   calculateCompletionPercentage,
   isPlacementInfoCompleted,
@@ -25,15 +25,14 @@ export class FormRegistryService {
       excludedContributionFields: [
         'clientId',
         'facilityId',
-        'placementAgencyId',
-        'otherAgencyId',
-        'legalRepId',
-        'otherRepId',
-        'previousPlacementId',
         'tenantId',
         'metadata',
         'contributors',
+        'isCompleted',
+        'completionPercentage',
       ],
+      // Add entity relationships to the form definition
+      entityRelationships: PLACEMENT_INFO_ENTITY_RELATIONSHIPS,
     });
 
     // Register other form types as you build them

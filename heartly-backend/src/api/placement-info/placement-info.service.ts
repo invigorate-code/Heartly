@@ -12,9 +12,13 @@ import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { TenantService } from '../tenant/tenant.service';
 import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
+import { PlacementInfoResponseDto } from './dto/getPlacementInfo.req.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import {
   addTenantToAddress,
+  decryptPlacementInfoData,
+  getPlacementInfoRelations,
+  mapPlacementInfoToDto,
   processMedications,
   processSpecialistObject,
   processSpecialists,
@@ -192,6 +196,30 @@ export class PlacementInfoService extends BaseTenantService {
 
     // Return the complete entity with relations
     return savedPlacementInfo.id;
+  }
+
+  async getPlacementInfo(
+    id: string,
+    session: SessionContainer,
+  ): Promise<PlacementInfoResponseDto> {
+    const userTenantId = await this.verifyTenantAccess(session);
+    const relations = getPlacementInfoRelations();
+    const placementInfo = await this.placementInfoRepository.findOne({
+      where: { id, tenantId: userTenantId },
+      relations,
+    });
+
+    if (!placementInfo) {
+      throw new NotFoundException(
+        `Placement info with ID ${id} not found or not accessible`,
+      );
+    }
+
+    const decryptedData = decryptPlacementInfoData(
+      placementInfo,
+      this.phiService,
+    );
+    return mapPlacementInfoToDto(decryptedData);
   }
 
   async delete(id: string): Promise<void> {

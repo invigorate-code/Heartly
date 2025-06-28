@@ -1,5 +1,5 @@
-import { CreateAddressDto } from '@/api/address/dto/create-address.dto';
-import { CreateMedicationDto } from '@/api/medication/dto/CreateMedication.req.dto';
+import { CreateAddressDto } from '@/api/address/dto/createAddress.req.dto';
+import { CreateMedicationDto } from '@/api/medication/dto/createMedication.req.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -10,7 +10,7 @@ import {
   IsUUID,
   MaxLength,
 } from 'class-validator';
-import { CreateSpecialistDto } from '../../specialist/dto/CreateSpecialist.dto';
+import { CreateSpecialistDto } from '../../specialist/dto/createSpecialist.req.dto';
 
 export class CreatePlacementInfoDto {
   @ApiPropertyOptional({

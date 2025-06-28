@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   Session,
@@ -25,5 +25,14 @@ export class PlacementInfoController {
       createPlacementInfoDto,
       session,
     );
+  }
+
+  @Get('/:id')
+  @VerifySession()
+  async getPlacementInfo(
+    @Session() session: SessionContainer,
+    @Param('id') id: string,
+  ): Promise<any> {
+    return await this.placementInfoService.getPlacementInfo(id, session);
   }
 }
