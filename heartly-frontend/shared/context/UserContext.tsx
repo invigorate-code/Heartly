@@ -27,6 +27,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<UserEntity | null>(null);
+  const [user, setUser] = useState<UserEntity | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,6 +44,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const getUserRole = () => user?.role;
+  const userDisplayName = () => user?.firstName + " " + user?.lastName;
   const userDisplayName = () => user?.firstName + " " + user?.lastName;
   const isOwner = () => user?.role === "OWNER";
   const isOnboardingCompleted = () => user?.onboarding_completed_at !== null;

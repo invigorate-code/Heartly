@@ -1,7 +1,7 @@
 // dto/create-audit-log.dto.ts
 import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
-export class CreateSystemAuditLogDto {
+export class CreateUserActionAuditLogDto {
   @IsNotEmpty()
   @IsString()
   userId: string;
@@ -22,11 +22,11 @@ export class CreateSystemAuditLogDto {
   @IsString()
   targetUserId?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  targetFacilityId?: string;
+  targetFacilityId: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  targetTenantId?: string;
+  targetTenantId: string;
 }

@@ -25,6 +25,14 @@ export const LandingNavbar = () => {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
+          <Link
+            href="/components"
+            className="text-default-700 hover:text-primary transition-colors"
+          >
+            Components
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
           <Button
             isIconOnly
             variant="light"

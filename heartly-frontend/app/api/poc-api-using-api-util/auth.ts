@@ -33,9 +33,11 @@ export type SignInUserFormFields = {
 
 export type SignInUserResponse = {
   status: "OK" | "SIGN_IN_NOT_ALLOWED" | "WRONG_CREDENTIALS_ERROR";
+  status: "OK" | "SIGN_IN_NOT_ALLOWED" | "WRONG_CREDENTIALS_ERROR";
   reason?: string;
   user?: User;
   session?: SessionContainerInterface;
+};
 };
 
 const baseURL = process.env.NEXT_PUBLIC_NEST_API_URL || "http://localhost:3001";
@@ -43,7 +45,21 @@ const baseURL = process.env.NEXT_PUBLIC_NEST_API_URL || "http://localhost:3001";
 export const api = axios.create({
   baseURL: baseURL,
   withCredentials: true, // Important for sending and receiving cookies (like SuperTokens session cookies)
+  timeout: 5000, // 5 second timeout
 });
+
+// Add response interceptor to handle network errors gracefully
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === "NETWORK_ERROR" || error.code === "ECONNREFUSED") {
+      console.warn(
+        "Backend server is not available. Frontend will work in offline mode.",
+      );
+    }
+    return Promise.reject(error);
+  },
+);
 
 // --- Auth Endpoints ---
 export const testAuth = async (): Promise<string | null | unknown> => {
@@ -55,9 +71,17 @@ export const testAuth = async (): Promise<string | null | unknown> => {
         console.error("Error getting logged in user:", error);
         reject(error);
       });
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error getting logged in user:", error);
+        reject(error);
+      });
   });
 };
 
+export const signInUser = async (
+  formFields: SignInUserFormFields,
+): Promise<SignInUserResponse> => {
 export const signInUser = async (
   formFields: SignInUserFormFields,
 ): Promise<SignInUserResponse> => {
@@ -82,6 +106,9 @@ export const signInUser = async (
 export const signUpUser = async (
   formFields: SignUpUserFormFields,
 ): Promise<any> => {
+export const signUpUser = async (
+  formFields: SignUpUserFormFields,
+): Promise<any> => {
   return new Promise((resolve, reject) => {
     api
       .post("/auth/signup", formFields)
@@ -90,11 +117,21 @@ export const signUpUser = async (
         console.error("Error signing up user:", error);
         reject(error);
       });
+        console.error("Error signing up user:", error);
+        reject(error);
+      });
   });
 };
 
 export const getLoggedInUser = async (): Promise<LoggedInUserResponse> => {
   return new Promise((resolve, reject) => {
+    api
+      .post("/api/auth/getUserSession")
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error getting logged in user:", error);
+        reject(error);
+      });
     api
       .post("/api/auth/getUserSession")
       .then((response) => resolve(response.data))
@@ -131,8 +168,28 @@ export const deleteUser = async (userId) => {
       });
   });
 };
+  return new Promise((resolve, reject) => {
+    api
+      .delete(`/api/auth/user/${userId}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+        reject(error);
+      });
+  });
+};
 
 export const getUserProfile = async () => {
+  return new Promise((resolve, reject) => {
+    api
+      .get("/api/auth/user/profile")
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error getting user profile:", error);
+        reject(error);
+      });
+  });
+};
   return new Promise((resolve, reject) => {
     api
       .get("/api/auth/user/profile")
@@ -158,7 +215,31 @@ export const createResetPasswordLink = async (userId, email) => {
       });
   });
 };
+  return new Promise((resolve, reject) => {
+    api
+      .post("/api/auth/reset-password", {
+        userId,
+        email,
+      })
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error creating reset password link:", error);
+        reject(error);
+      });
+  });
+};
 
+export const sendEmailVerificationLink = async (email: string) => {
+  return new Promise((resolve, reject) => {
+    api
+      .post("/auth/send-email-verification-link", { email })
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error sending email verification link:", error);
+        reject(error);
+      });
+  });
+};
 export const sendEmailVerificationLink = async (email: string) => {
   return new Promise((resolve, reject) => {
     api
@@ -184,6 +265,14 @@ export const verifyEmail = async (token: string, tenantId: string) => {
 };
 
 export const signOut = async () => {
+  return new Promise((resolve, reject) => {
+    api
+      .post("/auth/signOut")
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        console.error("Error signing out:", error);
+        reject(error);
+      });
   return new Promise((resolve, reject) => {
     api
       .post("/auth/signOut")

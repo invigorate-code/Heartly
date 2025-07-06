@@ -64,7 +64,15 @@ export class FacilityResDto {
   })
   @NumberField()
   @Expose()
-  projected_client_count: number;
+  projectedClientCount: number;
+
+  @ApiProperty({
+    description: 'Projected number of rooms at this facility',
+    example: 150,
+  })
+  @NumberField()
+  @Expose()
+  roomCount: number;
 
   @ApiProperty({
     description: 'ID of the tenant this facility belongs to',
@@ -89,6 +97,21 @@ export class FacilityResDto {
   @ClassField(() => Date)
   @Expose()
   updatedAt: Date;
+
+  @ApiProperty({
+    description: 'Indicates if the facility is deleted',
+    example: false,
+  })
+  @Expose()
+  isDeleted: boolean;
+
+  @ApiProperty({
+    description: 'Date when the facility was deleted, if applicable',
+    example: null,
+  })
+  @ClassField(() => Date, { nullable: true })
+  @Expose()
+  deletedAt?: Date | null;
 
   @ApiProperty({
     description: 'Tenant details this facility belongs to',

@@ -20,13 +20,20 @@ export async function updateSession(req: NextRequest) {
   // Check if the current route needs protection
   const isProtectedRoute = protectedRoutes.some(
     (route) => path === route || path.startsWith(`${route}/`),
+    (route) => path === route || path.startsWith(`${route}/`),
   );
   const isAuthRoute = authRoutes.some(
+    (route) => path === route || path.startsWith(`${route}/`),
     (route) => path === route || path.startsWith(`${route}/`),
   );
   const isVerificationRoute = verificationRoutes.some(
     (route) => path === route || path.startsWith(`${route}/`),
   );
+
+  // Skip middleware for unprotected routes
+  if (isUnprotectedRoute) {
+    return NextResponse.next();
+  }
 
   // Skip middleware for non-protected and non-auth routes
   if (!isProtectedRoute && !isAuthRoute && !isVerificationRoute) {
@@ -43,6 +50,7 @@ export async function updateSession(req: NextRequest) {
           Cookie: req.headers.get("cookie") || "",
         },
         credentials: "include",
+      },
       },
     );
 
@@ -120,9 +128,16 @@ export async function updateSession(req: NextRequest) {
   } catch (error) {
     console.error("Session verification error:", error);
 
-    // On error, allow access to auth routes but redirect from protected routes
+    // On error during development, allow access to auth routes but redirect from protected routes
+    // In production, you might want to handle this differently
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    // If we're trying to access the root path and backend is not available,
+    // allow it to proceed (this will show the landing page)
+    if (path === "/") {
+      return NextResponse.next();
     }
   }
 

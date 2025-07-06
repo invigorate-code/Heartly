@@ -6,53 +6,77 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { Repository } from 'typeorm';
+import { BaseTenantService } from '../../common/base-tenant-service';
 import { TenantService } from '../tenant/tenant.service';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity, UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
-import { UpdateFacilityDto } from './dto/updateFacility.reg.dto';
+import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityEntity } from './entities/facility.entity';
+import { facilityHasPHI } from './facility.utils';
 
 @Injectable()
-export class FacilityService {
+export class FacilityService extends BaseTenantService {
   constructor(
     @InjectRepository(FacilityEntity)
     private readonly facilityRepository: Repository<FacilityEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly tenantService: TenantService,
-  ) {}
+  ) {
+    super();
+  }
 
   async createFacility(
     facility: CreateFacilityDto,
     session: SessionContainer,
   ): Promise<FacilityEntity> {
     const userId = session.getUserId();
+    const userTenantId = await this.verifyTenantAccess(session);
 
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-
-    const tenant = await this.tenantService.findTenantById(metadata.tenantId);
+    const tenant = await this.tenantService.findTenantById(userTenantId);
     if (!tenant) {
-      throw new NotFoundException(
-        `Tenant with id ${metadata.tenantId} not found`,
-      );
+      throw new NotFoundException(`Tenant with id ${userTenantId} not found`);
     }
 
-    const facilityWithTenantId = {
+    const facilityWithTenantId: Partial<FacilityEntity> = {
       ...facility,
       tenant: tenant,
-      // projected client count
     };
 
-    const newFacility = this.facilityRepository.create(facilityWithTenantId);
+    const newFacility = this.facilityRepository.create({
+      ...facilityWithTenantId,
+      users: [{ id: userId }],
+    });
+
     return await this.facilityRepository.save(newFacility);
   }
 
-  async getFacilityById(id: string): Promise<FacilityResDto> {
+  async getFacilityById(
+    id: string,
+    session: SessionContainer,
+  ): Promise<FacilityResDto> {
+    const userId = session.getUserId();
+    const userTenantId = await this.verifyTenantAccess(session);
+
+    // Get the user to check their role
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    // Build the where clause based on user role
+    const whereClause =
+      user.role === UserRole.OWNER
+        ? { id, tenant: { id: userTenantId } } // OWNER can see soft-deleted facilities
+        : { id, isDeleted: false, tenant: { id: userTenantId } }; // Others only see active facilities
+
     const facility = await this.facilityRepository.findOne({
-      where: { id },
+      where: whereClause,
       relations: { tenant: true, users: true },
     });
 
@@ -63,56 +87,14 @@ export class FacilityService {
     return plainToInstance(FacilityResDto, facility);
   }
 
-  async getFacilitiesByTenantId(
+  async getLoggedInUserFacilities(
     session: SessionContainer,
   ): Promise<FacilityResDto[]> {
     const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const tenantId = metadata.tenantId;
-
-    if (!tenantId || typeof tenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user session');
-    }
-
-    const allFacilitiesEntitiesByTenantId = await this.facilityRepository.find({
-      where: {
-        tenant: { id: tenantId },
-      },
-      relations: { tenant: true, users: true },
-    });
-
-    if (allFacilitiesEntitiesByTenantId.length === 0) {
-      throw new NotFoundException(
-        `Facilities with tenantId ${tenantId} not found`,
-      );
-    }
-
-    const allFacilitiesByTenantId = allFacilitiesEntitiesByTenantId.map(
-      (facility) => plainToInstance(FacilityResDto, facility),
-    );
-
-    return allFacilitiesByTenantId;
-  }
-
-  async getAllFacilities(): Promise<FacilityResDto[]> {
-    const allFacilityEntities = await this.facilityRepository.find();
-    if (allFacilityEntities.length === 0) {
-      throw new NotFoundException('No facilities found');
-    }
-    const allFacilities = allFacilityEntities.map((facility) =>
-      plainToInstance(FacilityResDto, facility),
-    );
-
-    return allFacilities;
-  }
-
-  async getLoggedInStaffFacilities(
-    session: SessionContainer,
-  ): Promise<FacilityResDto[]> {
-    const userId = session.getUserId();
+    const userTenantId = await this.verifyTenantAccess(session);
 
     const userWithFacilities = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: userId, tenant: { id: userTenantId } },
       relations: { facilities: true },
     });
 
@@ -120,13 +102,22 @@ export class FacilityService {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
 
-    if (userWithFacilities.facilities.length === 0) {
+    // OWNER users can see both active and soft-deleted facilities
+    // Other users only see active facilities
+    const facilitiesToReturn =
+      userWithFacilities.role === UserRole.OWNER
+        ? userWithFacilities.facilities
+        : userWithFacilities.facilities.filter(
+            (facility) => !facility.isDeleted,
+          );
+
+    if (facilitiesToReturn.length === 0) {
       throw new NotFoundException(
         `No facilities found for user with id ${userId}`,
       );
     }
 
-    return userWithFacilities.facilities.map((facility) =>
+    return facilitiesToReturn.map((facility) =>
       plainToInstance(FacilityResDto, facility),
     );
   }
@@ -135,33 +126,21 @@ export class FacilityService {
     session: SessionContainer,
     updateFacilityDto: UpdateFacilityDto,
   ): Promise<FacilityEntity> {
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
-
-    if (!userTenantId || typeof userTenantId !== 'string') {
-      throw new Error('Valid tenant ID not found in user metadata');
-    }
+    const userTenantId = await this.verifyTenantAccess(session);
 
     return this.facilityRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const existingFacility = await transactionalEntityManager.findOne(
           FacilityEntity,
           {
-            where: { id: updateFacilityDto.id },
-            relations: ['tenant', 'users'],
+            where: { id: updateFacilityDto.id, tenant: { id: userTenantId } },
+            relations: { tenant: true, users: true },
           },
         );
 
         if (!existingFacility) {
           throw new NotFoundException(
             `Facility with id ${updateFacilityDto.id} not found`,
-          );
-        }
-
-        if (existingFacility.tenant.id !== userTenantId) {
-          throw new ForbiddenException(
-            'You do not have permission to update this facility',
           );
         }
 
@@ -179,34 +158,71 @@ export class FacilityService {
     );
   }
 
-  // Question(@thompson): Do we want to do a soft delete?
   async deleteFacility(id: string, session: SessionContainer): Promise<void> {
+    const userTenantId = await this.verifyTenantAccess(session);
+
     const existingFacility = await this.facilityRepository.findOne({
-      where: { id },
-      relations: ['tenant'],
+      where: { id: id, tenant: { id: userTenantId } },
+      relations: { tenant: true },
     });
 
     if (!existingFacility) {
       throw new NotFoundException(`Facility with id ${id} not found`);
     }
 
-    // Check if user has permission to delete this facility
-    const userId = session.getUserId();
-    const { metadata } = await UserMetadata.getUserMetadata(userId);
-    const userTenantId = metadata.tenantId;
+    const hasPHI = await facilityHasPHI(id, this.facilityRepository);
 
-    if (existingFacility.tenant.id !== userTenantId) {
+    if (hasPHI) {
+      // Soft delete - keep records for HIPAA compliance but mark as deleted
+      existingFacility.isDeleted = true;
+      existingFacility.deletedAt = new Date();
+      await this.facilityRepository.save(existingFacility);
+
+      this.logger.log(`Facility ${id} was soft-deleted due to presence of PHI`);
+    } else {
+      // Hard delete - completely remove the facility as no PHI exists
+      await this.facilityRepository.remove(existingFacility);
+      this.logger.log(`Facility ${id} was hard-deleted (no PHI detected)`);
+    }
+  }
+
+  async restoreFacility(
+    id: string,
+    session: SessionContainer,
+  ): Promise<FacilityEntity> {
+    const userId = session.getUserId();
+    const userTenantId = await this.verifyTenantAccess(session);
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    // Only OWNER role should be able to undelete facilities
+    if (user.role !== UserRole.OWNER) {
       throw new ForbiddenException(
-        'You do not have permission to delete this facility',
+        'Only owners can restore deleted facilities',
       );
     }
 
-    // Soft delete
-    // existingFacility.isDeleted = true;
-    // existingFacility.deletedAt = new Date();
-    // await this.facilityRepository.save(existingFacility);
+    const existingFacility = await this.facilityRepository.findOne({
+      where: { id, tenant: { id: userTenantId }, isDeleted: true },
+      relations: { tenant: true },
+    });
 
-    // Hard delete
-    await this.facilityRepository.delete(id);
+    if (!existingFacility) {
+      throw new NotFoundException(`Deleted facility with id ${id} not found`);
+    }
+
+    existingFacility.isDeleted = false;
+    existingFacility.deletedAt = null;
+
+    const restoredFacility =
+      await this.facilityRepository.save(existingFacility);
+
+    return restoredFacility;
   }
 }
