@@ -30,6 +30,8 @@ export async function updateSession(req: NextRequest) {
     (route) => path === route || path.startsWith(`${route}/`),
   );
 
+  const isUnprotectedRoute = !isProtectedRoute && !isAuthRoute && !isVerificationRoute;
+
   // Skip middleware for unprotected routes
   if (isUnprotectedRoute) {
     return NextResponse.next();
@@ -42,15 +44,13 @@ export async function updateSession(req: NextRequest) {
 
   try {
     // First try to get basic user info (works for unverified users)
-    const basicUserResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getBasicUserInfo`,
+    const basicUserResponse = await fetch(`${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getBasicUserInfo`,
       {
         method: "POST",
         headers: {
           Cookie: req.headers.get("cookie") || "",
         },
         credentials: "include",
-      },
       },
     );
 

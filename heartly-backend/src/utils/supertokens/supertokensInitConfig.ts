@@ -19,7 +19,7 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
   framework: 'express',
   supertokens: {
     connectionURI: 'http://localhost:3567',
-    apiKey: process.env.ST_API_KEY,
+    apiKey: process.env.SUPERTOKENS_API_KEY,
   },
   appInfo: {
     appName: 'heartly',

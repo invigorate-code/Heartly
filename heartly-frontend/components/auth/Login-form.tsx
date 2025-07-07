@@ -81,7 +81,7 @@ export function LoginForm() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
       <p className="pb-2 text-2xl font-bold">Welcome Back</p>
-      <Alert
+      {error?.reason && <Alert
         color={confirmLinkSent ? "success" : "danger"}
         description={
           error?.reason === "Email not verified"
@@ -91,7 +91,7 @@ export function LoginForm() {
         isVisible={error?.status !== "OK"}
         title={errorMessageParser(error?.status ?? "")}
         variant="faded"
-      />
+      />}
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <Input
           name="email"
@@ -139,7 +139,7 @@ export function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <SubmitButton pendingText="Signing In...">"Sign In"</SubmitButton>
+        <SubmitButton pendingText="Signing In...">Sign In</SubmitButton>
         <Divider />
         <p className="text-center">
           Don't have an account? <Link href="/sign-up">Sign Up</Link>
