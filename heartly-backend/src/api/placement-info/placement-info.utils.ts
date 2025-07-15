@@ -11,7 +11,7 @@ import { CreateMedicationDto } from '../medication/dto/createMedication.req.dto'
 import { MedicationEntity } from '../medication/entities/medication.entity';
 import { CreateSpecialistDto } from '../specialist/dto/createSpecialist.req.dto';
 import { SpecialistEntity } from '../specialist/entities/specialist.entity';
-import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
 import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 

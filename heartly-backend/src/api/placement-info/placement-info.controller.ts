@@ -6,7 +6,7 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
 import { PlacementInfoService } from './placement-info.service';
 
 @ApiTags('placementInfo')

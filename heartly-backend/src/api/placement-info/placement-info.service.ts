@@ -12,7 +12,7 @@ import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { MedicationEntity } from '../medication/entities/medication.entity';
 import { TenantService } from '../tenant/tenant.service';
-import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
 import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import {
@@ -105,6 +105,7 @@ export class PlacementInfoService extends BaseTenantService {
     const formDefinition = this.formRegistryService.getFormDefinition(
       FORM_TYPE.PLACEMENT_INFO,
     );
+
     if (!formDefinition) {
       throw new Error(
         `No form definition found for ${FORM_TYPE.PLACEMENT_INFO}`,
@@ -115,6 +116,7 @@ export class PlacementInfoService extends BaseTenantService {
       FORM_TYPE.PLACEMENT_INFO,
       placementInfo,
     );
+
     const isCompleted = this.formRegistryService.isFormCompleted(
       FORM_TYPE.PLACEMENT_INFO,
       placementInfo,
@@ -170,18 +172,20 @@ export class PlacementInfoService extends BaseTenantService {
         tenant.id,
         this.phiService,
       ),
-      // Handle arrays - change this line to match your entity
       otherSpecialists: processSpecialists(
         placementInfo.otherSpecialists,
         tenant.id,
         this.phiService,
       ),
-      medications: processMedications(
-        placementInfo.medications,
-        tenant.id,
-        this.phiService,
-        client.id, // Pass client ID for medication-client relationship
-      ),
+      medications: placementInfo.medications?.length
+        ? processMedications(
+            placementInfo.medications,
+            tenant.id,
+            this.phiService,
+            client.id,
+            'temp-id', // Temporary ID that will be updated after saving
+          )
+        : [],
     };
 
     // Create the placement info object first to get its ID
@@ -190,20 +194,12 @@ export class PlacementInfoService extends BaseTenantService {
     const savedPlacementInfo =
       await this.placementInfoRepository.save(newPlacementInfo);
 
-    // If we have medications, process and save them efficiently using medicationRepository
-    if (placementInfo.medications?.length) {
-      // Process medications with the saved placement info ID
-      const processedMedications = processMedications(
-        placementInfo.medications,
-        tenant.id,
-        this.phiService,
-        client.id,
-        savedPlacementInfo.id,
+    // Update the medication references with the correct placement info ID
+    if (savedPlacementInfo.medications?.length) {
+      await this.medicationRepository.update(
+        { placementInfoId: 'temp-id' },
+        { placementInfoId: savedPlacementInfo.id },
       );
-
-      // Save medications directly through the medication repository
-      // This is more efficient than saving via placementInfo.medications
-      await this.medicationRepository.save(processedMedications);
     }
 
     // Update the entityId in metadata to match the placement info id
