@@ -12,8 +12,8 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### 1. **Workflow Transformation**
 
-- Convert static PDF forms into dynamic, intelligent workflows
-- **Transform the user experience**: Make data entry feel natural and engaging, not like filling out forms
+- Convert static PDF forms into dynamic, intelligent, intuitive input systems
+- Transform the user experience: Make data entry feel intuitive, context-aware, and easy to use, not like filling out forms
 - Capture richer, more structured data than paper-based processes
 - Make collected information immediately actionable and meaningful
 - Transform how staff interact with and utilize facility documentation
@@ -92,8 +92,8 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### For Staff
 
-- **Life-Changing Workflows**: Transform tedious paper-based tasks into meaningful, interactive processes
-- **Engaging Experience**: Data entry that feels natural and conversational, not like form filling
+- **Life-Changing Workflows**: Transform tedious paper-based tasks into meaningful, intuitive digital processes
+- **Engaging Experience**: Data entry that feels intuitive and easy, not like form filling
 - **Immediate Value**: See the impact of their work through real-time dashboards and insights
 - **Better Communication**: Share important information instantly across shifts and teams
 - **Reduced Burden**: Streamlined processes that save time and reduce stress
@@ -125,7 +125,7 @@ To transform facility management by converting static PDF forms into dynamic, in
 ### User Experience
 
 - **Simplicity**: Clean, intuitive interfaces that require minimal training
-- **Engagement**: Data entry that feels natural and conversational, not like form filling
+- **Engagement**: Data entry that feels intuitive and easy, not like form filling
 - **Accessibility**: WCAG compliant design for all users
 - **Responsive**: Works seamlessly across all devices and screen sizes
 - **Performance**: Fast, responsive applications that don't slow down workflows
@@ -171,7 +171,7 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### When Working on Heartly Code
 
-1. **Transform workflows, don't just digitize** - Make processes more intelligent and meaningful
+1. **Transform workflows, don't just digitize** - Make processes more intelligent, intuitive, and meaningful
 2. **Think multi-tenant** - All data must be isolated by tenant
 3. **Prioritize user experience** - Facility staff need intuitive, engaging tools that don't feel like forms
 4. **Maintain security** - Security is not optional, it's fundamental
@@ -185,7 +185,7 @@ To transform facility management by converting static PDF forms into dynamic, in
 12. **Make data actionable** - Every piece of information should provide value
 13. **Ensure PDF compliance** - All data must be exportable to official PDF forms
 14. **Build audit trails** - Track all data entry, modifications, and access for regulatory compliance
-15. **Design for engagement** - Make data entry feel natural and conversational
+15. **Design for engagement** - Make data entry feel intuitive and easy
 16. **Track timelines** - Implement comprehensive deadline and due date management
 17. **Monitor completion** - Provide real-time visibility into profile completeness
 18. **Log granularly** - Track every field change, save, submit, and edit action
@@ -215,8 +215,8 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### Competitive Advantages
 
-- **Workflow Transformation**: Not just digitization, but intelligent process redesign
-- **Engaging User Experience**: Data entry that feels natural, not like form filling
+- **Workflow Transformation**: Not just digitization, but intelligent, intuitive process redesign
+- **Engaging User Experience**: Data entry that feels intuitive and easy, not like form filling
 - **Data-Rich Interfaces**: Capture structured, actionable data instead of just text
 - **Real-Time Insights**: Immediate value from collected information
 - **Multi-Tenant**: True isolation between different facilities
