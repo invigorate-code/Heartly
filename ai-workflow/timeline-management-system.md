@@ -2,288 +2,147 @@
 
 ## 🎯 Overview
 
-The Timeline Management System is a core component of Heartly that ensures complete regulatory compliance by tracking due dates, suspense dates, deadlines, and profile completion progress. This system provides real-time visibility into compliance status and prevents missed requirements.
-
-## 📋 Key Features
-
-### 1. Due Date Tracking
-
-- **Comprehensive Deadline Management**: Track all regulatory deadlines and requirements
-- **Automated Notifications**: Smart alerts for upcoming and overdue requirements
-- **Escalation System**: Progressive notification system for critical deadlines
-- **Integration**: Seamless integration with all forms and workflows
-
-### 2. Suspense Date Management
-
-- **Critical Deadlines**: High-priority suspense dates with immediate attention required
-- **Compliance Requirements**: Regulatory deadlines with automatic tracking
-- **Documentation Updates**: Required reviews and updates with deadline tracking
-- **Escalation Alerts**: Automated escalation for missed suspense dates
-
-### 3. Profile Completion Progress
-
-- **Real-time Indicators**: Visual progress bars on client lists and individual profiles
-- **Missing Requirements**: Clear identification of incomplete documentation
-- **Completion Alerts**: Smart notifications for staff and administrators
-- **Compliance Dashboard**: Facility-wide overview of completion status
-
-## 🏗 System Architecture
-
-### Database Entities
-
-#### Timeline Tracking
-
-```typescript
-interface TimelineEntry {
-  id: string;
-  clientId: string;
-  facilityId: string;
-  requirementType: string;
-  dueDate: Date;
-  suspenseDate?: Date;
-  completedDate?: Date;
-  status: "pending" | "in_progress" | "completed" | "overdue";
-  priority: "low" | "medium" | "high" | "critical";
-  assignedTo?: string;
-  notes?: string;
-  auditTrail: AuditEntry[];
-}
-```
-
-#### Profile Completion Status
-
-```typescript
-interface ProfileCompletion {
-  clientId: string;
-  facilityId: string;
-  overallProgress: number; // 0-100
-  completedRequirements: string[];
-  pendingRequirements: string[];
-  overdueRequirements: string[];
-  lastUpdated: Date;
-  nextDeadline?: Date;
-  complianceStatus: "compliant" | "at_risk" | "non_compliant";
-}
-```
-
-#### Deadline Notifications
-
-```typescript
-interface DeadlineNotification {
-  id: string;
-  timelineEntryId: string;
-  userId: string;
-  notificationType: "upcoming" | "due" | "overdue" | "escalation";
-  message: string;
-  priority: "low" | "medium" | "high" | "critical";
-  sentAt: Date;
-  readAt?: Date;
-  actionRequired: boolean;
-}
-```
-
-### Core Components
-
-#### 1. Timeline Engine
-
-- **Deadline Calculation**: Automatically calculate due dates based on regulatory requirements
-- **Status Updates**: Real-time status updates based on completion and deadlines
-- **Priority Management**: Intelligent priority assignment based on requirements
-- **Audit Integration**: Complete audit trail for all timeline activities
-
-#### 2. Notification System
-
-- **Smart Alerts**: Contextual notifications based on user role and responsibilities
-- **Escalation Logic**: Progressive escalation for critical deadlines
-- **Delivery Methods**: Email, in-app notifications, SMS (future)
-- **Preference Management**: User-configurable notification preferences
-
-#### 3. Progress Tracking
-
-- **Real-time Updates**: Live progress calculation based on completed requirements
-- **Visual Indicators**: Progress bars, status icons, and completion percentages
-- **Missing Requirements**: Clear identification of incomplete items
-- **Compliance Status**: Overall compliance assessment for each client
-
-## 🎨 User Interface Design
-
-### Client List View
-
-```
-[Client Name] [Progress Bar: 85%] [Status: ⏳ Due in 5 days]
-[Client Name] [Progress Bar: 100%] [Status: ✅ Compliant]
-[Client Name] [Progress Bar: 60%] [Status: ❌ Overdue]
-```
-
-### Client Profile View
-
-```
-Profile Completion: 85%
-┌─────────────────────────────────────┐
-│ ✅ Admission Agreement (3/15/24)    │
-│ ✅ Medical History (3/16/24)        │
-│ ✅ Personal Rights (3/17/24)        │
-│ ⏳ Quarterly Review (Due: 3/30/24)  │
-│ ❌ Annual Assessment (Overdue: 5d)  │
-└─────────────────────────────────────┘
+The Timeline Management System is a comprehensive solution for tracking and managing all regulatory deadlines, compliance requirements, and facility documentation timelines. This system ensures that no critical deadline is ever missed while providing intelligent automation, predictive analytics, and automated compliance monitoring.
+
+## 🔄 Core Features
+
+### Intelligent Deadline Tracking
+
+- **Automated Deadline Calculation**: Automatically calculate deadlines based on regulatory requirements and facility policies
+- **Smart Notifications**: Progressive notification system with intelligent escalation and risk assessment
+- **Predictive Scheduling**: Automated scheduling recommendations based on workload and priorities
+- **Compliance Monitoring**: Real-time compliance status tracking with intelligent risk assessment
+
+### Multi-Level Notification System
+
+- **30-Day Advance Notifications**: Early warning system for upcoming deadlines with intelligent prioritization
+- **14-Day Reminders**: Standard reminder notifications with smart escalation
+- **7-Day Alerts**: Heightened awareness notifications with automated task assignment
+- **3-Day Warnings**: Critical deadline warnings with intelligent risk assessment
+- **1-Day Final Alerts**: Last-chance notifications with automated escalation
+- **Same-Day Due Alerts**: Immediate notifications for due items with intelligent prioritization
+- **Overdue Escalation**: Automated escalation for overdue items with risk-based prioritization
+
+### Profile Completion Progress
+
+- **Real-Time Indicators**: Visual progress bars on client lists and profiles with intelligent completion prediction
+- **Missing Requirements**: Clear identification of incomplete documentation with smart recommendations
+- **Completion Alerts**: Smart notifications for staff and administrators with automated task assignment
+- **Compliance Dashboard**: Facility-wide overview of completion status with intelligent risk assessment
+
+## 📊 Timeline Categories
+
+### Before Placement
+
+- **Restricted Health Care Plan**: Enhanced with intelligent health plan builder with condition-specific templates, automated condition management, and integration with medical systems
+- **Smart Defaults**: Pre-populate based on client history and condition patterns
+- **Automated Follow-up**: Smart scheduling and renewal tracking
+
+### Upon Placement
+
+- **Consent for Medical Treatment**: Enhanced with consent management system featuring renewal tracking, family notifications, and automated compliance monitoring
+- **Digital Signature Capture**: Multi-factor authentication with intelligent verification
+- **Medical Integration**: Real-time consent verification with medical provider systems
+- **Admission Agreement**: Enhanced with digital workflow system featuring electronic signatures, smart defaults, and automated legal compliance
+- **Real-Time Status**: Completion monitoring with intelligent tracking
+
+### Within 30 Days of Placement
+
+- **Physical Report**: Enhanced with intelligent health assessment system featuring condition-specific templates, automated health trend analysis, and integration with medical records
+- **Smart Field Population**: Based on client history and medical patterns
+- **Automated Follow-up**: Smart scheduling and health monitoring alerts
+- **Dental Report**: Enhanced with dental care tracking system featuring appointment scheduling, follow-up reminders, and dental health trend analysis
+- **Provider Integration**: Dental provider systems and insurance verification
+- **Automated Care Plans**: Dental care plan generation and compliance monitoring
+
+### Ongoing Documentation
+
+- **Placement Information**: Enhanced with smart defaults, location tracking, facility data integration, and real-time status updates
+- **Automated Timeline Tracking**: Placement timeline tracking and milestone notifications
+- **Cross-Document Integration**: Integration with admission agreement and personal possession inventory
+- **Personal Possession Inventory**: Enhanced with visual inventory system featuring photo capture, barcode scanning, and digital signature requirements
+- **Smart Categorization**: Value tracking with automated depreciation calculations
+- **Security Integration**: Integration with facility security systems
+- **Medication Administration Record**: Enhanced with real-time medication tracking featuring barcode integration, automated alerts, and side effect monitoring
+- **Smart Scheduling**: Medication scheduling with conflict detection and dosage validation
+- **Pharmacy Integration**: Integration with pharmacy systems and automated refill management
+- **Destruction Logs**: Enhanced with automated destruction tracking featuring witness signatures, photo documentation, and compliance verification
+- **Smart Scheduling**: Destruction scheduling with regulatory compliance checks
+- **Audit Integration**: Integration with medication management and audit systems
+- **Psychotropic Medication Log**: Enhanced with specialized tracking system featuring side effect monitoring, dosage validation, and behavioral correlation analysis
+- **Automated Compliance**: Compliance alerts and regulatory reporting
+- **Provider Integration**: Psychiatric care providers and medication management systems
+- **Weight Record**: Enhanced with health trend analysis featuring automated alerts for significant changes, goal tracking, and nutritional insights
+- **Smart Monitoring**: Weight monitoring with trend prediction and health recommendations
+- **Dietary Integration**: Integration with dietary management and health care planning systems
+- **Daily Notes**: Enhanced with intelligent interface featuring mood tracking, goal progress monitoring, and behavioral analytics
+- **Smart Data Capture**: Pattern recognition and predictive insights
+- **Care Integration**: Integration with care planning and behavioral health systems
+- **Client Cash Management**: Enhanced with comprehensive Client Cash Management System featuring real-time balance tracking, transaction management, and receipt documentation
+- **Smart Financial Monitoring**: Automated alerts and compliance tracking
+- **Banking Integration**: Integration with banking systems and financial reporting tools
+
+### Reports & Periodic Compliance
+
+- **Individual Program Plan**: Enhanced with dynamic goal-setting system featuring progress tracking, team collaboration, and automated milestone notifications
+- **Smart Goal Recommendations**: Based on client history and best practices
+- **Cross-Document Integration**: Integration with daily notes and quarterly reports for comprehensive care planning
+- **Quarterly Reports**: Enhanced with automated report generation featuring smart templates, data integration, and compliance verification
+- **Real-Time Progress**: Progress tracking with automated deadline management
+- **Plan Integration**: Integration with individual program plans and care quality metrics
+- **Yearly Report**: Enhanced with comprehensive annual assessment featuring trend analysis, goal achievement tracking, and predictive planning
+- **Automated Data Compilation**: Data compilation from all client records and activities
+- **Regulatory Integration**: Integration with regulatory requirements and inspection preparation tools
+- **Special Incident Report**: Enhanced with incident workflow system featuring photo documentation, witness statements, and automated escalation protocols
+- **Smart Categorization**: Incident categorization with regulatory compliance checks
+- **Safety Integration**: Integration with safety management and risk assessment systems
+
+## 🔧 Advanced Features
+
+### Intelligent Compliance Monitoring
+
+- **Risk Assessment**: Automated compliance risk analysis and mitigation recommendations
+- **Predictive Analytics**: Forecast compliance issues before they occur
+- **Automated Reporting**: Generate compliance reports automatically
+- **Inspection Preparation**: Automated preparation for regulatory inspections
 
-Quick Actions:
-- Complete Annual Assessment
-- Schedule Quarterly Review
-- Export Profile for Inspection
-```
+### Enhanced Integration
 
-### Compliance Dashboard
+- **Cross-Document Validation**: Ensure consistency between related documents
+- **External System Integration**: Connect with medical, financial, and regulatory systems
+- **Real-Time Synchronization**: Keep data current across all systems
+- **Intelligent Data Flow**: Smart routing of information to relevant parties
 
-```
-Facility Compliance Overview
-┌─────────────────────────────────────┐
-│ Overall Compliance: 78%             │
-│ Compliant Clients: 12/15            │
-│ At Risk: 2/15                       │
-│ Non-Compliant: 1/15                 │
-│                                     │
-│ Upcoming Deadlines (Next 7 days):   │
-│ • Sarah J. - Quarterly Review       │
-│ • Mike R. - Annual Assessment       │
-│ • Lisa T. - Medication Review       │
-└─────────────────────────────────────┘
-```
+### Advanced Analytics
 
-## 📊 Timeline Requirements
+- **Performance Metrics**: Real-time analytics and performance indicators
+- **Trend Analysis**: Identify trends in compliance and documentation
+- **Predictive Modeling**: Forecast future compliance needs
+- **Automated Insights**: Smart recommendations based on data analysis
 
-### Client Admission Timeline
+## 🎯 User Experience
 
-- **Day 1**: Admission Agreement
-- **Day 7**: Initial Assessment
-- **Day 30**: Complete Profile Requirements
-- **Day 90**: First Quarterly Review
-- **Day 365**: Annual Assessment
+### Dashboard Integration
 
-### Ongoing Requirements
+- **Timeline Widgets**: Visual timeline displays on dashboards
+- **Progress Indicators**: Real-time progress tracking
+- **Alert System**: Intelligent notification management
+- **Compliance Overview**: Facility-wide compliance status
 
-- **Quarterly Reports**: Every 90 days
-- **Medication Reviews**: Every 6 months
-- **Annual Assessments**: Every 365 days
-- **Documentation Updates**: As needed
+### Mobile Accessibility
 
-### Critical Deadlines
+- **Mobile Notifications**: Push notifications for critical deadlines
+- **Offline Capabilities**: Timeline tracking without internet connection
+- **Touch-Friendly Interface**: Optimized for mobile devices
+- **Location Awareness**: GPS-based facility context
 
-- **Suspense Dates**: High-priority requirements with immediate attention
-- **Compliance Deadlines**: Regulatory requirements with strict timelines
-- **Review Deadlines**: Required reviews and assessments
-- **Update Deadlines**: Documentation updates and modifications
+### Customization Options
 
-## 🔔 Notification System
-
-### Notification Types
-
-1. **Upcoming Deadlines**: 30, 14, 7, 3, and 1 day notifications
-2. **Due Today**: Same-day notifications for due items
-3. **Overdue Alerts**: Immediate notifications for overdue items
-4. **Escalation Notifications**: Progressive escalation for critical items
-
-### Notification Channels
-
-- **In-App Notifications**: Real-time notifications within the application
-- **Email Notifications**: Daily/weekly summary emails
-- **Dashboard Alerts**: Prominent alerts on relevant dashboards
-- **Mobile Push Notifications**: Future implementation
-
-### Escalation Logic
-
-```
-Day 1: Due date notification
-Day 3: First reminder
-Day 7: Second reminder + manager notification
-Day 14: Escalation to administrator
-Day 30: Critical escalation + compliance alert
-```
-
-## 🛠 Implementation Phases
-
-### Phase 1: Foundation (Current)
-
-- Basic deadline tracking system
-- Simple progress indicators
-- Basic notification system
-- Timeline database schema
-
-### Phase 2: Enhancement (Next 3 months)
-
-- Advanced notification system
-- Escalation logic
-- Compliance dashboard
-- Integration with all workflows
-
-### Phase 3: Advanced Features (6+ months)
-
-- Predictive deadline management
-- Advanced analytics
-- Mobile notifications
-- AI-powered suggestions
-
-## 📈 Success Metrics
-
-### Compliance Metrics
-
-- **Timeline Compliance Rate**: Percentage of deadlines met on time
-- **Profile Completion Rate**: Average profile completion percentage
-- **Overdue Items**: Number and percentage of overdue requirements
-- **Escalation Rate**: Frequency of deadline escalations
-
-### User Experience Metrics
-
-- **Notification Engagement**: User interaction with notifications
-- **Completion Time**: Time from notification to completion
-- **User Satisfaction**: Satisfaction with timeline management features
-- **Adoption Rate**: Usage of timeline management features
-
-### Business Impact Metrics
-
-- **Audit Readiness**: Time to prepare for inspections
-- **Compliance Risk**: Reduction in compliance violations
-- **Administrative Efficiency**: Time saved on deadline management
-- **Regulatory Confidence**: Improved confidence in compliance status
-
-## 🔐 Compliance Integration
-
-### California Regional Center
-
-- **Inspection Readiness**: Complete timeline compliance for inspections
-- **Documentation Trails**: Full audit trail for all timeline activities
-- **Quick Access**: Rapid retrieval of compliance status for inspections
-
-### Licensing Requirements
-
-- **Regulatory Compliance**: Complete adherence to licensing timelines
-- **Audit Trails**: Comprehensive logging of all compliance activities
-- **Reporting**: Automated compliance reporting for licensing authorities
-
-### PDF Export Integration
-
-- **Timeline Data**: Include timeline information in PDF exports
-- **Completion Status**: Show completion status in exported documents
-- **Audit Information**: Include timeline audit trails in exports
-
-## 🎯 Best Practices
-
-### Design Principles
-
-1. **Proactive**: Anticipate and prevent compliance issues
-2. **Transparent**: Clear visibility into all deadlines and status
-3. **Actionable**: Provide clear next steps for users
-4. **Integrated**: Seamless integration with existing workflows
-5. **Auditable**: Complete audit trail for all activities
-
-### Development Guidelines
-
-1. **Real-time Updates**: Ensure all timeline data is current
-2. **Performance**: Optimize for fast timeline calculations
-3. **Scalability**: Support multiple facilities and users
-4. **Reliability**: Ensure notification delivery and accuracy
-5. **User Experience**: Make timeline management intuitive and helpful
+- **Role-Based Views**: Different views for different user roles
+- **Facility-Specific Settings**: Customize timelines for facility needs
+- **Personal Preferences**: Individual user customization
+- **Widget Customization**: Customizable timeline widgets
 
 ---
 
-_This document outlines the comprehensive timeline management system that ensures complete regulatory compliance while providing an engaging user experience that helps staff and administrators stay on top of all deadlines and requirements._
+*The Timeline Management System ensures complete regulatory compliance while providing intelligent automation and predictive insights for optimal facility management.*

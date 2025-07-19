@@ -49,15 +49,15 @@ This document summarizes all critical timelines and compliance triggers for clie
   - (Upload) Enhanced with dental care tracking system featuring appointment scheduling, follow-up reminders, and dental health trend analysis.
   - Integration with dental provider systems and insurance verification.
   - Automated dental care plan generation and compliance monitoring.
+- **Placement Information (PDF):**
+  - (PDF) Enhanced with smart defaults, location tracking, facility data integration, and real-time status updates.
+  - Automated placement timeline tracking and milestone notifications.
+  - Integration with admission agreement and personal possession inventory.
 
 ---
 
 ## Ongoing Documentation
 
-- **Placement Information (PDF):**
-  - (PDF) Enhanced with smart defaults, location tracking, facility data integration, and real-time status updates.
-  - Automated placement timeline tracking and milestone notifications.
-  - Integration with admission agreement and personal possession inventory.
 - **Personal Possession Inventory (PDF):**
   - (PDF) Enhanced with visual inventory system featuring photo capture, barcode scanning, and digital signature requirements.
   - Smart categorization and value tracking with automated depreciation calculations.

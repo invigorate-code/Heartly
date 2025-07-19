@@ -23,9 +23,9 @@
 
 ### The Cost of Inaction
 
-- **80staff time** spent on administrative tasks instead of resident care
-- **60ilities** struggle with compliance deadlines and audit preparation
-- **$150nnually** in paper costs and administrative overhead per facility
+- **80% of staff time** spent on administrative tasks instead of resident care
+- **60% of facilities** struggle with compliance deadlines and audit preparation
+- **$15,000+ annually** in paper costs and administrative overhead per facility
 - **Critical errors** in medication administration and incident reporting
 - **Staff turnover** due to administrative burden and lack of meaningful tools
 - **Missed opportunities** for data-driven insights and operational optimization
@@ -49,22 +49,24 @@ Heartly transforms the user experience from **paperwork to meaningful interactio
 
 **Heartly Transformation:**
 ```
-"How was Sarah's day today?
+"How was Sarah's day today?"
 [Mood Slider: 😢 😕 😐 🙂 😊]
-[Quick Activity Buttons: Went for walk,Had visitors, "Appointment"]
+[Quick Activity Buttons: "Went for walk", "Had visitors", "Appointment"]
 [Smart Text Input: "Tell me more about her day..."]
-Real-time Preview:Based on today's mood, consider..."]
+[Real-time Preview: "Based on today's mood, consider..."]
 [Immediate Dashboard Update: Recent activity visible to all staff]
-[Pattern Recognition:Sarah's mood has improved15is week"]
+[Pattern Recognition: "Sarah's mood has improved 15% this week"]
 [Predictive Alert: "Consider scheduling outdoor activities based on mood patterns"]
 ```
 
 ### Key Differentiators
-1**Intelligent, Intuitive Input System**: Data entry that is context-aware, easy to use, and adapts to user needs with smart defaults and automation
+
+1. **Intelligent, Intuitive Input System**: Data entry that is context-aware, easy to use, and adapts to user needs with smart defaults and automation
 2. **Immediate Value Creation**: Every piece of data instantly provides insights and alerts with predictive analytics
 3. **Intelligent Automation**: Rule-based suggestions, automated workflows, and predictive insights
 4. **Complete Compliance**: Built-in audit trails and PDF export for regulatory requirements with intelligent compliance monitoring
-5. **Multi-Facility Excellence**: Seamless management across multiple facility locations with intelligent cross-facility analytics6zable Intelligence**: Drag-and-drop dashboards tailored to each facilitys needs with real-time analytics
+5. **Multi-Facility Excellence**: Seamless management across multiple facility locations with intelligent cross-facility analytics
+6. **Customizable Intelligence**: Drag-and-drop dashboards tailored to each facility's needs with real-time analytics
 7. **Advanced Integration**: Seamless integration with external systems (medical, financial, regulatory) with real-time data synchronization
 8. **Predictive Analytics**: Pattern recognition, trend analysis, and automated recommendations for improved care quality
 
@@ -93,7 +95,7 @@ Heartly's robust architecture ensures complete data isolation while enabling eff
 ### Modern Technology Stack
 
 **Frontend:**
-- Next.js 14ith TypeScript for robust, scalable web applications
+- Next.js 14 with TypeScript for robust, scalable web applications
 - HeroUI (NextUI v2) for modern, accessible components
 - TailwindCSS for responsive, utility-first styling
 - Framer Motion for smooth, engaging user interactions
@@ -123,13 +125,13 @@ Heartly's robust architecture ensures complete data isolation while enabling eff
 ### Daily Notes Transformation
 
 **Before Heartly:**
-- Staff spend 30inutes filling out daily notes forms
+- Staff spend 30 minutes filling out daily notes forms
 - Information gets lost in paperwork
 - No immediate value from collected data
 - Tedious, repetitive process
 
 **With Heartly:**
-- 5ute intuitive note entry with mood tracking and pattern recognition
+- 5-minute intuitive note entry with mood tracking and pattern recognition
 - Real-time dashboard updates visible to all staff
 - Smart suggestions based on patterns and trends with predictive insights
 - Immediate insights and alerts for important changes
@@ -174,13 +176,13 @@ Heartly's robust architecture ensures complete data isolation while enabling eff
 
 | Metric | Before Heartly | With Heartly | Improvement |
 |--------|----------------|--------------|-------------|
-| Daily Notes Time | 30+ minutes |5 | **83n** |
-| Medication Errors | 5% error rate | <1 error rate | **80n** |
-| Compliance Deadlines | 40ssed | 95 **55% improvement** |
-| Administrative Overhead | $15,000/year | $3/year | **80% cost reduction** |
-| Staff Satisfaction |60 **25% improvement** |
-| Data-Driven Insights | 0% |100ete transformation** |
-| Automation Benefits | None | 70 tasks automated | **70% automation** |
+| Daily Notes Time | 30+ minutes | 5 minutes | **83% reduction** |
+| Medication Errors | 5% error rate | <1% error rate | **80% reduction** |
+| Compliance Deadlines | 40% missed | 95% on-time | **55% improvement** |
+| Administrative Overhead | $15,000/year | $3,000/year | **80% cost reduction** |
+| Staff Satisfaction | 60% | 85% | **25% improvement** |
+| Data-Driven Insights | 0% | 100% | **Complete transformation** |
+| Automation Benefits | None | 70% tasks automated | **70% automation** |
 
 ### Quality of Care Enhancement
 
@@ -224,7 +226,7 @@ Heartly's intelligent timeline management system ensures no regulatory requireme
 - Documentation update requirements with smart notifications
 
 **Smart Notifications:**
-- 304 and 1-day advance notifications with progressive escalation
+- 30, 14, 7, 3, and 1-day advance notifications with progressive escalation
 - Same-day due date alerts with intelligent prioritization
 - Overdue item escalations with automated workflow triggers
 - Progressive notification system for critical deadlines with risk assessment
@@ -233,7 +235,7 @@ Heartly's intelligent timeline management system ensures no regulatory requireme
 ```
 Facility Compliance Overview
 ┌─────────────────────────────────────┐
-│ Overall Compliance: 92         │
+│ Overall Compliance: 92%             │
 │ Compliant Clients: 14/15            │
 │ At Risk: 1/15                       │
 │ Non-Compliant: 0/15                 │
@@ -245,7 +247,7 @@ Facility Compliance Overview
 │                                     │
 │ Intelligent Insights:               │
 │ • 3 clients need attention          │
-│ • Compliance trend: +5 this month  │
+│ • Compliance trend: +5% this month  │
 │ • Risk level: Low                   │
 └─────────────────────────────────────┘
 ```
@@ -304,6 +306,7 @@ Every action, change, and event is logged with complete transparency and intelli
 - Single facility access and management with intelligent insights
 
 **Expected Launch**: Q2 2024
+
 ### Phase 2: Workflow Revolution (Next 6 months)
 
 **Advanced Features:**
@@ -317,7 +320,7 @@ Every action, change, and event is logged with complete transparency and intelli
 - Widget system foundation with drag-and-drop functionality and intelligent customization
 - Multi-facility access and switching capabilities with cross-facility analytics
 
-### Phase3gence & Automation (6-12 months)
+### Phase 3: Intelligence & Automation (6-12 months)
 
 **Enhanced Features:**
 - Automated notifications and rule-based alerts with intelligent escalation
@@ -347,9 +350,9 @@ Every action, change, and event is logged with complete transparency and intelli
 ### Market Size and Opportunity
 
 - **Target Market**: 15,000+ Adult Residential Facilities in the United States
-- **Market Value**: $2.5acility management software market
-- **Growth Rate**:12% annual growth in healthcare facility management
-- **Addressable Market**: $500illion for ARF/ARTF specific solutions
+- **Market Value**: $2.5 billion facility management software market
+- **Growth Rate**: 12% annual growth in healthcare facility management
+- **Addressable Market**: $500 million for ARF/ARTF specific solutions
 - **Intelligent Automation Premium**: 25% additional value for AI/ML capabilities
 
 ### Revenue Model
@@ -371,14 +374,16 @@ Every action, change, and event is logged with complete transparency and intelli
 ### Competitive Advantages
 
 1. **Workflow Transformation**: Not just digitization, but intelligent, intuitive process redesign
-2ng User Experience**: Data entry that feels intuitive and easy, not like form filling
+2. **Engaging User Experience**: Data entry that feels intuitive and easy, not like form filling
 3. **Data-Rich Interfaces**: Capture structured, actionable data instead of just text
-4. **Real-Time Insights**: Immediate value from collected information with predictive analytics5-Tenant Excellence**: True isolation between different facilities
+4. **Real-Time Insights**: Immediate value from collected information with predictive analytics
+5. **Multi-Tenant Excellence**: True isolation between different facilities
 6. **Modern Technology**: Latest technologies for better performance and user experience
-7hensive Compliance**: Built-in audit trails and PDF export for regulatory requirements
+7. **Comprehensive Compliance**: Built-in audit trails and PDF export for regulatory requirements
 8. **Timeline Management**: Comprehensive deadline tracking and compliance monitoring
 9. **Granular Audit**: Complete field-level audit trails for regulatory compliance
-10*Customizable Dashboards**: Flexible, role-based dashboard layouts for optimal user experience11lligent Automation**: Smart defaults, automated workflows, and predictive insights
+10. **Customizable Dashboards**: Flexible, role-based dashboard layouts for optimal user experience
+11. **Intelligent Automation**: Smart defaults, automated workflows, and predictive insights
 12. **Advanced Integration**: Seamless integration with external systems and real-time data synchronization
 
 ---
@@ -444,7 +449,7 @@ Heartly aims to become the leading platform for facility management transformati
 ### Next Steps
 
 1. **Schedule a Demo**: See Heartly in action with a personalized demonstration
-2**Pilot Program**: Start with a small pilot to experience the transformation
+2. **Pilot Program**: Start with a small pilot to experience the transformation
 3. **Implementation**: Smooth onboarding with comprehensive training and support
 4. **Ongoing Support**: Continuous improvement and feature updates
 
@@ -452,7 +457,11 @@ Heartly aims to become the leading platform for facility management transformati
 
 - **Website**: [heartly.com](https://heartly.com)
 - **Email**: info@heartly.com
-- **Phone**: (555) 123-4567rtly: Transforming facility management from paperwork to meaningful interaction through intelligent automation and predictive insights.*
+- **Phone**: (555) 123-4567
+
+---
+
+*Heartly: Transforming facility management from paperwork to meaningful interaction through intelligent automation and predictive insights.*
 
 ---
 
