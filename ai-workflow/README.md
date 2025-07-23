@@ -69,6 +69,9 @@ This folder contains comprehensive guidance for AI-assisted development of Heart
 | `supertokens-ai-guidance.md` | **Authentication Patterns** | When implementing auth flows or user management |
 | `hipaa-compliance-developers-guide-master/` | **HIPAA Compliance** | When implementing security features or data handling |
 
+### 📝 Important Note
+**This documentation represents the current scope of documented features and requirements. The Heartly application is comprehensive and may include additional features, workflows, or requirements that are not yet documented here. New documentation may be added as the app evolves and additional requirements are identified. Always check for the most recent documentation and ask for clarification if something seems missing.**
+
 ### Project Structure
 ```
 Heartly/
