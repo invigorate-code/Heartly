@@ -1,4 +1,4 @@
-# Heartly MVP Overview
+# Heartly MVP Outline
 
 This document outlines the Minimum Viable Product (MVP) for the Heartly application. The MVP focuses on the essential features required to onboard users, manage clients, and perform core facility operations while transforming traditional forms into engaging, intelligent experiences with automation, smart defaults, and predictive capabilities.
 

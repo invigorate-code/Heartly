@@ -53,10 +53,10 @@ This folder contains comprehensive guidance for AI-assisted development of Heart
 
 ### AI-Workflow Documents (Reference for Development)
 
-| Document | Purpose | When to Reference |
+| Document/Folder | Purpose | When to Reference |
 |----------|---------|-------------------|
 | `heartly-comprehensive-overview.md` | **Primary Vision Document** | Always reference for feature planning and architectural decisions |
-| `mvp-overview.md` | **MVP Scope & Features** | When implementing core features or planning development phases |
+| `mvp-outline.md` | **MVP Scope & Features** | When implementing core features or planning development phases |
 | `form-transformation-philosophy.md` | **UX/UI Philosophy** | When designing user interfaces or data entry flows |
 | `timeline-management-system.md` | **Compliance & Deadlines** | When implementing timeline tracking or compliance features |
 | `granular-audit-system.md` | **Audit & Logging** | When implementing audit trails or compliance logging |
@@ -66,8 +66,37 @@ This folder contains comprehensive guidance for AI-assisted development of Heart
 | `client-cash-management-system.md` | **Cash Management** | When implementing financial tracking features |
 | `document-timelines-and-compliance.md` | **Compliance Requirements** | When implementing regulatory compliance features |
 | `heartly-vision.md` | **Long-term Vision** | When planning future features or architectural decisions |
+| `heartly-technical-structure.md` | **Technical Architecture** | When making technical decisions or understanding system structure |
 | `supertokens-ai-guidance.md` | **Authentication Patterns** | When implementing auth flows or user management |
+| `currently-used-pdfs/` | **PDF Analysis & Requirements** | When implementing features based on existing PDF forms or compliance requirements |
+| `ai-development-track/` | **AI Development Guidelines** | When implementing AI features, ML models, or automated workflows |
 | `hipaa-compliance-developers-guide-master/` | **HIPAA Compliance** | When implementing security features or data handling |
+
+### Folder Usage Instructions
+
+#### `currently-used-pdfs/`
+- **Purpose**: Contains analysis of existing PDF forms and compliance documents
+- **Usage**: 
+  - Review PDF analysis files when implementing form features
+  - Reference compliance requirements when building data entry forms
+  - Use transformation roadmaps for migrating from PDF to digital forms
+  - Check specific form requirements (placement info, medication records, etc.)
+
+#### `ai-development-track/`
+- **Purpose**: Contains AI development guidelines and implementation strategies
+- **Usage**:
+  - Reference when implementing AI-powered features
+  - Follow AI development best practices
+  - Use for ML model integration guidelines
+  - Check automated workflow implementation patterns
+
+#### `hipaa-compliance-developers-guide-master/`
+- **Purpose**: Comprehensive HIPAA compliance documentation for developers
+- **Usage**:
+  - Reference when implementing security features
+  - Follow HIPAA compliance requirements for data handling
+  - Use for audit trail implementation
+  - Check data encryption and access control requirements
 
 ### 📝 Important Note
 **This documentation represents the current scope of documented features and requirements. The Heartly application is comprehensive and may include additional features, workflows, or requirements that are not yet documented here. New documentation may be added as the app evolves and additional requirements are identified. Always check for the most recent documentation and ask for clarification if something seems missing.**
