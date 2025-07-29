@@ -57,6 +57,7 @@ This folder contains comprehensive guidance for AI-assisted development of Heart
 |----------|---------|-------------------|
 | `heartly-comprehensive-overview.md` | **Primary Vision Document** | Always reference for feature planning and architectural decisions |
 | `mvp-outline.md` | **MVP Scope & Features** | When implementing core features or planning development phases |
+| `epic-plan.md` | **Epic Planning & Roadmap** | When planning large features, epics, or development roadmaps |
 | `form-transformation-philosophy.md` | **UX/UI Philosophy** | When designing user interfaces or data entry flows |
 | `timeline-management-system.md` | **Compliance & Deadlines** | When implementing timeline tracking or compliance features |
 | `granular-audit-system.md` | **Audit & Logging** | When implementing audit trails or compliance logging |

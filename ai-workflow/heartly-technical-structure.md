@@ -1,4 +1,4 @@
-# Heartly Application Overview
+# Heartly Application Technical Structure
 
 ## 🏥 Project Description
 
