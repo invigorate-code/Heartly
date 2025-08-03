@@ -1,0 +1,4 @@
+packages:
+  - 'heartly-frontend'
+  - 'heartly-backend'
+  - 'shared'

@@ -1,5 +1,5 @@
-import { HeroSection } from "@/components/landing-page/HeroSection.tsx";
-import { LandingNavbar } from "@/components/landing-page/LandingNavbar.tsx";
+import { HeroSection } from "@/components/landing-page/HeroSection";
+import { LandingNavbar } from "@/components/landing-page/LandingNavbar";
 
 export default function LandingPage() {
   return (

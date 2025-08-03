@@ -9,7 +9,7 @@ services:
     environment:
       # Use the db2 service name here to point to the dedicated SuperTokens DB
       POSTGRESQL_CONNECTION_URI: "postgresql://postgres:postgres@postgres-supertokens:5432/supertokens"
-      API_KEYS: ${NEXT_PUBLIC_ST_API_KEY}
+      API_KEYS: ${SUPERTOKENS_API_KEY}
     networks:
       - heartly-backend-network
     restart: unless-stopped

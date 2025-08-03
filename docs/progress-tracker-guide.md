@@ -7,11 +7,23 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Pre-commit hook (recommended)
-.git/hooks/pre-commit
+# Clean commit then amend (working - bypasses hooks)
+./scripts/commit-clean-then-amend.sh "Your commit message"
+# or
+git commit-clean-amend "Your commit message"
 
-# Simulate git commit
-git commit --dry-run
+# Amend previous commit (if no hooks conflict)
+./scripts/amend-with-progress.sh
+# or
+git amend-progress
+
+# Commit with progress (all-in-one)
+./scripts/commit-with-progress.sh "Your commit message"
+# or
+git commit-progress "Your commit message"
+
+# Traditional git (progress in separate commit)
+git commit -m "Your commit message"
 ```
 
 ### **Auto-Generated Summary**

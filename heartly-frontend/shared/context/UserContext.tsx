@@ -7,7 +7,7 @@ import React, {
   ReactNode,
 } from "react";
 
-import { getLoggedInUser } from "@/app/api/poc-api-using-api-util/auth.ts";
+import { getLoggedInUser } from "@/app/api/poc-api-using-api-util/auth";
 import { UserEntity } from "@/generated/types/UserEntity.js";
 
 type UserContextType = {
@@ -26,31 +26,27 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<UserEntity | null>(
-    null
-  );
+  const [user, setUser] = useState<UserEntity | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       getLoggedInUser()
-      .then(res => setUser(res.userProfile))
-      .catch(err => {
-        console.error(err);
-      });
-
+        .then((res) => {
+          setUser(res.userProfile);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     };
 
     fetchUserData();
   }, []);
 
   const getUserRole = () => user?.role;
-  const userDisplayName = () =>
-    user?.firstName + " " + user?.lastName;
+  const userDisplayName = () => user?.firstName + " " + user?.lastName;
   const isOwner = () => user?.role === "OWNER";
   const isOnboardingCompleted = () => user?.onboarding_completed_at !== null;
   const isOnboardingRequired = () => isOwner() && !isOnboardingCompleted();
-
-
 
   const value = {
     user,

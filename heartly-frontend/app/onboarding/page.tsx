@@ -1,7 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { useUser } from "@/shared/context/UserContext.tsx";
+import { useUser } from "@/shared/context/UserContext";
 
 export default async function OnboardingPage() {
   const { user } = useUser();
