@@ -7,11 +7,11 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Pre-commit hook (recommended)
-.git/hooks/pre-commit
+# Prepare-commit-msg hook (automatic on commit)
+git commit -m "Your commit message"
 
-# Simulate git commit
-git commit --dry-run
+# Manual trigger
+.git/hooks/prepare-commit-msg
 ```
 
 ### **Auto-Generated Summary**
