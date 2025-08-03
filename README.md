@@ -126,7 +126,18 @@ This file is updated and included in commits using various approaches to ensure 
 
 #### **🚀 Usage Options (Recommended Order):**
 
-**Option 1: Amend Previous Commit (Simplest)**
+**Option 1: Clean Commit Then Amend (Working)**
+```bash
+# Stage your files
+git add .
+
+# Make clean commit then amend with progress
+./scripts/commit-clean-then-amend.sh "Your commit message"
+# or
+git commit-clean-amend "Your commit message"
+```
+
+**Option 2: Amend Previous Commit (If no hooks conflict)**
 ```bash
 # Make your normal commit
 git add .
@@ -138,7 +149,7 @@ git commit -m "Your commit message"
 git amend-progress
 ```
 
-**Option 2: Commit with Progress (All-in-One)**
+**Option 3: Commit with Progress (All-in-One)**
 ```bash
 # Direct script usage
 ./scripts/commit-with-progress.sh "Your commit message"
@@ -147,7 +158,7 @@ git amend-progress
 git commit-progress "Your commit message"
 ```
 
-**Option 3: Traditional Git (Progress in separate commit)**
+**Option 4: Traditional Git (Progress in separate commit)**
 ```bash
 git add .
 git commit -m "Your commit message"

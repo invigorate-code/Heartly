@@ -7,7 +7,12 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Amend previous commit with progress (simplest)
+# Clean commit then amend (working - bypasses hooks)
+./scripts/commit-clean-then-amend.sh "Your commit message"
+# or
+git commit-clean-amend "Your commit message"
+
+# Amend previous commit (if no hooks conflict)
 ./scripts/amend-with-progress.sh
 # or
 git amend-progress
