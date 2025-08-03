@@ -293,3 +293,8 @@ ai-workflow/ai-development-track/ai-dev-notes/
 - **Data integrity controls**: Prevent unauthorized modifications with proper validation
 
 When making ANY changes to data models or user interactions, ensure audit trails are maintained and compliance features continue to work properly. This is non-negotiable for a healthcare application.
+
+## Memories
+
+### Development Workflow
+- Always keep notes of work in ai-dev-notes folder and create a folder title with epic-story-team type naming structure and with error, feature, test md. Also can just view ai development notes structure setting in ai-development-direction
