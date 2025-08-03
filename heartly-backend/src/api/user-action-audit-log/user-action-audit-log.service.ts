@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
-import { BaseTenantService } from '../../common/base-tenant-service';
+import { BaseTenantService } from '../../common/services/base-tenant.service';
 import { CreateUserActionAuditLogDto } from './dto/create-user-action-audit-log.dto';
 import { QueryUserActionAuditLogDto } from './dto/query-user-action-audit-log.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';

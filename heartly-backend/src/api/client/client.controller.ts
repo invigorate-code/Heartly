@@ -15,13 +15,11 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { UserRole } from '../user/entities/user.entity';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/createClient.req.dto';
 import { ClientResDto } from './dto/getClient.res.dto';
 import { UpdateClientNameDto } from './dto/updateClientName.req.dto';
 import { UpdateClientPhotoDto } from './dto/updateClientPhoto.req.dto';
-import { ClientEntity } from './entities/client.entity';
 
 @ApiTags('client')
 @UseGuards(SuperTokensAuthGuard)
@@ -30,18 +28,18 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Post('/create')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async createClient(
     @Body() client: CreateClientDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.createClient(client, session);
   }
 
   @Get('/getClientById/:id')
   @VerifySession()
   async getClientById(
-    @Param() id: string,
+    @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<ClientResDto> {
     return await this.clientService.getClientById(id, session);
@@ -57,7 +55,7 @@ export class ClientController {
   }
 
   @Get('/getClientsByTenantId/:tenantId')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async getClientsByTenantId(
     @Param('tenantId') tenantId: string,
     @Session() session: SessionContainer,
@@ -71,7 +69,7 @@ export class ClientController {
     @Param('id') id: string,
     @Body() updateClientNameDto: UpdateClientNameDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.updateClientName(
       id,
       updateClientNameDto,
@@ -85,7 +83,7 @@ export class ClientController {
     @Param('id') id: string,
     @Body() updateClientPhotoDto: UpdateClientPhotoDto,
     @Session() session: SessionContainer,
-  ): Promise<ClientEntity> {
+  ): Promise<ClientResDto> {
     return await this.clientService.updateClientPhoto(
       id,
       updateClientPhotoDto,
@@ -94,7 +92,7 @@ export class ClientController {
   }
 
   @Delete('/deleteClient/:id')
-  @VerifySession({ roles: [UserRole.OWNER, UserRole.ADMIN] })
+  @VerifySession()
   async deleteClient(
     @Param('id') id: string,
     @Session() session: SessionContainer,

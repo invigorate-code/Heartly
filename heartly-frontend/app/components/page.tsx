@@ -4,6 +4,7 @@ import { WeightTrackingChart } from "@/components/charts/WeightTrackingChart";
 import { SymptomsTrackerCard } from "@/components/cards/SymptomsTrackerCard";
 import { RecentActivityCard } from "@/components/cards/RecentActivityCard";
 import { AllergyTrackerCard } from "@/components/cards/AllergyTrackerCard";
+import { ClientList } from "@/components/ClientList";
 import {
   Button,
   Card,
@@ -22,6 +23,7 @@ import {
   BookOpen,
   Activity,
   AlertTriangle,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -72,6 +74,7 @@ export default function ComponentsShowcase() {
             "symptoms-card",
             "recent-activity",
             "allergy-tracker",
+            "client-list",
           ]}
           className="gap-4"
         >
@@ -907,6 +910,323 @@ export default function ComponentsShowcase() {
                       </li>
                       <li>
                         • Blue action link (#1C376F) with hover animations
+                      </li>
+                    </ul>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </AccordionItem>
+
+          {/* Client List Accordion */}
+          <AccordionItem
+            key="client-list"
+            aria-label="Client List"
+            title={
+              <div className="flex items-center gap-3">
+                <Users className="w-6 h-6 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Client List
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Comprehensive client management cards with status tracking
+                    and progress indicators
+                  </p>
+                </div>
+              </div>
+            }
+            className="bg-white shadow-sm rounded-lg"
+          >
+            <div className="space-y-8 p-4">
+              {/* Component Examples */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                  Examples
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-md font-medium text-gray-700 mb-4">
+                      Default Client List
+                    </h4>
+                    <div className="max-w-2xl">
+                      <ClientList />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-md font-medium text-gray-700 mb-4">
+                      Custom Client Data
+                    </h4>
+                    <div className="max-w-2xl">
+                      <ClientList
+                        clients={[
+                          {
+                            id: "custom-1",
+                            name: "Sarah Johnson",
+                            avatar:
+                              "https://api.builder.io/api/v1/image/assets/TEMP/ce12f9c8fe6f43c55ca60e6697d79868f29ef744?width=82",
+                            gender: "Female",
+                            age: "32 Years",
+                            birthDate: "Mar 22, 1992",
+                            uciNumber: "UCI 123456",
+                            status: {
+                              type: "action-taken",
+                              text: "Action Taken",
+                            },
+                            progressScore: {
+                              current: 8,
+                              total: 10,
+                            },
+                            sections: {
+                              intake: {
+                                status: "completed",
+                                statusText: "Completed",
+                              },
+                              reports: {
+                                status: "completed",
+                                statusText: "Completed",
+                              },
+                              health: {
+                                status: "completed",
+                                statusText: "Completed",
+                              },
+                              medication: {
+                                status: "not-started",
+                                statusText: "Not started",
+                              },
+                            },
+                          },
+                          {
+                            id: "custom-2",
+                            name: "Michael Chen",
+                            avatar:
+                              "https://api.builder.io/api/v1/image/assets/TEMP/fa0490c7bbf939be01e7f1a6dfc6335fe0ba6f35?width=82",
+                            gender: "Male",
+                            age: "45 Years",
+                            birthDate: "Jul 8, 1978",
+                            uciNumber: "UCI 789012",
+                            status: {
+                              type: "placement",
+                              text: "Placement Information",
+                            },
+                            progressScore: {
+                              current: 3,
+                              total: 10,
+                            },
+                            sections: {
+                              intake: {
+                                status: "completed",
+                                statusText: "Completed",
+                              },
+                              reports: {
+                                status: "not-started",
+                                statusText: "Not started",
+                              },
+                              health: {
+                                status: "placement-info",
+                                statusText: "Placement Information",
+                                hasInfo: true,
+                              },
+                              medication: {
+                                status: "not-started",
+                                statusText: "Not started",
+                              },
+                            },
+                          },
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Example */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Usage
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`import { ClientList } from "@/components/ClientList";
+
+// Basic usage
+<ClientList />
+
+// Custom configuration
+<ClientList
+  clients={[
+    {
+      id: '1',
+      name: 'Sarah Johnson',
+      avatar: '/avatar.jpg',
+      gender: 'Female',
+      age: '32 Years',
+      birthDate: 'Mar 22, 1992',
+      uciNumber: 'UCI 123456',
+      status: {
+        type: 'action-taken',
+        text: 'Action Taken'
+      },
+      progressScore: {
+        current: 8,
+        total: 10
+      },
+      sections: {
+        intake: { status: 'completed', statusText: 'Completed' },
+        reports: { status: 'completed', statusText: 'Completed' },
+        health: { status: 'completed', statusText: 'Completed' },
+        medication: { status: 'not-started', statusText: 'Not started' }
+      }
+    }
+  ]}
+/>`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Props Documentation */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Props
+                </h3>
+                <Card>
+                  <CardBody>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 font-semibold">
+                              Prop
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Type
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Default
+                            </th>
+                            <th className="text-left py-2 font-semibold">
+                              Description
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              clients
+                            </td>
+                            <td className="py-2">ClientData[]</td>
+                            <td className="py-2">Default dataset</td>
+                            <td className="py-2">
+                              Array of client data objects to display
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 font-mono text-purple-600">
+                              className
+                            </td>
+                            <td className="py-2">string</td>
+                            <td className="py-2">""</td>
+                            <td className="py-2">
+                              Additional CSS classes for styling
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Client Data Interface */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  ClientData Interface
+                </h3>
+                <Card>
+                  <CardBody>
+                    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                      {`interface ClientData {
+  id: string;
+  name: string;
+  avatar: string;
+  gender: string;
+  age: string;
+  birthDate: string;
+  uciNumber: string;
+  status: {
+    type: "placement" | "physical-report" | "action-taken";
+    text: string;
+  };
+  progressScore?: {
+    current: number;
+    total: number;
+  };
+  sections: {
+    intake: {
+      status: "not-started" | "completed";
+      statusText: string;
+    };
+    reports: {
+      status: "not-started" | "completed";
+      statusText: string;
+    };
+    health: {
+      status: "not-started" | "completed" | "physical-report-due" | "placement-info";
+      statusText: string;
+      hasInfo?: boolean;
+    };
+    medication: {
+      status: "not-started" | "completed";
+      statusText: string;
+    };
+  };
+}`}
+                    </pre>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Features */}
+              <div className="border-t pt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Features
+                </h3>
+                <Card>
+                  <CardBody>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li>
+                        • Responsive client cards with avatar, demographics, and
+                        status indicators
+                      </li>
+                      <li>
+                        • Circular progress indicators with dynamic color coding
+                        (green, blue, red)
+                      </li>
+                      <li>
+                        • Status badges for different client states (Placement
+                        Information, Physical Report, Action Taken)
+                      </li>
+                      <li>
+                        • Section grid with icons for Intake, Reports, Health,
+                        and Medication
+                      </li>
+                      <li>
+                        • Info indicators for additional health information
+                      </li>
+                      <li>
+                        • Clean, healthcare-focused design with appropriate
+                        typography and spacing
+                      </li>
+                      <li>
+                        • Hover effects and smooth transitions for better user
+                        interaction
+                      </li>
+                      <li>
+                        • Flexible data structure supporting various client
+                        management scenarios
                       </li>
                     </ul>
                   </CardBody>

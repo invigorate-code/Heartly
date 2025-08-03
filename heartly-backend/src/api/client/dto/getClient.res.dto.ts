@@ -1,6 +1,22 @@
 import { ClassField, StringField } from '@/decorators/field.decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+
+class SimpleFacilityDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+}
+
+class SimpleTenantDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+}
 
 Exclude();
 export class ClientResDto {
@@ -52,6 +68,11 @@ export class ClientResDto {
   @Expose()
   facilityId: string;
 
+  @Expose()
+  @Type(() => SimpleFacilityDto)
+  @ApiProperty({ type: SimpleFacilityDto })
+  facility: SimpleFacilityDto;
+
   @ApiProperty({
     description: 'ID of the tenant where the client is registered',
     example: 'h45sh223',
@@ -59,6 +80,11 @@ export class ClientResDto {
   @StringField()
   @Expose()
   tenantId: string;
+
+  @Expose()
+  @Type(() => SimpleTenantDto)
+  @ApiProperty({ type: SimpleTenantDto })
+  tenant: SimpleTenantDto;
 
   @ApiProperty({
     description: 'Indicates if the client is deleted',

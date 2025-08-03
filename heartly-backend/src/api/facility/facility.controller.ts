@@ -19,7 +19,6 @@ import { UserRole } from '../user/entities/user.entity';
 import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
-import { FacilityEntity } from './entities/facility.entity';
 import { FacilityService } from './facility.service';
 
 @ApiTags('facility')
@@ -29,26 +28,24 @@ export class FacilityController {
   constructor(private readonly facilityService: FacilityService) {}
 
   @Post('/create')
-  @VerifySession({
-    roles: [UserRole.OWNER, UserRole.ADMIN],
-  })
+  @VerifySession()
   async createFacility(
     @Body() createFacilityDto: CreateFacilityDto,
     @Session() session: SessionContainer,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     return await this.facilityService.createFacility(
       createFacilityDto,
       session,
     );
   }
 
-  @Get('/getFacilityById')
+  @Get('/getFacilityById/:id')
   @VerifySession()
   async getFacilityById(
-    @Body() body: { id: string },
+    @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<FacilityResDto> {
-    return await this.facilityService.getFacilityById(body.id, session);
+    return await this.facilityService.getFacilityById(id, session);
   }
 
   @Get('/getLoggedInUserFacilities')
@@ -60,13 +57,11 @@ export class FacilityController {
   }
 
   @Patch('/updateFacility')
-  @VerifySession({
-    roles: [UserRole.ADMIN, UserRole.OWNER],
-  })
+  @VerifySession()
   async updateFacility(
     @Session() session: SessionContainer,
     @Body() updateFacilityDto: UpdateFacilityDto,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     return await this.facilityService.updateFacility(
       session,
       updateFacilityDto,
@@ -91,7 +86,7 @@ export class FacilityController {
   async restoreFacility(
     @Param('id') id: string,
     @Session() session: SessionContainer,
-  ): Promise<FacilityEntity> {
+  ): Promise<FacilityResDto> {
     return await this.facilityService.restoreFacility(id, session);
   }
 }
