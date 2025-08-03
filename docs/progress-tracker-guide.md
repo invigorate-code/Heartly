@@ -7,10 +7,14 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Commit with progress (recommended)
-./scripts/commit-with-progress.sh "Your commit message"
+# Amend previous commit with progress (simplest)
+./scripts/amend-with-progress.sh
+# or
+git amend-progress
 
-# Git alias for commit with progress
+# Commit with progress (all-in-one)
+./scripts/commit-with-progress.sh "Your commit message"
+# or
 git commit-progress "Your commit message"
 
 # Traditional git (progress in separate commit)

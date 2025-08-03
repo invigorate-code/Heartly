@@ -115,28 +115,39 @@ In the root `package.json`:
 
 ### 📈 Auto-Generated Progress Summary
 
-The commit-with-progress script automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
+The progress tracking system automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
 
 - **Story Progress**: Overall and epic-specific completion rates
 - **Team Progress**: Parallel team advancement tracking
 - **Technical Progress**: Backend, frontend, and overall project metrics
 - **Timestamp**: Last update time for reference
 
-This file is updated and included in every commit when using the commit-with-progress script, ensuring progress updates are part of the same commit that triggered them.
+This file is updated and included in commits using various approaches to ensure progress updates are part of your commit history.
 
-#### **🚀 Usage Options:**
+#### **🚀 Usage Options (Recommended Order):**
 
-**Option 1: Direct Script Usage**
+**Option 1: Amend Previous Commit (Simplest)**
 ```bash
-./scripts/commit-with-progress.sh "Your commit message"
+# Make your normal commit
+git add .
+git commit -m "Your commit message"
+
+# Then amend with progress
+./scripts/amend-with-progress.sh
+# or
+git amend-progress
 ```
 
-**Option 2: Git Alias (Recommended)**
+**Option 2: Commit with Progress (All-in-One)**
 ```bash
+# Direct script usage
+./scripts/commit-with-progress.sh "Your commit message"
+
+# Git alias (easier to remember)
 git commit-progress "Your commit message"
 ```
 
-**Option 3: Traditional Git (Progress updates in separate commit)**
+**Option 3: Traditional Git (Progress in separate commit)**
 ```bash
 git add .
 git commit -m "Your commit message"
