@@ -22,7 +22,7 @@ export class CreateClientTable1754250023000 implements MigrationInterface {
                 CONSTRAINT "PK_client" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_client_facility" FOREIGN KEY ("facilityId") REFERENCES "facility"("id") ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT "FK_client_tenant" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT "CHK_client_birth_date" CHECK (birthDate <= CURRENT_DATE AND birthDate >= '1900-01-01')
+                CONSTRAINT "CHK_client_birth_date" CHECK ("birthDate" <= CURRENT_DATE AND "birthDate" >= '1900-01-01')
             )
         `);
 
@@ -44,7 +44,7 @@ export class CreateClientTable1754250023000 implements MigrationInterface {
         await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS pg_trgm`);
 
         // Full-text search index for client names
-        await queryRunner.query(`CREATE INDEX "IDX_client_full_name_search" ON "client" USING gin((firstName || ' ' || lastName) gin_trgm_ops)`);
+        await queryRunner.query(`CREATE INDEX "IDX_client_full_name_search" ON "client" USING gin(("firstName" || ' ' || "lastName") gin_trgm_ops)`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
