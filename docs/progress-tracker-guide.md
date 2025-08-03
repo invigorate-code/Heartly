@@ -7,11 +7,14 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Prepare-commit-msg hook (automatic on commit)
-git commit -m "Your commit message"
+# Commit with progress (recommended)
+./scripts/commit-with-progress.sh "Your commit message"
 
-# Manual trigger
-.git/hooks/prepare-commit-msg
+# Git alias for commit with progress
+git commit-progress "Your commit message"
+
+# Traditional git (progress in separate commit)
+git commit -m "Your commit message"
 ```
 
 ### **Auto-Generated Summary**

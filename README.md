@@ -115,11 +115,30 @@ In the root `package.json`:
 
 ### 📈 Auto-Generated Progress Summary
 
-The prepare-commit-msg hook automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
+The commit-with-progress script automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
 
 - **Story Progress**: Overall and epic-specific completion rates
 - **Team Progress**: Parallel team advancement tracking
 - **Technical Progress**: Backend, frontend, and overall project metrics
 - **Timestamp**: Last update time for reference
 
-This file is updated every time you run `git commit` and is automatically staged for commit, ensuring progress updates are included in your commit history.
+This file is updated and included in every commit when using the commit-with-progress script, ensuring progress updates are part of the same commit that triggered them.
+
+#### **🚀 Usage Options:**
+
+**Option 1: Direct Script Usage**
+```bash
+./scripts/commit-with-progress.sh "Your commit message"
+```
+
+**Option 2: Git Alias (Recommended)**
+```bash
+git commit-progress "Your commit message"
+```
+
+**Option 3: Traditional Git (Progress updates in separate commit)**
+```bash
+git add .
+git commit -m "Your commit message"
+# Progress file updated by prepare-commit-msg hook
+```
