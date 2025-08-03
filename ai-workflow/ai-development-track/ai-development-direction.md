@@ -3,6 +3,8 @@
 ## 🎯 **Purpose**
 This file provides comprehensive direction for AI assistants working on the Heartly project. It establishes development standards, folder structure, and ensures consistent, high-quality implementation of features based on the epic and story plans.
 
+**IMPORTANT**: This project now uses a parallel work approach with two teams. See `parallel-work-plan.md` for team assignments and coordination details.
+
 ## 📁 **Project Context & Structure**
 
 ### **Core Project Information**
@@ -15,6 +17,7 @@ This file provides comprehensive direction for AI assistants working on the Hear
 ### **Key Documentation Locations**
 - **Epic Plans**: `ai-workflow/ai-development-track/epic-plan.md`
 - **Story Plans**: `ai-workflow/ai-development-track/story-plan.md`
+- **Parallel Work Plan**: `ai-workflow/ai-development-track/parallel-work-plan.md`
 - **Technical Structure**: `ai-workflow/heartly-technical-structure.md`
 - **HIPAA Compliance**: `ai-workflow/hipaa-compliance-developers-guide-master/`
 - **Comprehensive Overview**: `ai-workflow/heartly-comprehensive-overview.md`
@@ -50,6 +53,7 @@ This file provides comprehensive direction for AI assistants working on the Hear
 **AI Development Track**:
 - `ai-development-track/epic-plan.md` - Current development priorities
 - `ai-development-track/story-plan.md` - Detailed story breakdowns
+- `ai-development-track/parallel-work-plan.md` - Team assignments and coordination
 - `ai-development-track/ai-development-direction.md` - This file (development standards)
 
 ## 🏗️ **Development Standards**
@@ -172,14 +176,22 @@ ai-workflow/ai-development-track/ai-dev-notes/
 
 ## 🔄 **Development Workflow**
 
+### **Parallel Work Coordination**
+1. **Check Team Assignment**: Review `parallel-work-plan.md` to understand your team's responsibilities
+2. **Coordinate Dependencies**: Check handoff points and dependencies with the other team
+3. **Communicate Changes**: Notify the other team of any breaking changes or API modifications
+4. **Document Handoffs**: Provide required documentation when handing off work to the other team
+
 ### **Feature Implementation Process**
 1. **Review Epic/Story Plans**: Understand the specific requirements from the story plan
-2. **Create Feature Folder**: Set up the feature folder in `ai-dev-notes/`
-3. **Plan Implementation**: Document the technical approach in `feature.md`
-4. **Implement Feature**: Follow the documented plan with detailed explanations
-5. **Handle Errors**: Document any issues and solutions in `errors.md`
-6. **Write Tests**: Implement comprehensive tests for the feature
-7. **Code Review**: Ensure all standards are met and HIPAA compliance is maintained
+2. **Check Team Assignment**: Ensure you're working on stories assigned to your team
+3. **Create Feature Folder**: Set up the feature folder in `ai-dev-notes/`
+4. **Plan Implementation**: Document the technical approach in `feature.md`
+5. **Implement Feature**: Follow the documented plan with detailed explanations
+6. **Handle Errors**: Document any issues and solutions in `errors.md`
+7. **Write Tests**: Implement comprehensive tests for the feature
+8. **Code Review**: Ensure all standards are met and HIPAA compliance is maintained
+9. **Coordinate Integration**: Work with the other team for integration testing
 
 ### **Quality Assurance Checklist**
 - [ ] Feature matches story requirements exactly
@@ -196,37 +208,44 @@ ai-workflow/ai-development-track/ai-dev-notes/
 
 ### **For New AI Assistants**
 1. **Read Complete Context**: Review ALL files in the `ai-workflow/` folder to understand the complete application context, vision, and requirements
-2. **Understand Current Priorities**: Review the epic and story plans to understand current development priorities
-3. **Understand Architecture**: Review `heartly-technical-structure.md` for system overview
-4. **Check HIPAA Requirements**: Review HIPAA compliance guide for security requirements
-5. **Set Up Notes**: Create feature folder in `ai-dev-notes/` for the current story
-6. **Begin Implementation**: Follow the documented standards and processes
+2. **Check Team Assignment**: Review `parallel-work-plan.md` to understand your team's responsibilities and dependencies
+3. **Understand Current Priorities**: Review the epic and story plans to understand current development priorities
+4. **Understand Architecture**: Review `heartly-technical-structure.md` for system overview
+5. **Check HIPAA Requirements**: Review HIPAA compliance guide for security requirements
+6. **Set Up Notes**: Create feature folder in `ai-dev-notes/` for the current story
+7. **Begin Implementation**: Follow the documented standards and processes
 
 ### **For Ongoing Development**
 1. **Check Current Status**: Review existing `ai-dev-notes/` for current progress
-2. **Continue Implementation**: Follow the established patterns and standards
-3. **Update Documentation**: Keep feature and error files current
-4. **Maintain Quality**: Ensure all code meets the established standards
+2. **Check Team Coordination**: Review `parallel-work-plan.md` for any handoff requirements or dependencies
+3. **Continue Implementation**: Follow the established patterns and standards
+4. **Update Documentation**: Keep feature and error files current
+5. **Maintain Quality**: Ensure all code meets the established standards
+6. **Coordinate with Other Team**: Communicate any changes that affect the other team's work
 
 ## 📞 **Important Notes**
 
 ### **Do's**
 - ✅ Read and understand ALL files in the `ai-workflow/` folder for complete context
+- ✅ Check `parallel-work-plan.md` to understand your team's responsibilities
 - ✅ Follow the epic and story plans exactly
 - ✅ Create detailed implementation notes in `ai-dev-notes/`
 - ✅ Implement comprehensive error handling and validation
 - ✅ Write tests for every feature
 - ✅ Consider HIPAA compliance in every decision
 - ✅ Use concise inline documentation
+- ✅ Coordinate with the other team for dependencies and handoffs
 - ✅ Suggest improvements when absolutely necessary (but don't implement without approval)
 
 ### **Don'ts**
 - ❌ Don't implement features not in the current story plan
+- ❌ Don't work on stories assigned to the other team without coordination
 - ❌ Don't skip error handling or validation
 - ❌ Don't ignore HIPAA compliance requirements
 - ❌ Don't implement suggested improvements without explicit approval
 - ❌ Don't skip testing or documentation
 - ❌ Don't assume the foundation is solid - check current state if needed
+- ❌ Don't make breaking changes without notifying the other team
 
 ## 🎯 **Success Metrics**
 - All features implemented according to story requirements

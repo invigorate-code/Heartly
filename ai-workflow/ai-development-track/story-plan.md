@@ -3,6 +3,8 @@
 ## 🎯 **Epic Overview**
 **Epic 1: The Foundation Crisis** - "Fixing What's Broken Before Building New"
 
+**PARALLEL WORK APPROACH**: This epic is now split between two teams. See `parallel-work-plan.md` for team assignments and coordination details.
+
 **Epic Goal**: Fix all critical foundation issues including database schema, authentication system, and onboarding flow to create a stable, secure foundation for the Heartly application.
 
 **Epic Success Criteria**:
@@ -11,9 +13,14 @@
 - Complete, functional onboarding flow for new users
 - All basic user flows work end-to-end
 
+**Team Assignments**:
+- **Team A**: Core Infrastructure & Security (Stories 1.1, 1.3, 1.5, 2.1, 2.3, 2.5, 3.1)
+- **Team B**: User Experience & Integration (Stories 1.2, 1.4, 2.2, 2.4, 2.6, 3.2, 3.3, 3.4, 3.5, 3.6)
+
 ---
 
 ## 📚 **Chapter 1: Database Schema and Migration Crisis**
+**PARALLEL WORK**: Both teams work on database layer simultaneously
 
 ### **Story 1.1: Create Core Database Migrations**
 **As a** developer  
@@ -138,6 +145,7 @@
 ---
 
 ## 🔐 **Chapter 2: Authentication System Overhaul**
+**PARALLEL WORK**: Both teams work on authentication layer simultaneously
 
 ### **Story 2.1: Fix SuperTokens Session Management Integration**
 **As a** user  
@@ -279,6 +287,7 @@
 ---
 
 ## 🚀 **Chapter 3: Onboarding System Fix**
+**PARALLEL WORK**: Team A builds API infrastructure, Team B builds user experience
 
 ### **Story 3.1: Fix Facility Creation to Use NestJS API**
 **As a** new user  
@@ -460,10 +469,13 @@
 2. **Authentication System** (Stories 2.1-2.6) - Security and user management
 3. **Onboarding System** (Stories 3.1-3.6) - User experience and adoption
 
-### **Dependencies**
-- Database migrations must be completed before RLS policies
-- Authentication system must be working before onboarding
-- SuperTokens configuration must be complete before role integration
+### **Team Dependencies**
+- **Team A**: Database migrations must be completed before RLS policies (Story 1.1 before 1.2)
+- **Team A**: SuperTokens configuration must be complete before role integration (Story 2.1 before 2.3)
+- **Team B**: Can work on RLS policies and constraints once basic schema exists (Story 1.1 complete)
+- **Team B**: Can work on user-facing auth features once core auth exists (Story 2.1 complete)
+- **Both Teams**: Must coordinate on API contracts and integration points
+- **Both Teams**: Work on same chapters but different stories within each chapter
 
 ### **Testing Strategy**
 - Each story should include unit tests
@@ -472,10 +484,13 @@
 - Security testing for authentication and authorization
 
 ### **Risk Mitigation**
-- Backup database before running migrations
-- Test authentication changes in staging environment
-- Have rollback plan for each major change
-- Monitor application performance during changes
+- **Team A**: Backup database before running migrations
+- **Team A**: Test authentication changes in staging environment
+- **Team B**: Have rollback plan for UI changes
+- **Both Teams**: Monitor application performance during changes
+- **Both Teams**: Coordinate on breaking changes and API modifications
+- **Both Teams**: Regular integration testing to catch issues early
+- **Both Teams**: Clear separation of concerns to avoid conflicts on same layer
 
 ### **Success Metrics**
 - Zero critical security vulnerabilities

@@ -30,6 +30,11 @@
 ## 🚀 **Epic 1: The Foundation Crisis** 
 *"Fixing What's Broken Before Building New"*
 
+**PARALLEL WORK APPROACH**: This epic is now split between two teams working on the same chapters but different stories. See `parallel-work-plan.md` for team assignments and coordination details.
+
+**Team A**: Core Infrastructure & Security (Stories 1.1, 1.3, 1.5, 2.1, 2.3, 2.5, 3.1)  
+**Team B**: User Experience & Integration (Stories 1.2, 1.4, 2.2, 2.4, 2.6, 3.2, 3.3, 3.4, 3.5, 3.6)
+
 ### **Chapter 1: Database Schema and Migration Crisis**
 **Objective**: Complete the database setup and ensure proper tenant isolation
 
@@ -292,10 +297,20 @@
 
 ## 🚨 **Critical Next Steps**
 
-**Immediate Priority (Week 1-2)**:
-1. **Fix Database Schema**: Create proper migrations and RLS policies
-2. **Fix Authentication**: Complete SuperTokens integration and session management
-3. **Fix Onboarding**: Complete the broken onboarding flow
-4. **Test Core Functionality**: Ensure basic user flows work end-to-end
+**PARALLEL WORK APPROACH**: Teams should coordinate according to the parallel work plan.
+
+**Team A Immediate Priority (Week 1-2)**:
+1. **Database Core Infrastructure**: Create migrations, indexes, and audit logging (Stories 1.1, 1.3, 1.5)
+2. **Authentication Core**: Complete SuperTokens session management and role integration (Stories 2.1, 2.3, 2.5)
+
+**Team B Immediate Priority (Week 1-2)**:
+1. **Database Security**: Implement RLS policies and database constraints (Stories 1.2, 1.4)
+2. **Authentication User Features**: Implement email verification and user-facing auth features (Stories 2.2, 2.4, 2.6)
+
+**Coordination Required**:
+- Team A completes basic database schema (Story 1.1) before Team B can implement RLS policies
+- Team A completes basic authentication (Story 2.1) before Team B can implement user-facing features
+- Both teams work on same chapters but different stories within each chapter
+- Regular coordination to ensure compatibility and avoid conflicts
 
 **Would you like me to start with any of these critical foundation issues?** The current state is much more basic than the documentation suggests, and we need to fix the fundamentals before building the advanced features.
