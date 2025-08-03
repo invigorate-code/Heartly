@@ -28,6 +28,7 @@ Successfully migrated the progress update feature from pre-push to pre-commit ho
 - **Real-Time**: Calculates current metrics from actual project files
 - **Safe**: Creates separate file, doesn't modify main README
 - **Reliable**: No complex sed operations that could corrupt files
+- **Auto-Staged**: Progress file automatically staged for commit
 
 ## 📁 Files Created/Modified
 
@@ -48,7 +49,8 @@ Successfully migrated the progress update feature from pre-push to pre-commit ho
 2. **Progress Calculation**: Sources `scripts/dev-progress.sh` and calculates current metrics
 3. **Summary Generation**: Creates formatted markdown with current progress
 4. **File Update**: Writes to `docs/current-progress.md`
-5. **User Feedback**: Shows updated metrics in terminal output
+5. **Auto-Stage**: Automatically stages the progress file for commit
+6. **User Feedback**: Shows updated metrics in terminal output
 
 ### **Key Differences from Pre-Push**
 - **Focus**: Progress tracking and code quality checks (no test running)
@@ -89,7 +91,7 @@ calculate_overall_metrics()
 HIPAA-Compliant Facility Management System
 
 📝 Updating progress summary...
-✅ Progress summary updated at docs/current-progress.md
+✅ Progress summary updated and staged for commit
 Updated metrics:
   - Overall Stories: 1/50 (2%)
   - Epic 1: 1/17 (5%)
@@ -101,8 +103,8 @@ Updated metrics:
 
 === Commit Summary ===
 Branch: ai-setup
-Files Staged: 1
-Lines Staged: 1
+Files Staged: 2
+Lines Staged: 2
 
 ✅ Pre-commit checks completed successfully!
 Ready to commit changes.
@@ -180,6 +182,11 @@ ls -la docs/current-progress.md
 - **Pre-Push**: Checks changed files (what's being pushed)
 - **Benefit**: More relevant to current commit
 
+### **✅ Auto-Staging**
+- **Pre-Commit**: Automatically stages progress file for commit
+- **Pre-Push**: No auto-staging (file updates after push)
+- **Benefit**: Progress updates included in commit history
+
 ## 🔍 Technical Details
 
 ### **Function Implementation**
@@ -198,6 +205,9 @@ update_readme_progress() {
     
     # Write to file
     echo "$progress_summary" > "$PROJECT_ROOT/docs/current-progress.md"
+    
+    # Auto-stage the progress file for commit
+    git add "$PROJECT_ROOT/docs/current-progress.md"
 }
 ```
 

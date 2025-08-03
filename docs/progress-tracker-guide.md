@@ -21,6 +21,8 @@ cat docs/current-progress.md
 
 # Check when it was last updated
 ls -la docs/current-progress.md
+
+# Note: Progress file is automatically staged for commit
 ```
 
 ### **Debug & Test**

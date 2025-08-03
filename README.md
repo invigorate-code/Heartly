@@ -34,4 +34,4 @@ The pre-commit hook automatically generates a current progress summary at `docs/
 - **Technical Progress**: Backend, frontend, and overall project metrics
 - **Timestamp**: Last update time for reference
 
-This file is updated every time you run `git commit` or the pre-commit hook, providing an always-current snapshot of project status.
+This file is updated every time you run `git commit` or the pre-commit hook, providing an always-current snapshot of project status. The progress file is automatically staged for commit, ensuring progress updates are included in your commit history.
