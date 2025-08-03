@@ -8,6 +8,7 @@ import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { BaseTenantService } from '../../common/services/base-tenant.service';
+import { RlsContextService } from '../../common/services/rls-context.service';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { FacilityService } from '../facility/facility.service';
 import { TenantService } from '../tenant/tenant.service';
@@ -30,8 +31,9 @@ export class ClientService extends BaseTenantService {
     private readonly facilityRepository: Repository<FacilityEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    rlsContextService: RlsContextService,
   ) {
-    super();
+    super(rlsContextService);
   }
 
   async createClient(

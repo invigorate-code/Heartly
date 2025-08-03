@@ -34,12 +34,18 @@ export async function checkIfEmailAndCompanyNameAvailable(
   });
 
   if (userEmailLookup.length > 0) {
-    console.log('found user in checkIfEmailAndCompanyNameAvailable', userEmailLookup);
+    console.log(
+      'found user in checkIfEmailAndCompanyNameAvailable',
+      userEmailLookup,
+    );
     return 'EMAIL_ALREADY_IN_USE';
   }
 
   if (userCompanyLookup.length > 0) {
-    console.log('found user in checkIfEmailAndCompanyNameAvailable', userCompanyLookup);
+    console.log(
+      'found user in checkIfEmailAndCompanyNameAvailable',
+      userCompanyLookup,
+    );
     return 'COMPANY_NAME_ALREADY_IN_USE';
   }
 

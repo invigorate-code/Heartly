@@ -47,7 +47,7 @@ export class AuthController {
 
     // Extract email and verification status from user info
     const emailLoginMethod = userInfo.loginMethods.find(
-      method => method.recipeId === 'emailpassword'
+      (method) => method.recipeId === 'emailpassword',
     );
 
     return {
@@ -85,12 +85,9 @@ export class AuthController {
 
   @Post('/verify-email')
   @ApiPublic({ summary: 'verify email' })
-  async verifyEmail(@Body() body: { token: string, tenantId: string }) {
+  async verifyEmail(@Body() body: { token: string; tenantId: string }) {
     try {
-      await EmailVerification.verifyEmailUsingToken(
-        body.tenantId,
-        body.token,
-      );
+      await EmailVerification.verifyEmailUsingToken(body.tenantId, body.token);
       return {
         status: 'OK',
         message: 'Email verified successfully',
