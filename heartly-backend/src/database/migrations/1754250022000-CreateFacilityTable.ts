@@ -32,15 +32,11 @@ export class CreateFacilityTable1754250022000 implements MigrationInterface {
         // Create indexes
         await queryRunner.query(`CREATE INDEX "IDX_facility_tenant_id" ON "facility" ("tenantId")`);
         await queryRunner.query(`CREATE INDEX "IDX_facility_deleted_at" ON "facility" ("deleted_at")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_is_deleted" ON "facility" ("isDeleted")`);
         await queryRunner.query(`CREATE INDEX "IDX_facility_tenant_id_deleted_at" ON "facility" ("tenantId", "deleted_at")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_tenant_id_is_deleted" ON "facility" ("tenantId", "isDeleted")`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id_is_deleted"`);
         await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id_deleted_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_is_deleted"`);
         await queryRunner.query(`DROP INDEX "IDX_facility_deleted_at"`);
         await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id"`);
         await queryRunner.query(`DROP TABLE "facility"`);

@@ -18,18 +18,15 @@ export class CreateFacilityStaffTable1754250025000 implements MigrationInterface
             )
         `);
 
-        // Create indexes for performance
-        await queryRunner.query(`CREATE INDEX "IDX_facility_staff_facility_id" ON "facility_staff" ("facilityId")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_staff_user_id" ON "facility_staff" ("userId")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_staff_assigned_at" ON "facility_staff" ("assigned_at")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_staff_assigned_by" ON "facility_staff" ("assigned_by")`);
+        // Create only essential indexes here - others will be added in performance migration
+        // This avoids PostgreSQL timing issues with column recognition
+        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_facility_staff_facility_id" ON "facility_staff" ("facilityId")`);
+        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_facility_staff_user_id" ON "facility_staff" ("userId")`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_facility_staff_assigned_by"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_staff_assigned_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_staff_user_id"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_staff_facility_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_facility_staff_user_id"`);
+        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_facility_staff_facility_id"`);
         await queryRunner.query(`DROP TABLE "facility_staff"`);
     }
 }
