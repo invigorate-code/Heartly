@@ -2,6 +2,7 @@ import { ApiModule } from '@/api/api.module';
 import { TenantEntity } from '@/api/tenant/entities/tenant.entity';
 import { UserEntity, UserRole } from '@/api/user/entities/user.entity';
 import { BackgroundModule } from '@/background/background.module';
+import { CommonModule } from '@/common/common.module';
 import appConfig from '@/config/app.config';
 import { AllConfigType } from '@/config/config.type';
 import { Environment } from '@/constants/app.constant';
@@ -126,6 +127,7 @@ function generateModulesSet() {
       load: [appConfig, databaseConfig, redisConfig, mailConfig],
       envFilePath: ['.env'],
     }),
+    CommonModule,
   ];
   let customModules: ModuleMetadata['imports'] = [];
 
