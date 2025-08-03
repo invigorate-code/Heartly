@@ -7,11 +7,11 @@
 # Direct execution
 ./scripts/dev-progress.sh
 
-# Pre-push hook (recommended)
-.git/hooks/pre-push
+# Pre-commit hook (recommended)
+.git/hooks/pre-commit
 
-# Simulate git push
-git push origin your-branch --dry-run
+# Simulate git commit
+git commit --dry-run
 ```
 
 ### **Auto-Generated Summary**

@@ -27,11 +27,11 @@
 
 ### 📈 Auto-Generated Progress Summary
 
-The pre-push hook automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
+The pre-commit hook automatically generates a current progress summary at `docs/current-progress.md` with real-time metrics including:
 
 - **Story Progress**: Overall and epic-specific completion rates
 - **Team Progress**: Parallel team advancement tracking
 - **Technical Progress**: Backend, frontend, and overall project metrics
 - **Timestamp**: Last update time for reference
 
-This file is updated every time you run `git push` or the pre-push hook, providing an always-current snapshot of project status.
+This file is updated every time you run `git commit` or the pre-commit hook, providing an always-current snapshot of project status.
