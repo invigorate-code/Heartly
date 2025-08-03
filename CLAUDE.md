@@ -23,6 +23,9 @@ Heartly is a HIPAA-compliant management system for Adult Residential Facilities 
 - `timeline-management-system.md` - Compliance and deadline tracking
 - `granular-audit-system.md` - Audit logging for HIPAA compliance
 - `document-timelines-and-compliance.md` - Document management requirements
+- `universal-action-button.md` - Core UX floating action button system
+- `client-cash-management-system.md` - Client financial management and expense tracking
+- `supertokens-ai-guidance.md` - SuperTokens authentication integration patterns
 
 ### Development Standards (ai-workflow/ai-development-track/)
 - `ai-development-direction.md` - **MANDATORY** development standards and guidelines
