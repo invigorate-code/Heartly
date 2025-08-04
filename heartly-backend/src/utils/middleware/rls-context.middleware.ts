@@ -61,10 +61,10 @@ export class RlsContextMiddleware implements NestMiddleware {
 // Cleanup middleware to release query runner
 @Injectable()
 export class RlsContextCleanupMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction): void {
+  use(req: RlsRequest, res: Response, next: NextFunction): void {
     // Add cleanup logic when response finishes
     res.on('finish', async () => {
-      const queryRunner = req['rlsQueryRunner'];
+      const queryRunner = req.rlsQueryRunner;
       if (queryRunner) {
         try {
           await queryRunner.release();
