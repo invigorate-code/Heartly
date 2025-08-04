@@ -1,7 +1,11 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import Session from 'supertokens-node/recipe/session';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
+
+interface RlsRequest extends Request {
+  rlsQueryRunner?: QueryRunner;
+}
 
 @Injectable()
 export class RlsContextMiddleware implements NestMiddleware {
