@@ -1,14 +1,14 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateTenantTable1754250020000 implements MigrationInterface {
-    name = 'CreateTenantTable1754250020000'
+  name = 'CreateTenantTable1754250020000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Enable uuid-ossp extension if not already enabled
-        await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Enable uuid-ossp extension if not already enabled
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
-        // Create tenant table
-        await queryRunner.query(`
+    // Create tenant table
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS "tenant" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" varchar(100) NOT NULL,
@@ -20,12 +20,14 @@ export class CreateTenantTable1754250020000 implements MigrationInterface {
             )
         `);
 
-        // Create indexes
-        await queryRunner.query(`CREATE INDEX "IDX_tenant_deleted_at" ON "tenant" ("deleted_at")`);
-    }
+    // Create indexes
+    await queryRunner.query(
+      `CREATE INDEX "IDX_tenant_deleted_at" ON "tenant" ("deleted_at")`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_tenant_deleted_at"`);
-        await queryRunner.query(`DROP TABLE "tenant"`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP INDEX "IDX_tenant_deleted_at"`);
+    await queryRunner.query(`DROP TABLE "tenant"`);
+  }
 }

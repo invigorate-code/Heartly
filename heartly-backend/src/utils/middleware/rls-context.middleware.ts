@@ -29,22 +29,18 @@ export class RlsContextMiddleware implements NestMiddleware {
 
         if (tenantId && userRole) {
           // Set database context for RLS policies
-          try {
-            await this.dataSource.query(
-              `SELECT set_config('app.tenant_id', $1, true)`,
-              [tenantId],
-            );
-            await this.dataSource.query(
-              `SELECT set_config('app.user_id', $1, true)`,
-              [userId],
-            );
-            await this.dataSource.query(
-              `SELECT set_config('app.user_role', $1, true)`,
-              [userRole],
-            );
-          } catch (error) {
-            throw error;
-          }
+          await this.dataSource.query(
+            `SELECT set_config('app.tenant_id', $1, true)`,
+            [tenantId],
+          );
+          await this.dataSource.query(
+            `SELECT set_config('app.user_id', $1, true)`,
+            [userId],
+          );
+          await this.dataSource.query(
+            `SELECT set_config('app.user_role', $1, true)`,
+            [userRole],
+          );
         }
       }
     } catch (error) {

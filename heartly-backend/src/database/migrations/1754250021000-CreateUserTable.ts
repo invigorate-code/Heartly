@@ -1,14 +1,16 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUserTable1754250021000 implements MigrationInterface {
-    name = 'CreateUserTable1754250021000'
+  name = 'CreateUserTable1754250021000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Create user role enum type
-        await queryRunner.query(`DO $$ BEGIN CREATE TYPE "user_role_enum" AS ENUM('OWNER', 'ADMIN', 'STAFF'); EXCEPTION WHEN duplicate_object THEN null; END $$`);
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create user role enum type
+    await queryRunner.query(
+      `DO $$ BEGIN CREATE TYPE "user_role_enum" AS ENUM('OWNER', 'ADMIN', 'STAFF'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
+    );
 
-        // Create user table
-        await queryRunner.query(`
+    // Create user table
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS "user" (
                 "id" uuid NOT NULL,
                 "firstName" varchar(50) NOT NULL,
@@ -34,21 +36,31 @@ export class CreateUserTable1754250021000 implements MigrationInterface {
             )
         `);
 
-        // Create indexes
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_user_tenant_id" ON "user" ("tenantId")`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_user_email" ON "user" ("email")`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_user_username" ON "user" ("username")`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at")`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_user_tenant_id_deleted_at" ON "user" ("tenantId", "deleted_at")`);
-    }
+    // Create indexes
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_user_tenant_id" ON "user" ("tenantId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_user_email" ON "user" ("email")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_user_username" ON "user" ("username")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_user_tenant_id_deleted_at" ON "user" ("tenantId", "deleted_at")`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_user_tenant_id_deleted_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_user_deleted_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_user_username"`);
-        await queryRunner.query(`DROP INDEX "IDX_user_email"`);
-        await queryRunner.query(`DROP INDEX "IDX_user_tenant_id"`);
-        await queryRunner.query(`DROP TABLE "user"`);
-        await queryRunner.query(`DROP TYPE "user_role_enum"`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP INDEX "IDX_user_tenant_id_deleted_at"`);
+    await queryRunner.query(`DROP INDEX "IDX_user_deleted_at"`);
+    await queryRunner.query(`DROP INDEX "IDX_user_username"`);
+    await queryRunner.query(`DROP INDEX "IDX_user_email"`);
+    await queryRunner.query(`DROP INDEX "IDX_user_tenant_id"`);
+    await queryRunner.query(`DROP TABLE "user"`);
+    await queryRunner.query(`DROP TYPE "user_role_enum"`);
+  }
 }
