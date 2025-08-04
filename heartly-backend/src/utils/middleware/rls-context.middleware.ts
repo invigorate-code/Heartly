@@ -42,7 +42,7 @@ export class RlsContextMiddleware implements NestMiddleware {
             );
 
             // Store the query runner in the request for cleanup
-            req['rlsQueryRunner'] = queryRunner;
+            req.rlsQueryRunner = queryRunner;
           } catch (error) {
             await queryRunner.release();
             throw error;
