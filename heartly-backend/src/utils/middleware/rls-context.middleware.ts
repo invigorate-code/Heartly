@@ -25,26 +25,20 @@ export class RlsContextMiddleware implements NestMiddleware {
 
         if (tenantId && userRole) {
           // Set database context for RLS policies
-          const queryRunner = this.dataSource.createQueryRunner();
-
           try {
-            await queryRunner.query(
+            await this.dataSource.query(
               `SELECT set_config('app.tenant_id', $1, true)`,
               [tenantId],
             );
-            await queryRunner.query(
+            await this.dataSource.query(
               `SELECT set_config('app.user_id', $1, true)`,
               [userId],
             );
-            await queryRunner.query(
+            await this.dataSource.query(
               `SELECT set_config('app.user_role', $1, true)`,
               [userRole],
             );
-
-            // Store the query runner in the request for cleanup
-            req.rlsQueryRunner = queryRunner;
           } catch (error) {
-            await queryRunner.release();
             throw error;
           }
         }
