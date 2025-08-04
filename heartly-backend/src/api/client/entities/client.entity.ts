@@ -17,9 +17,15 @@ export class ClientEntity extends AbstractEntity {
   @Column({ nullable: false })
   uci!: string;
 
+  @Column('uuid')
+  facilityId!: string;
+
   @ManyToOne(() => FacilityEntity, { nullable: false })
   @JoinColumn({ name: 'facilityId' })
   facility!: FacilityEntity;
+
+  @Column('uuid')
+  tenantId!: string;
 
   @ManyToOne(() => TenantEntity, { nullable: false })
   @JoinColumn({ name: 'tenantId' })

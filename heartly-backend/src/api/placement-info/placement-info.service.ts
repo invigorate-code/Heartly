@@ -2,6 +2,7 @@ import { MetadataEntity } from '@/common/entities/form-metadata.entity';
 import { BaseTenantService } from '@/common/services/base-tenant.service';
 import { FormFieldContributionService } from '@/common/services/form-field-contribution.service';
 import { FormRegistryService } from '@/common/services/form-registry.service';
+import { RlsContextService } from '@/common/services/rls-context.service';
 import { FORM_TYPE } from '@/constants/form-types.constant';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -41,8 +42,9 @@ export class PlacementInfoService extends BaseTenantService {
     private readonly clientRepository: Repository<ClientEntity>,
     private readonly phiService: PHIService,
     private readonly formRegistryService: FormRegistryService,
+    rlsContextService: RlsContextService,
   ) {
-    super();
+    super(rlsContextService);
   }
 
   async findOne(id: string): Promise<PlacementInfoEntity> {
