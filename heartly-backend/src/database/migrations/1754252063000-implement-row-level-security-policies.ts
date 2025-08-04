@@ -105,19 +105,19 @@ export class ImplementRowLevelSecurityPolicies1754252063000
 
     // Create indexes to optimize RLS policy performance
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_user_tenant_id" ON "user" ("tenantId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_user_tenant_id" ON "user" ("tenantId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_client_tenant_facility" ON "client" ("tenantId", "facilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_client_tenant_facility" ON "client" ("tenantId", "facilityId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_facility_tenant_id" ON "facility" ("tenantId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_facility_tenant_id" ON "facility" ("tenantId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_audit_log_tenant_facility" ON "user_action_audit_log" ("targetTenantId", "targetFacilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_audit_log_tenant_facility" ON "user_action_audit_log" ("targetTenantId", "targetFacilityId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_facility_staff_user_facility" ON "facility_staff" ("userId", "facilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_facility_staff_user_facility" ON "facility_staff" ("userId", "facilityId")`,
     );
   }
 
