@@ -28,7 +28,7 @@ export class RlsContextMiddleware implements NestMiddleware {
         const userRole = userPayload.role;
 
         if (tenantId && userRole) {
-          // Set database context for RLS policies
+          // Set database context for RLS policies and audit logging
           try {
             await this.dataSource.query(
               `SELECT set_config('app.tenant_id', $1, true)`,
@@ -41,6 +41,24 @@ export class RlsContextMiddleware implements NestMiddleware {
             await this.dataSource.query(
               `SELECT set_config('app.user_role', $1, true)`,
               [userRole],
+            );
+
+            // Set additional context for audit logging
+            const sessionId = session.getHandle();
+            const ipAddress = req.ip || req.connection?.remoteAddress || 'unknown';
+            const userAgent = req.get('User-Agent') || 'unknown';
+
+            await this.dataSource.query(
+              `SELECT set_config('app.session_id', $1, true)`,
+              [sessionId],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.ip_address', $1, true)`,
+              [ipAddress],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.user_agent', $1, true)`,
+              [userAgent],
             );
           } catch (error) {
             throw error;
