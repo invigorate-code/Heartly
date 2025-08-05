@@ -1,15 +1,15 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder, In } from 'typeorm';
-import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
-import { UserEntity } from '../user/entities/user.entity';
-import { FacilityEntity } from '../facility/entities/facility.entity';
+import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import {
-  GetAuditLogsDto,
-  ExportAuditLogsDto,
   AuditLogResponseDto,
   AuditLogSummaryDto,
+  ExportAuditLogsDto,
+  GetAuditLogsDto,
 } from '../../common/dto/audit-log.dto';
+import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
+import { FacilityEntity } from '../facility/entities/facility.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuditLogService {
@@ -25,7 +25,12 @@ export class AuditLogService {
   async getAuditLogs(
     query: GetAuditLogsDto,
     currentUser: UserEntity,
-  ): Promise<{ logs: AuditLogResponseDto[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    logs: AuditLogResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     // Check permissions
     this.validateAccessPermissions(currentUser);
 
@@ -62,7 +67,9 @@ export class AuditLogService {
   ): Promise<any[]> {
     // Check permissions - only OWNER and ADMIN can export
     if (!['OWNER', 'ADMIN'].includes(currentUser.role)) {
-      throw new ForbiddenException('Insufficient permissions to export audit logs');
+      throw new ForbiddenException(
+        'Insufficient permissions to export audit logs',
+      );
     }
 
     // Use the database function for compliance export
@@ -116,18 +123,18 @@ export class AuditLogService {
     // Calculate summary statistics
     const totalLogs = logs.length;
     const operationCounts = {
-      INSERT: logs.filter(log => log.operation === 'INSERT').length,
-      UPDATE: logs.filter(log => log.operation === 'UPDATE').length,
-      DELETE: logs.filter(log => log.operation === 'DELETE').length,
+      INSERT: logs.filter((log) => log.operation === 'INSERT').length,
+      UPDATE: logs.filter((log) => log.operation === 'UPDATE').length,
+      DELETE: logs.filter((log) => log.operation === 'DELETE').length,
     };
 
     const tableCounts: Record<string, number> = {};
     const userCounts: Record<string, number> = {};
 
-    logs.forEach(log => {
+    logs.forEach((log) => {
       // Count by table
       tableCounts[log.tableName] = (tableCounts[log.tableName] || 0) + 1;
-      
+
       // Count by user
       if (log.userId) {
         userCounts[log.userId] = (userCounts[log.userId] || 0) + 1;
@@ -135,7 +142,9 @@ export class AuditLogService {
     });
 
     const dateRange = {
-      start: startDate || (logs.length > 0 ? logs[logs.length - 1].timestamp : new Date()),
+      start:
+        startDate ||
+        (logs.length > 0 ? logs[logs.length - 1].timestamp : new Date()),
       end: endDate || (logs.length > 0 ? logs[0].timestamp : new Date()),
     };
 
@@ -164,7 +173,9 @@ export class AuditLogService {
 
   private validateAccessPermissions(user: UserEntity): void {
     if (!['OWNER', 'ADMIN', 'STAFF'].includes(user.role)) {
-      throw new ForbiddenException('Insufficient permissions to access audit logs');
+      throw new ForbiddenException(
+        'Insufficient permissions to access audit logs',
+      );
     }
   }
 
@@ -238,29 +249,37 @@ export class AuditLogService {
     }
   }
 
-  private async transformToResponseDto(logs: DataAuditLog[]): Promise<AuditLogResponseDto[]> {
-    const userIds = [...new Set(logs.map(log => log.userId).filter(Boolean))];
-    const facilityIds = [...new Set(logs.map(log => log.facilityId).filter(Boolean))];
+  private async transformToResponseDto(
+    logs: DataAuditLog[],
+  ): Promise<AuditLogResponseDto[]> {
+    const userIds = [...new Set(logs.map((log) => log.userId).filter(Boolean))];
+    const facilityIds = [
+      ...new Set(logs.map((log) => log.facilityId).filter(Boolean)),
+    ];
 
     // Fetch related data in batches for performance
-    const users = userIds.length > 0 
-      ? await this.userRepository.find({ 
-          where: { id: In(userIds) },
-          select: ['id', 'email'] 
-        })
-      : [];
-    
-    const facilities = facilityIds.length > 0 
-      ? await this.facilityRepository.find({ 
-          where: { id: In(facilityIds) },
-          select: ['id', 'name'] 
-        })
-      : [];
+    const users =
+      userIds.length > 0
+        ? await this.userRepository.find({
+            where: { id: In(userIds) },
+            select: ['id', 'email'],
+          })
+        : [];
 
-    const userMap = new Map(users.map(user => [user.id, user]));
-    const facilityMap = new Map(facilities.map(facility => [facility.id, facility]));
+    const facilities =
+      facilityIds.length > 0
+        ? await this.facilityRepository.find({
+            where: { id: In(facilityIds) },
+            select: ['id', 'name'],
+          })
+        : [];
 
-    return logs.map(log => ({
+    const userMap = new Map(users.map((user) => [user.id, user]));
+    const facilityMap = new Map(
+      facilities.map((facility) => [facility.id, facility]),
+    );
+
+    return logs.map((log) => ({
       id: log.id,
       tableName: log.tableName,
       operation: log.operation,
@@ -269,7 +288,9 @@ export class AuditLogService {
       userEmail: log.userId ? userMap.get(log.userId)?.email : undefined,
       tenantId: log.tenantId,
       facilityId: log.facilityId,
-      facilityName: log.facilityId ? facilityMap.get(log.facilityId)?.name : undefined,
+      facilityName: log.facilityId
+        ? facilityMap.get(log.facilityId)?.name
+        : undefined,
       timestamp: log.timestamp,
       oldValues: log.oldValues,
       newValues: log.newValues,

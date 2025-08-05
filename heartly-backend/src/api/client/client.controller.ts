@@ -6,8 +6,8 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -16,7 +16,6 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import EmailVerification from 'supertokens-node/recipe/emailverification';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/createClient.req.dto';
 import { ClientResDto } from './dto/getClient.res.dto';
@@ -38,9 +37,11 @@ export class ClientController {
     // Check email verification manually
     const payload = session.getAccessTokenPayload();
     const isEmailVerified = payload['st-ev']?.v || false;
-    
+
     if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required for client creation');
+      throw new UnauthorizedException(
+        'Email verification required for client creation',
+      );
     }
 
     return await this.clientService.createClient(client, session);

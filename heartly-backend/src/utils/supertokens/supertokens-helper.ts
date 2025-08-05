@@ -111,7 +111,7 @@ export async function getUserTenantContext(
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
-  
+
   const userRepository = AppDataSource.getRepository(UserEntity);
   const user = await userRepository.findOne({
     where: { id: userId },

@@ -221,16 +221,18 @@ export function IsAddress(validationOptions?: ValidationOptions) {
 export class IsBirthDateConstraint implements ValidatorConstraintInterface {
   validate(birthDate: Date, args: ValidationArguments) {
     if (!birthDate) return false; // Birth date is required
-    
+
     const date = new Date(birthDate);
     const today = new Date();
     const minDate = new Date('1900-01-01');
-    
+
     // Must be a valid date, not in future, and not before 1900
-    return date instanceof Date && 
-           !isNaN(date.getTime()) && 
-           date <= today && 
-           date >= minDate;
+    return (
+      date instanceof Date &&
+      !isNaN(date.getTime()) &&
+      date <= today &&
+      date >= minDate
+    );
   }
 
   defaultMessage(args: ValidationArguments) {
@@ -252,14 +254,16 @@ export function IsBirthDate(validationOptions?: ValidationOptions) {
 
 // ===== Financial Amount Validation =====
 @ValidatorConstraint({ name: 'isFinancialAmount', async: false })
-export class IsFinancialAmountConstraint implements ValidatorConstraintInterface {
+export class IsFinancialAmountConstraint
+  implements ValidatorConstraintInterface
+{
   validate(amount: number, args: ValidationArguments) {
     if (amount === null || amount === undefined) return true; // Allow null
-    
+
     // Must be within precision range: -999999.99 to 999999.99
-    return amount >= -999999.99 && 
-           amount <= 999999.99 && 
-           Number.isFinite(amount);
+    return (
+      amount >= -999999.99 && amount <= 999999.99 && Number.isFinite(amount)
+    );
   }
 
   defaultMessage(args: ValidationArguments) {

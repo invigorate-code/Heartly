@@ -1,30 +1,35 @@
 import {
+  Body,
   Controller,
   Get,
-  Query,
-  UseGuards,
   Post,
-  Body,
+  Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { AuditLogService } from './audit-log.service';
-import { SessionContainer } from 'supertokens-node/recipe/session';
 import {
   Session,
   SuperTokensAuthGuard,
   VerifySession,
 } from 'supertokens-nestjs';
-import { UserEntity, UserRole } from '../user/entities/user.entity';
-import { CurrentUser } from '../../decorators/current-user.decorator';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import {
-  GetAuditLogsDto,
-  ExportAuditLogsDto,
   AuditLogResponseDto,
   AuditLogSummaryDto,
+  ExportAuditLogsDto,
+  GetAuditLogsDto,
 } from '../../common/dto/audit-log.dto';
+import { CurrentUser } from '../../decorators/current-user.decorator';
+import { UserEntity, UserRole } from '../user/entities/user.entity';
+import { AuditLogService } from './audit-log.service';
 
 @ApiTags('Audit Logs')
 @ApiBearerAuth()
@@ -82,22 +87,31 @@ export class AuditLogController {
     // Set additional context for audit logging
     await this.setAuditContext(session, req);
 
-    const data = await this.auditLogService.exportAuditLogs(exportDto, currentUser);
+    const data = await this.auditLogService.exportAuditLogs(
+      exportDto,
+      currentUser,
+    );
 
     if (exportDto.format === 'csv') {
       // Convert to CSV format
       const csv = this.convertToCSV(data);
       const filename = `audit-logs-${exportDto.startDate}-to-${exportDto.endDate}.csv`;
-      
+
       res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`,
+      );
       return res.send(csv);
     } else {
       // Return JSON format
       const filename = `audit-logs-${exportDto.startDate}-to-${exportDto.endDate}.json`;
-      
+
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`,
+      );
       return res.json({
         exportDate: new Date().toISOString(),
         dateRange: {
@@ -188,13 +202,14 @@ export class AuditLogController {
     const csvRows = [headers.join(',')];
 
     for (const row of data) {
-      const values = headers.map(header => {
+      const values = headers.map((header) => {
         const value = row[header];
         if (value === null || value === undefined) return '';
-        if (typeof value === 'object') return JSON.stringify(value).replace(/"/g, '""');
+        if (typeof value === 'object')
+          return JSON.stringify(value).replace(/"/g, '""');
         return String(value).replace(/"/g, '""');
       });
-      csvRows.push(values.map(value => `"${value}"`).join(','));
+      csvRows.push(values.map((value) => `"${value}"`).join(','));
     }
 
     return csvRows.join('\n');

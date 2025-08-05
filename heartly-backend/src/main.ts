@@ -18,9 +18,9 @@ import supertokens from 'supertokens-node';
 import { middleware } from 'supertokens-node/framework/express';
 import { AppModule } from './app.module';
 import { type AllConfigType } from './config/config.type';
-import setupSwagger from './utils/setup-swagger';
 import { RlsContextMiddleware } from './utils/middleware/rls-context.middleware';
 import { SessionContextInitMiddleware } from './utils/middleware/session-context-init.middleware';
+import setupSwagger from './utils/setup-swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -62,20 +62,26 @@ async function bootstrap() {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      
+
       // Check if origin is in allowed list
-      const allowedOrigins = Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
-      if (corsOrigin === true || corsOrigin === '*' || allowedOrigins.includes(origin)) {
+      const allowedOrigins = Array.isArray(corsOrigin)
+        ? corsOrigin
+        : [corsOrigin];
+      if (
+        corsOrigin === true ||
+        corsOrigin === '*' ||
+        allowedOrigins.includes(origin)
+      ) {
         return callback(null, true);
       }
-      
+
       // Log the blocked origin for debugging
       console.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     },
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
-      'Content-Type', 
+      'Content-Type',
       'Authorization',
       'X-Requested-With',
       'Accept',
@@ -83,7 +89,7 @@ async function bootstrap() {
       'Cache-Control',
       'Pragma',
       // Add SuperTokens specific headers
-      ...supertokens.getAllCORSHeaders()
+      ...supertokens.getAllCORSHeaders(),
     ],
     credentials: true,
     optionsSuccessStatus: 200, // For legacy browser support

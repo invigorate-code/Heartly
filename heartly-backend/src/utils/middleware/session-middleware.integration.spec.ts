@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DataSource } from 'typeorm';
-import { Request, Response, NextFunction } from 'express';
 import { SessionContextService } from '@/common/services/session-context.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { NextFunction, Request, Response } from 'express';
+import { DataSource } from 'typeorm';
 import { RlsContextMiddleware } from './rls-context.middleware';
 import { SessionContextInitMiddleware } from './session-context-init.middleware';
 
@@ -35,11 +35,14 @@ describe('Session Middleware Integration', () => {
       ],
     }).compile();
 
-    rlsContextMiddleware = module.get<RlsContextMiddleware>(RlsContextMiddleware);
+    rlsContextMiddleware =
+      module.get<RlsContextMiddleware>(RlsContextMiddleware);
     sessionContextInitMiddleware = module.get<SessionContextInitMiddleware>(
-      SessionContextInitMiddleware
+      SessionContextInitMiddleware,
     );
-    sessionContextService = module.get<SessionContextService>(SessionContextService);
+    sessionContextService = module.get<SessionContextService>(
+      SessionContextService,
+    );
 
     // Setup mocks
     mockRequest = {
@@ -70,7 +73,7 @@ describe('Session Middleware Integration', () => {
       await sessionContextInitMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
@@ -85,7 +88,7 @@ describe('Session Middleware Integration', () => {
       await sessionContextInitMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
@@ -94,20 +97,22 @@ describe('Session Middleware Integration', () => {
 
     it('should handle session errors gracefully', async () => {
       const Session = require('supertokens-node/recipe/session').default;
-      Session.getSession = jest.fn().mockRejectedValue(new Error('Session error'));
+      Session.getSession = jest
+        .fn()
+        .mockRejectedValue(new Error('Session error'));
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       await sessionContextInitMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Session context initialization error:',
-        'Session error'
+        'Session error',
       );
 
       consoleWarnSpy.mockRestore();
@@ -134,35 +139,35 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
-      
+
       // Verify database context was set
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.tenant_id', $1, true)`,
-        ['test-tenant-id']
+        ['test-tenant-id'],
       );
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.user_id', $1, true)`,
-        ['test-user-id']
+        ['test-user-id'],
       );
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.user_role', $1, true)`,
-        ['ADMIN']
+        ['ADMIN'],
       );
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.session_id', $1, true)`,
-        ['test-session-handle']
+        ['test-session-handle'],
       );
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.ip_address', $1, true)`,
-        ['127.0.0.1']
+        ['127.0.0.1'],
       );
       expect(mockDataSource.query).toHaveBeenCalledWith(
         `SELECT set_config('app.user_agent', $1, true)`,
-        ['test-user-agent']
+        ['test-user-agent'],
       );
     });
 
@@ -173,7 +178,7 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
@@ -182,20 +187,22 @@ describe('Session Middleware Integration', () => {
 
     it('should handle session errors gracefully', async () => {
       const Session = require('supertokens-node/recipe/session').default;
-      Session.getSession = jest.fn().mockRejectedValue(new Error('Session error'));
+      Session.getSession = jest
+        .fn()
+        .mockRejectedValue(new Error('Session error'));
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'RLS Context Middleware error:',
-        'Session error'
+        'Session error',
       );
       expect(mockDataSource.query).not.toHaveBeenCalled();
 
@@ -221,8 +228,8 @@ describe('Session Middleware Integration', () => {
         rlsContextMiddleware.use(
           mockRequest as Request,
           mockResponse as Response,
-          mockNext
-        )
+          mockNext,
+        ),
       ).rejects.toThrow('Database error');
 
       expect(mockNext).not.toHaveBeenCalled();
@@ -244,7 +251,7 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
@@ -272,7 +279,7 @@ describe('Session Middleware Integration', () => {
       await sessionContextInitMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(sessionContextService.isAuthenticated()).toBe(true);
@@ -284,7 +291,7 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
@@ -293,7 +300,8 @@ describe('Session Middleware Integration', () => {
 
     it('should handle error in first middleware without affecting second', async () => {
       const Session = require('supertokens-node/recipe/session').default;
-      Session.getSession = jest.fn()
+      Session.getSession = jest
+        .fn()
         .mockRejectedValueOnce(new Error('Init error'))
         .mockResolvedValueOnce(null);
 
@@ -303,13 +311,13 @@ describe('Session Middleware Integration', () => {
       await sessionContextInitMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Session context initialization error:',
-        'Init error'
+        'Init error',
       );
 
       mockNext.mockClear();
@@ -318,7 +326,7 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(mockNext).toHaveBeenCalled();

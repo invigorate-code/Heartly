@@ -1,7 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { Request } from 'express';
-import Session from 'supertokens-node/recipe/session';
-import { SessionContainer } from 'supertokens-node/recipe/session';
+import Session, { SessionContainer } from 'supertokens-node/recipe/session';
 
 export interface SessionContext {
   userId: string;
@@ -38,7 +37,7 @@ export class SessionContextService {
       if (this.session) {
         const userId = this.session.getUserId();
         const payload = this.session.getAccessTokenPayload();
-        
+
         this.sessionContext = {
           userId,
           tenantId: payload.tenantId || '',
@@ -138,8 +137,10 @@ export class SessionContextService {
    * Check if user has any of the specified roles
    */
   hasAnyRole(roles: string[]): boolean {
-    return this.isAuthenticated() && 
-           this.sessionContext !== null &&
-           roles.includes(this.sessionContext.role);
+    return (
+      this.isAuthenticated() &&
+      this.sessionContext !== null &&
+      roles.includes(this.sessionContext.role)
+    );
   }
 }

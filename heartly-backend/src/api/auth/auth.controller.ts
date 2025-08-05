@@ -1,5 +1,5 @@
 import { ApiPublic } from '@/decorators/http.decorators';
-import { Body, Controller, Get, Post, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import {
@@ -9,9 +9,7 @@ import {
 } from 'supertokens-nestjs';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import EmailVerification from 'supertokens-node/recipe/emailverification';
-import SuperTokensSession, {
-  SessionContainer,
-} from 'supertokens-node/recipe/session';
+import SessionNode, { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 @ApiTags('auth')
@@ -24,50 +22,55 @@ export class AuthController {
 
   @Get()
   @ApiPublic({ summary: 'auth test' })
-  async test(@Session() session: SessionContainer) {
+  async test() {
     return 'test';
   }
 
   @UseGuards(SuperTokensAuthGuard) // Will throw session not found error if missing supertoken auth guard decorator
   @Post('/getUserSession')
-  @VerifySession()
+  @VerifySession() // SuperTokens automatically enforces email verification in REQUIRED mode
   async getUserSession(@Session() session: SessionContainer) {
-    // Check email verification manually since it's now OPTIONAL
-    const payload = session.getAccessTokenPayload();
-    const isEmailVerified = payload['st-ev']?.v || false;
-    
-    if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required');
-    }
-
-    const recipeUserId = session.getRecipeUserId();
     const user = await this.userService.findById(session.getUserId());
     return {
       session: session.getAccessTokenPayload(),
       userProfile: user,
     };
   }
-  @UseGuards(SuperTokensAuthGuard)
   @Post('/getBasicUserInfo')
   @ApiPublic({
-    summary: 'Get basic user info without email verification requirement',
+    summary:
+      'Get basic user info for unverified users during verification process',
   })
-  @VerifySession() // No overrides needed since EmailVerification is now OPTIONAL
-  async getBasicUserInfo(@Session() session: SessionContainer) {
+  async getBasicUserInfo(@Req() req: Request) {
     try {
-      console.log('getBasicUserInfo: Session found for userId:', session.getUserId());
+      // Try to get session but don't require it
+      const session = await SessionNode.getSession(req, undefined, {
+        sessionRequired: false,
+      });
 
-      // Get basic info from session payload
-      const payload = session.getAccessTokenPayload();
-      console.log('getBasicUserInfo: Session payload:', payload);
+      if (session) {
+        console.log(
+          'getBasicUserInfo: Session found for userId:',
+          session.getUserId(),
+        );
 
-      return {
-        status: 'OK',
-        userId: session.getUserId(),
-        email: payload.email || '',
-        isEmailVerified: payload['st-ev']?.v || false,
-        tenantIds: [payload.tId || 'public'],
-      };
+        // Get basic info from session payload
+        const payload = session.getAccessTokenPayload();
+        console.log('getBasicUserInfo: Session payload:', payload);
+
+        return {
+          status: 'OK',
+          userId: session.getUserId(),
+          email: payload.email || '',
+          isEmailVerified: payload['st-ev']?.v || false,
+          tenantIds: [payload.tId || 'public'],
+        };
+      } else {
+        return {
+          status: 'NO_SESSION',
+          message: 'No active session found',
+        };
+      }
     } catch (error) {
       console.error('Error in getBasicUserInfo:', error);
       return {
@@ -80,16 +83,17 @@ export class AuthController {
   @UseGuards(SuperTokensAuthGuard)
   @Get('/user/:userId')
   @VerifySession({
-    roles: ['admin'],
+    roles: ['admin'], // SuperTokens automatically enforces email verification in REQUIRED mode
   })
-  async deleteUser(@Session() session: SessionContainer) {
-    // Check email verification manually
-    const payload = session.getAccessTokenPayload();
-    const isEmailVerified = payload['st-ev']?.v || false;
-    
-    if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required for admin operations');
-    }
+  async deleteUser(@Param('userId') userId: string) {
+    // TODO: Implement user deletion logic in appropriate story
+    // This endpoint exists but is not fully implemented yet
+    // Email verification is automatically enforced by SuperTokens REQUIRED mode
+    return {
+      status: 'NOT_IMPLEMENTED',
+      message: 'User deletion functionality to be implemented in future story',
+      userId,
+    };
   }
 
   @Post('/reset-password')
@@ -123,14 +127,27 @@ export class AuthController {
     }
   }
 
-  @UseGuards(SuperTokensAuthGuard)
   @Post('/resendVerificationEmail')
-  @VerifySession() // No email verification required - this is for unverified users to get verification emails
+  @ApiPublic({
+    summary: 'Resend verification email for unverified users',
+  })
   async resendVerificationEmail(
-    @Session() session: SessionContainer,
+    @Req() req: Request,
     @Body() body: { email: string },
   ) {
     try {
+      // Try to get session for unverified users
+      const session = await SessionNode.getSession(req, undefined, {
+        sessionRequired: false,
+      });
+
+      if (!session) {
+        return {
+          status: 'ERROR',
+          message: 'Session required to resend verification email',
+        };
+      }
+
       const linkResponse = await EmailVerification.createEmailVerificationLink(
         'public',
         session.getRecipeUserId(),
@@ -139,6 +156,10 @@ export class AuthController {
 
       if (linkResponse.status === 'OK') {
         console.log(linkResponse.link);
+        return {
+          status: 'OK',
+          message: 'Verification email sent successfully',
+        };
       } else {
         console.log("user's email is already verified");
         return {
@@ -148,6 +169,10 @@ export class AuthController {
       }
     } catch (err) {
       console.error(err);
+      return {
+        status: 'ERROR',
+        message: 'Failed to send verification email',
+      };
     }
   }
 }

@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  RlsContextCleanupMiddleware,
+  RlsContextMiddleware,
+} from '../utils/middleware/rls-context.middleware';
+import { SessionContextInitMiddleware } from '../utils/middleware/session-context-init.middleware';
 import { FormFieldContributionEntity } from './entities/form-field-contribution.entity';
 import { MetadataEntity } from './entities/form-metadata.entity';
 import { BaseTenantService } from './services/base-tenant.service';
@@ -7,8 +12,6 @@ import { FormFieldContributionService } from './services/form-field-contribution
 import { FormRegistryService } from './services/form-registry.service';
 import { RlsContextService } from './services/rls-context.service';
 import { SessionContextService } from './services/session-context.service';
-import { RlsContextMiddleware, RlsContextCleanupMiddleware } from '../utils/middleware/rls-context.middleware';
-import { SessionContextInitMiddleware } from '../utils/middleware/session-context-init.middleware';
 
 @Module({
   imports: [

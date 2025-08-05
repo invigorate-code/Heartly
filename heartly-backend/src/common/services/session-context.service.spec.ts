@@ -15,7 +15,9 @@ describe('SessionContextService', () => {
       providers: [SessionContextService],
     }).compile();
 
-    service = await module.resolve<SessionContextService>(SessionContextService);
+    service = await module.resolve<SessionContextService>(
+      SessionContextService,
+    );
 
     // Create mock session
     mockSession = {
@@ -66,7 +68,9 @@ describe('SessionContextService', () => {
 
     it('should handle session errors gracefully', async () => {
       const Session = require('supertokens-node/recipe/session').default;
-      Session.getSession = jest.fn().mockRejectedValue(new Error('Session error'));
+      Session.getSession = jest
+        .fn()
+        .mockRejectedValue(new Error('Session error'));
 
       const mockRequest = {} as Request;
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -76,7 +80,7 @@ describe('SessionContextService', () => {
       expect(service.isAuthenticated()).toBe(false);
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Failed to initialize session context:',
-        'Session error'
+        'Session error',
       );
 
       consoleWarnSpy.mockRestore();
@@ -139,7 +143,9 @@ describe('SessionContextService', () => {
     });
 
     it('should throw error when accessing session handle unauthenticated', () => {
-      expect(() => service.getSessionHandle()).toThrow('User not authenticated');
+      expect(() => service.getSessionHandle()).toThrow(
+        'User not authenticated',
+      );
     });
   });
 
