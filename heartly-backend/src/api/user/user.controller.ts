@@ -7,6 +7,7 @@ import {
   VerifySession,
 } from 'supertokens-nestjs';
 import { SessionContainer } from 'supertokens-node/recipe/session';
+import EmailVerification from 'supertokens-node/recipe/emailverification';
 import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { CreateUserDto } from './dto/create-user.req.dto';
 import { UserRole } from './entities/user.entity';
@@ -32,6 +33,13 @@ export class UserController {
     @Session() session: SessionContainer,
     @Body() body: CreateUserDto,
   ) {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+    
+    if (!isEmailVerified) {
+      throw new Error('Email verification required for user creation');
+    }
     const { metadata } = await UserMetadata.getUserMetadata(
       session.getUserId(),
     );
@@ -46,6 +54,13 @@ export class UserController {
     @Session() session: SessionContainer,
     @Body() body: { userId: string },
   ) {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+    
+    if (!isEmailVerified) {
+      throw new Error('Email verification required for accessing user data');
+    }
     const user = await this.userService.findById(body.userId);
     return user;
   }

@@ -1,6 +1,7 @@
 import { ApiPublic } from '@/decorators/http.decorators';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import {
   Session,
   SuperTokensAuthGuard,
@@ -8,7 +9,9 @@ import {
 } from 'supertokens-nestjs';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import EmailVerification from 'supertokens-node/recipe/emailverification';
-import { SessionContainer } from 'supertokens-node/recipe/session';
+import SuperTokensSession, {
+  SessionContainer,
+} from 'supertokens-node/recipe/session';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 @ApiTags('auth')
@@ -29,34 +32,49 @@ export class AuthController {
   @Post('/getUserSession')
   @VerifySession()
   async getUserSession(@Session() session: SessionContainer) {
+    // Check email verification manually since it's now OPTIONAL
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+    
+    if (!isEmailVerified) {
+      throw new Error('Email verification required');
+    }
+
     const recipeUserId = session.getRecipeUserId();
-    // Email verification is already enforced by @VerifySession() when EmailVerification mode is REQUIRED
     const user = await this.userService.findById(session.getUserId());
     return {
       session: session.getAccessTokenPayload(),
       userProfile: user,
     };
   }
-
   @UseGuards(SuperTokensAuthGuard)
   @Post('/getBasicUserInfo')
-  // No @VerifySession() here - this allows unverified users
+  @ApiPublic({
+    summary: 'Get basic user info without email verification requirement',
+  })
+  @VerifySession() // No overrides needed since EmailVerification is now OPTIONAL
   async getBasicUserInfo(@Session() session: SessionContainer) {
-    const userId = session.getUserId();
-    const userInfo = await this.authService.getUserById(userId);
+    try {
+      console.log('getBasicUserInfo: Session found for userId:', session.getUserId());
 
-    // Extract email and verification status from user info
-    const emailLoginMethod = userInfo.loginMethods.find(
-      (method) => method.recipeId === 'emailpassword',
-    );
+      // Get basic info from session payload
+      const payload = session.getAccessTokenPayload();
+      console.log('getBasicUserInfo: Session payload:', payload);
 
-    return {
-      status: 'OK',
-      userId,
-      email: emailLoginMethod?.email || '',
-      isEmailVerified: emailLoginMethod?.verified || false,
-      tenantIds: userInfo.tenantIds,
-    };
+      return {
+        status: 'OK',
+        userId: session.getUserId(),
+        email: payload.email || '',
+        isEmailVerified: payload['st-ev']?.v || false,
+        tenantIds: [payload.tId || 'public'],
+      };
+    } catch (error) {
+      console.error('Error in getBasicUserInfo:', error);
+      return {
+        status: 'ERROR',
+        message: 'Failed to get user information',
+      };
+    }
   }
 
   @UseGuards(SuperTokensAuthGuard)
@@ -64,7 +82,15 @@ export class AuthController {
   @VerifySession({
     roles: ['admin'],
   })
-  async deleteUser(@Session() session: SessionContainer) {}
+  async deleteUser(@Session() session: SessionContainer) {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+    
+    if (!isEmailVerified) {
+      throw new Error('Email verification required for admin operations');
+    }
+  }
 
   @Post('/reset-password')
   async createResetPasswordLink(
@@ -99,7 +125,7 @@ export class AuthController {
 
   @UseGuards(SuperTokensAuthGuard)
   @Post('/resendVerificationEmail')
-  @VerifySession()
+  @VerifySession() // No email verification required - this is for unverified users to get verification emails
   async resendVerificationEmail(
     @Session() session: SessionContainer,
     @Body() body: { email: string },

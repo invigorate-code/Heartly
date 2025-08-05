@@ -13,17 +13,17 @@ export class RlsContextMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Check if user is authenticated
-      const session = await Session.getSessionWithoutRequestResponse(
-        req.headers.authorization?.replace('Bearer ', '') || '',
-      );
+      // Check if user is authenticated using SuperTokens session
+      const session = await Session.getSession(req, res, {
+        sessionRequired: false, // Don't throw error for unauthenticated requests
+      });
 
       if (session) {
         // Get user information from session payload
         const userId = session.getUserId();
         const userPayload = session.getAccessTokenPayload();
 
-        // Extract tenant and role information
+        // Extract tenant and role information from the enhanced session payload
         const tenantId = userPayload.tenantId;
         const userRole = userPayload.role;
 

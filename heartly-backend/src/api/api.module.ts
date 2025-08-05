@@ -8,9 +8,7 @@ import { FormFieldContributionModule } from './form-field-contribution/form-fiel
 import { HealthModule } from './health/health.module';
 import { PlacementInfoModule } from './placement-info/placement-info.module';
 import { TenantModule } from './tenant/tenant.module';
-import { UserActionAuditLogController } from './user-action-audit-log/user-action-audit-log.controller';
 import { UserActionAuditLogModule } from './user-action-audit-log/user-action-audit-log.module';
-import { UserActionAuditLogService } from './user-action-audit-log/user-action-audit-log.service';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -21,13 +19,12 @@ import { UserModule } from './user/user.module';
     TenantModule,
     UserModule,
     ClientModule,
-    UserActionAuditLogModule,
+    UserActionAuditLogModule, // The module itself handles providers and controllers
     AuditLogModule,
     PHIModule,
     PlacementInfoModule,
     FormFieldContributionModule,
   ],
-  providers: [UserActionAuditLogService],
-  controllers: [UserActionAuditLogController],
+  // Removed duplicate providers and controllers - they're handled by UserActionAuditLogModule
 })
 export class ApiModule {}
