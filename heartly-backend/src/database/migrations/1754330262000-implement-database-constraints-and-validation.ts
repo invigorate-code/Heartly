@@ -70,15 +70,15 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // Add phone number format validation
     await queryRunner.query(`
       ALTER TABLE "user" ADD CONSTRAINT "CHK_user_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\\+?[1-9]\\d{1,14}$')
+      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\\+?[1-9]\\d{1,14}$')
+      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\\+?[1-9]\\d{1,14}$')
+      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
     `);
 
     // 2.2 Add email fields where missing and improve validation
