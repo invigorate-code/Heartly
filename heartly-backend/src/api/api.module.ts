@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PHIModule } from 'src/phi/phi.module';
+import { AuditLogModule } from './audit-log/audit-log.module';
 import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
 import { FacilityModule } from './facility/facility.module';
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     ClientModule,
     UserActionAuditLogModule,
+    AuditLogModule,
     PHIModule,
     PlacementInfoModule,
     FormFieldContributionModule,
