@@ -50,7 +50,8 @@ export class CreateFacilityDto {
   city: string;
 
   @ApiProperty({
-    description: 'State code where the facility is located (2 uppercase letters)',
+    description:
+      'State code where the facility is located (2 uppercase letters)',
     example: 'CA',
   })
   @Transform(({ value }) => value?.toUpperCase())

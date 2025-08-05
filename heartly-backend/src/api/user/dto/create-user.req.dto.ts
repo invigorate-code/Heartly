@@ -1,8 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Uuid } from '@/common/types/common.type';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
+import {
+  IsPersonName,
+  IsPhoneNumber,
+} from '../../../common/validators/business-rules.validator';
 import { UserRole } from '../entities/user.entity';
-import { IsPersonName, IsPhoneNumber } from '../../../common/validators/business-rules.validator';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',

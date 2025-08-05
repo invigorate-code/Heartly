@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
-import { 
-  IsBirthDate, 
-  IsPersonName, 
-  IsPhoneNumber, 
-  IsUciFormat 
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import {
+  IsBirthDate,
+  IsPersonName,
+  IsPhoneNumber,
+  IsUciFormat,
 } from '../../../common/validators/business-rules.validator';
 
 export enum ClientStatus {
@@ -41,7 +48,8 @@ export class CreateClientDto {
   birthDate: Date;
 
   @ApiProperty({
-    description: 'Unique Client Identifier (UCI) - 6-20 uppercase alphanumeric characters',
+    description:
+      'Unique Client Identifier (UCI) - 6-20 uppercase alphanumeric characters',
     example: 'CLIENT123456',
   })
   @Transform(({ value }) => value?.toUpperCase())

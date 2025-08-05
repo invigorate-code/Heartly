@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
 
@@ -36,12 +36,14 @@ describe('Database Constraints and Validation (e2e)', () => {
             '+1234567890'
           ) RETURNING id
         `);
-        
+
         expect(result).toHaveLength(1);
         expect(result[0].id).toBeDefined();
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject invalid phone number format', async () => {
@@ -57,7 +59,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               (SELECT id FROM "tenant" LIMIT 1), 
               'invalid-phone'
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
@@ -76,11 +78,13 @@ describe('Database Constraints and Validation (e2e)', () => {
             'jane.smith@example.com'
           ) RETURNING id
         `);
-        
+
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject invalid email format', async () => {
@@ -96,7 +100,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               (SELECT id FROM "tenant" LIMIT 1), 
               'invalid-email'
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
@@ -114,11 +118,13 @@ describe('Database Constraints and Validation (e2e)', () => {
             (SELECT id FROM "tenant" LIMIT 1)
           ) RETURNING id
         `);
-        
+
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject names with invalid characters', async () => {
@@ -133,17 +139,20 @@ describe('Database Constraints and Validation (e2e)', () => {
               'STAFF', 
               (SELECT id FROM "tenant" LIMIT 1)
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
 
     describe('Tenant-Scoped Uniqueness', () => {
       it('should allow same email in different tenants', async () => {
-        const tenants = await dataSource.query(`SELECT id FROM "tenant" LIMIT 2`);
+        const tenants = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 2`,
+        );
         expect(tenants).toHaveLength(2);
 
-        const user1 = await dataSource.query(`
+        const user1 = await dataSource.query(
+          `
           INSERT INTO "user" ("id", "firstName", "lastName", "username", "role", "tenantId", "email")
           VALUES (
             uuid_generate_v4(), 
@@ -154,9 +163,12 @@ describe('Database Constraints and Validation (e2e)', () => {
             $1, 
             'same@example.com'
           ) RETURNING id
-        `, [tenants[0].id]);
+        `,
+          [tenants[0].id],
+        );
 
-        const user2 = await dataSource.query(`
+        const user2 = await dataSource.query(
+          `
           INSERT INTO "user" ("id", "firstName", "lastName", "username", "role", "tenantId", "email")
           VALUES (
             uuid_generate_v4(), 
@@ -167,19 +179,27 @@ describe('Database Constraints and Validation (e2e)', () => {
             $1, 
             'same@example.com'
           ) RETURNING id
-        `, [tenants[1].id]);
+        `,
+          [tenants[1].id],
+        );
 
         expect(user1).toHaveLength(1);
         expect(user2).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id IN ($1, $2)`, [user1[0].id, user2[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id IN ($1, $2)`, [
+          user1[0].id,
+          user2[0].id,
+        ]);
       });
 
       it('should reject duplicate email within same tenant', async () => {
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
-        
-        const user1 = await dataSource.query(`
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
+
+        const user1 = await dataSource.query(
+          `
           INSERT INTO "user" ("id", "firstName", "lastName", "username", "role", "tenantId", "email")
           VALUES (
             uuid_generate_v4(), 
@@ -190,10 +210,13 @@ describe('Database Constraints and Validation (e2e)', () => {
             $1, 
             'duplicate@example.com'
           ) RETURNING id
-        `, [tenant[0].id]);
+        `,
+          [tenant[0].id],
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "user" ("id", "firstName", "lastName", "username", "role", "tenantId", "email")
             VALUES (
               uuid_generate_v4(), 
@@ -204,11 +227,15 @@ describe('Database Constraints and Validation (e2e)', () => {
               $1, 
               'duplicate@example.com'
             )
-          `, [tenant[0].id])
+          `,
+            [tenant[0].id],
+          ),
         ).rejects.toThrow();
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [user1[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [
+          user1[0].id,
+        ]);
       });
     });
 
@@ -230,7 +257,9 @@ describe('Database Constraints and Validation (e2e)', () => {
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "user" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject onboarding date in the future', async () => {
@@ -246,7 +275,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               (SELECT id FROM "tenant" LIMIT 1), 
               CURRENT_TIMESTAMP + INTERVAL '1 day'
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
@@ -273,7 +302,9 @@ describe('Database Constraints and Validation (e2e)', () => {
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "facility" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "facility" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject invalid ZIP code format', async () => {
@@ -291,7 +322,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               100, 
               50
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
 
@@ -310,16 +341,19 @@ describe('Database Constraints and Validation (e2e)', () => {
               100, 
               50
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
 
     describe('Facility Name Uniqueness', () => {
       it('should allow same facility name in different tenants', async () => {
-        const tenants = await dataSource.query(`SELECT id FROM "tenant" LIMIT 2`);
-        
-        const facility1 = await dataSource.query(`
+        const tenants = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 2`,
+        );
+
+        const facility1 = await dataSource.query(
+          `
           INSERT INTO "facility" ("id", "name", "address", "city", "state", "zip", "tenantId", "projectedClientCount", "roomCount")
           VALUES (
             uuid_generate_v4(), 
@@ -332,9 +366,12 @@ describe('Database Constraints and Validation (e2e)', () => {
             100, 
             50
           ) RETURNING id
-        `, [tenants[0].id]);
+        `,
+          [tenants[0].id],
+        );
 
-        const facility2 = await dataSource.query(`
+        const facility2 = await dataSource.query(
+          `
           INSERT INTO "facility" ("id", "name", "address", "city", "state", "zip", "tenantId", "projectedClientCount", "roomCount")
           VALUES (
             uuid_generate_v4(), 
@@ -347,13 +384,18 @@ describe('Database Constraints and Validation (e2e)', () => {
             100, 
             50
           ) RETURNING id
-        `, [tenants[1].id]);
+        `,
+          [tenants[1].id],
+        );
 
         expect(facility1).toHaveLength(1);
         expect(facility2).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "facility" WHERE id IN ($1, $2)`, [facility1[0].id, facility2[0].id]);
+        await dataSource.query(`DELETE FROM "facility" WHERE id IN ($1, $2)`, [
+          facility1[0].id,
+          facility2[0].id,
+        ]);
       });
     });
 
@@ -373,7 +415,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               -1, 
               50
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
 
@@ -392,7 +434,7 @@ describe('Database Constraints and Validation (e2e)', () => {
               100, 
               -1
             )
-          `)
+          `),
         ).rejects.toThrow();
       });
     });
@@ -401,10 +443,15 @@ describe('Database Constraints and Validation (e2e)', () => {
   describe('Client Table Constraints', () => {
     describe('UCI Format Validation', () => {
       it('should accept valid UCI format', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
-        const result = await dataSource.query(`
+        const result = await dataSource.query(
+          `
           INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
           VALUES (
             uuid_generate_v4(), 
@@ -415,20 +462,29 @@ describe('Database Constraints and Validation (e2e)', () => {
             $1, 
             $2
           ) RETURNING id
-        `, [facility[0].id, tenant[0].id]);
+        `,
+          [facility[0].id, tenant[0].id],
+        );
 
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject UCI with invalid characters', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
             VALUES (
               uuid_generate_v4(), 
@@ -439,16 +495,23 @@ describe('Database Constraints and Validation (e2e)', () => {
               $1, 
               $2
             )
-          `, [facility[0].id, tenant[0].id])
+          `,
+            [facility[0].id, tenant[0].id],
+          ),
         ).rejects.toThrow();
       });
 
       it('should reject UCI that is too short', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
             VALUES (
               uuid_generate_v4(), 
@@ -459,17 +522,24 @@ describe('Database Constraints and Validation (e2e)', () => {
               $1, 
               $2
             )
-          `, [facility[0].id, tenant[0].id])
+          `,
+            [facility[0].id, tenant[0].id],
+          ),
         ).rejects.toThrow();
       });
     });
 
     describe('Birth Date Validation', () => {
       it('should accept valid birth date', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
-        const result = await dataSource.query(`
+        const result = await dataSource.query(
+          `
           INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
           VALUES (
             uuid_generate_v4(), 
@@ -480,20 +550,29 @@ describe('Database Constraints and Validation (e2e)', () => {
             $1, 
             $2
           ) RETURNING id
-        `, [facility[0].id, tenant[0].id]);
+        `,
+          [facility[0].id, tenant[0].id],
+        );
 
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject future birth date', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
             VALUES (
               uuid_generate_v4(), 
@@ -504,16 +583,23 @@ describe('Database Constraints and Validation (e2e)', () => {
               $1, 
               $2
             )
-          `, [facility[0].id, tenant[0].id])
+          `,
+            [facility[0].id, tenant[0].id],
+          ),
         ).rejects.toThrow();
       });
 
       it('should reject birth date before 1900', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId")
             VALUES (
               uuid_generate_v4(), 
@@ -524,17 +610,24 @@ describe('Database Constraints and Validation (e2e)', () => {
               $1, 
               $2
             )
-          `, [facility[0].id, tenant[0].id])
+          `,
+            [facility[0].id, tenant[0].id],
+          ),
         ).rejects.toThrow();
       });
     });
 
     describe('Financial Amount Validation', () => {
       it('should accept valid balance amounts', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
-        const result = await dataSource.query(`
+        const result = await dataSource.query(
+          `
           INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId", "current_balance")
           VALUES (
             uuid_generate_v4(), 
@@ -546,20 +639,29 @@ describe('Database Constraints and Validation (e2e)', () => {
             $2,
             250.75
           ) RETURNING id
-        `, [facility[0].id, tenant[0].id]);
+        `,
+          [facility[0].id, tenant[0].id],
+        );
 
         expect(result).toHaveLength(1);
 
         // Cleanup
-        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [result[0].id]);
+        await dataSource.query(`DELETE FROM "client" WHERE id = $1`, [
+          result[0].id,
+        ]);
       });
 
       it('should reject balance exceeding precision limits', async () => {
-        const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
-        const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
+        const facility = await dataSource.query(
+          `SELECT id FROM "facility" LIMIT 1`,
+        );
+        const tenant = await dataSource.query(
+          `SELECT id FROM "tenant" LIMIT 1`,
+        );
 
         await expect(
-          dataSource.query(`
+          dataSource.query(
+            `
             INSERT INTO "client" ("id", "firstName", "lastName", "birthDate", "uci", "facilityId", "tenantId", "current_balance")
             VALUES (
               uuid_generate_v4(), 
@@ -571,7 +673,9 @@ describe('Database Constraints and Validation (e2e)', () => {
               $2,
               1000000.00
             )
-          `, [facility[0].id, tenant[0].id])
+          `,
+            [facility[0].id, tenant[0].id],
+          ),
         ).rejects.toThrow();
       });
     });
@@ -580,10 +684,13 @@ describe('Database Constraints and Validation (e2e)', () => {
   describe('Audit Log Action Validation', () => {
     it('should accept valid audit action enum values', async () => {
       const user = await dataSource.query(`SELECT id FROM "user" LIMIT 1`);
-      const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
+      const facility = await dataSource.query(
+        `SELECT id FROM "facility" LIMIT 1`,
+      );
       const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
 
-      const result = await dataSource.query(`
+      const result = await dataSource.query(
+        `
         INSERT INTO "user_action_audit_log" ("id", "userId", "targetFacilityId", "targetTenantId", "action")
         VALUES (
           uuid_generate_v4(), 
@@ -592,21 +699,29 @@ describe('Database Constraints and Validation (e2e)', () => {
           $3, 
           'CREATE'
         ) RETURNING id
-      `, [user[0].id, facility[0].id, tenant[0].id]);
+      `,
+        [user[0].id, facility[0].id, tenant[0].id],
+      );
 
       expect(result).toHaveLength(1);
 
       // Cleanup
-      await dataSource.query(`DELETE FROM "user_action_audit_log" WHERE id = $1`, [result[0].id]);
+      await dataSource.query(
+        `DELETE FROM "user_action_audit_log" WHERE id = $1`,
+        [result[0].id],
+      );
     });
 
     it('should reject invalid audit action values', async () => {
       const user = await dataSource.query(`SELECT id FROM "user" LIMIT 1`);
-      const facility = await dataSource.query(`SELECT id FROM "facility" LIMIT 1`);
+      const facility = await dataSource.query(
+        `SELECT id FROM "facility" LIMIT 1`,
+      );
       const tenant = await dataSource.query(`SELECT id FROM "tenant" LIMIT 1`);
 
       await expect(
-        dataSource.query(`
+        dataSource.query(
+          `
           INSERT INTO "user_action_audit_log" ("id", "userId", "targetFacilityId", "targetTenantId", "action")
           VALUES (
             uuid_generate_v4(), 
@@ -615,7 +730,9 @@ describe('Database Constraints and Validation (e2e)', () => {
             $3, 
             'INVALID_ACTION'
           )
-        `, [user[0].id, facility[0].id, tenant[0].id])
+        `,
+          [user[0].id, facility[0].id, tenant[0].id],
+        ),
       ).rejects.toThrow();
     });
   });

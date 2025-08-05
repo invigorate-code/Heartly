@@ -1,6 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsDateString, IsUUID, IsEnum } from 'class-validator';
 import { Transform } from 'class-transformer';
+import {
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class GetAuditLogsDto {
   @ApiPropertyOptional({ description: 'Start date for filtering logs' })
@@ -33,9 +39,9 @@ export class GetAuditLogsDto {
   @IsUUID()
   facilityId?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Operation type to filter by',
-    enum: ['INSERT', 'UPDATE', 'DELETE']
+    enum: ['INSERT', 'UPDATE', 'DELETE'],
   })
   @IsOptional()
   @IsEnum(['INSERT', 'UPDATE', 'DELETE'])
@@ -66,10 +72,10 @@ export class ExportAuditLogsDto {
   @IsString()
   tableName?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Export format',
     enum: ['json', 'csv'],
-    default: 'json'
+    default: 'json',
   })
   @IsOptional()
   @IsEnum(['json', 'csv'])

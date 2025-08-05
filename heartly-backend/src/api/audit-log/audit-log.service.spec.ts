@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuditLogService } from './audit-log.service';
 import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
-import { UserEntityEntity } from '../user/entities/user.entity';
-import { FacilityEntityEntity } from '../facility/entities/facility.entity';
+import { AuditLogService } from './audit-log.service';
 
 describe('AuditLogService', () => {
   let service: AuditLogService;
@@ -49,7 +47,9 @@ describe('AuditLogService', () => {
     auditLogRepository = module.get<Repository<DataAuditLog>>(
       getRepositoryToken(DataAuditLog),
     );
-    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
+    userRepository = module.get<Repository<UserEntity>>(
+      getRepositoryToken(UserEntity),
+    );
     facilityRepository = module.get<Repository<FacilityEntity>>(
       getRepositoryToken(FacilityEntity),
     );

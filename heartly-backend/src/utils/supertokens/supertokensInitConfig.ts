@@ -19,7 +19,8 @@ import {
 export const SuperTokensInitModule = SuperTokensModule.forRoot({
   framework: 'express',
   supertokens: {
-    connectionURI: 'http://localhost:3567',
+    connectionURI:
+      process.env.SUPERTOKENS_CONNECTION_URI || 'http://localhost:3567',
     apiKey: process.env.SUPERTOKENS_API_KEY,
   },
   appInfo: {
@@ -279,6 +280,16 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
             ...original,
             sendEmail: async function (input) {
               input.user.email = (await getEmailUsingUserId(input.user.id))!;
+
+              // Custom email content for Heartly branding
+              if (input.type === 'PASSWORD_RESET') {
+                const customInput = {
+                  ...input,
+                  // Add custom email template content here
+                };
+                return original.sendEmail(customInput);
+              }
+
               return original.sendEmail(input);
             },
           };
@@ -290,7 +301,8 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
       // Configure session persistence and security
       sessionExpiredStatusCode: 401,
       invalidClaimStatusCode: 403,
-      cookieDomain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : 'localhost',
+      cookieDomain:
+        process.env.NODE_ENV === 'production' ? '.yourdomain.com' : 'localhost',
       cookieSecure: process.env.NODE_ENV === 'production',
       cookieSameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       override: {
@@ -300,7 +312,7 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
             createNewSession: async function (input) {
               // Get user tenant context before creating session
               const tenantContext = await getUserTenantContext(input.userId);
-              
+
               if (tenantContext) {
                 // Add tenant context to the access token payload
                 const accessTokenPayload = {
@@ -309,13 +321,13 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
                   role: tenantContext.role,
                   email: tenantContext.email,
                 };
-                
+
                 return original.createNewSession({
                   ...input,
                   accessTokenPayload,
                 });
               }
-              
+
               return original.createNewSession(input);
             },
           };
@@ -323,24 +335,26 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
       },
     }), // initializes session features with tenant context and persistence
     EmailVerification.init({
-      mode: 'OPTIONAL', // Changed from REQUIRED to allow unverified users to access some endpoints
+      mode: 'REQUIRED', // Email verification is required for all new user accounts
       emailDelivery: {
         override: (originalImplementation) => {
           return {
             ...originalImplementation,
             sendEmail: async function (input) {
-              // TODO: create and send email verification email
               input.user.email = (await getEmailUsingUserId(input.user.id))!;
 
-              // Or use the original implementation which calls the default service,
-              // or a service that you may have specified in the emailDelivery object.
-              return originalImplementation.sendEmail({
+              // Customize verification email with Heartly branding
+              const customInput = {
                 ...input,
                 emailVerifyLink: input.emailVerifyLink.replace(
                   'http://localhost:3000/auth/verify-email',
                   'http://localhost:3000/verify-email',
                 ),
-              });
+                // Custom email template variables can be added here
+                tenantId: input.tenantId || 'public',
+              };
+
+              return originalImplementation.sendEmail(customInput);
             },
           };
         },

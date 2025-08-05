@@ -15,7 +15,9 @@ describe('SessionContextService', () => {
       providers: [SessionContextService],
     }).compile();
 
-    service = await module.resolve<SessionContextService>(SessionContextService);
+    service = await module.resolve<SessionContextService>(
+      SessionContextService,
+    );
 
     // Create mock session
     mockSession = {
@@ -36,6 +38,7 @@ describe('SessionContextService', () => {
   describe('initializeFromRequest', () => {
     it('should initialize session context with valid session', async () => {
       // Mock Session.getSession to return our mock session
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -52,6 +55,7 @@ describe('SessionContextService', () => {
     });
 
     it('should handle null session gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(null);
 
@@ -65,8 +69,11 @@ describe('SessionContextService', () => {
     });
 
     it('should handle session errors gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
-      Session.getSession = jest.fn().mockRejectedValue(new Error('Session error'));
+      Session.getSession = jest
+        .fn()
+        .mockRejectedValue(new Error('Session error'));
 
       const mockRequest = {} as Request;
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -76,7 +83,7 @@ describe('SessionContextService', () => {
       expect(service.isAuthenticated()).toBe(false);
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Failed to initialize session context:',
-        'Session error'
+        'Session error',
       );
 
       consoleWarnSpy.mockRestore();
@@ -85,6 +92,7 @@ describe('SessionContextService', () => {
 
   describe('session context access', () => {
     beforeEach(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -115,6 +123,7 @@ describe('SessionContextService', () => {
 
   describe('unauthenticated access', () => {
     beforeEach(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(null);
 
@@ -139,12 +148,15 @@ describe('SessionContextService', () => {
     });
 
     it('should throw error when accessing session handle unauthenticated', () => {
-      expect(() => service.getSessionHandle()).toThrow('User not authenticated');
+      expect(() => service.getSessionHandle()).toThrow(
+        'User not authenticated',
+      );
     });
   });
 
   describe('role checking', () => {
     beforeEach(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -166,6 +178,7 @@ describe('SessionContextService', () => {
 
     it('should return false for role checks when unauthenticated', async () => {
       // Re-initialize with no session
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(null);
 
@@ -188,6 +201,7 @@ describe('SessionContextService', () => {
         getHandle: jest.fn().mockReturnValue('test-session-handle'),
       } as any;
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(incompleteSession);
 
@@ -207,6 +221,7 @@ describe('SessionContextService', () => {
         getHandle: jest.fn().mockReturnValue('test-session-handle'),
       } as any;
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(badSession);
 

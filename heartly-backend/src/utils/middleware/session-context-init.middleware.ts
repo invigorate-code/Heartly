@@ -1,7 +1,7 @@
+import { SessionContextService } from '@/common/services/session-context.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { NextFunction, Request, Response } from 'express';
-import { SessionContextService } from '@/common/services/session-context.service';
 
 /**
  * Middleware to initialize the SessionContextService with the current request
@@ -15,13 +15,15 @@ export class SessionContextInitMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // Resolve the request-scoped SessionContextService for this specific request
-      const sessionContextService = await this.moduleRef.resolve(SessionContextService);
+      const sessionContextService = await this.moduleRef.resolve(
+        SessionContextService,
+      );
       await sessionContextService.initializeFromRequest(req, res);
     } catch (error) {
       // Log error but don't block request - allow unauthenticated routes
       console.warn('Session context initialization error:', error.message);
     }
-    
+
     next();
   }
 }
