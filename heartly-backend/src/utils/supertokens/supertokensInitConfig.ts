@@ -11,6 +11,7 @@ import {
   checkIfEmailAndCompanyNameAvailable,
   createSubscriberProfileAndTenantRecord,
   getEmailUsingUserId,
+  getUserTenantContext,
   getUserUsingEmail,
   isInputEmail,
 } from './supertokens-helper';
@@ -284,9 +285,45 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
         },
       },
     }), // initializes signin / sign up features
-    Session.init({ getTokenTransferMethod: () => 'cookie' }), // initializes session features
+    Session.init({
+      getTokenTransferMethod: () => 'cookie',
+      // Configure session persistence and security
+      sessionExpiredStatusCode: 401,
+      invalidClaimStatusCode: 403,
+      cookieDomain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : 'localhost',
+      cookieSecure: process.env.NODE_ENV === 'production',
+      cookieSameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      override: {
+        functions: (original) => {
+          return {
+            ...original,
+            createNewSession: async function (input) {
+              // Get user tenant context before creating session
+              const tenantContext = await getUserTenantContext(input.userId);
+              
+              if (tenantContext) {
+                // Add tenant context to the access token payload
+                const accessTokenPayload = {
+                  ...input.accessTokenPayload,
+                  tenantId: tenantContext.tenantId,
+                  role: tenantContext.role,
+                  email: tenantContext.email,
+                };
+                
+                return original.createNewSession({
+                  ...input,
+                  accessTokenPayload,
+                });
+              }
+              
+              return original.createNewSession(input);
+            },
+          };
+        },
+      },
+    }), // initializes session features with tenant context and persistence
     EmailVerification.init({
-      mode: 'REQUIRED', // or "OPTIONAL"
+      mode: 'OPTIONAL', // Changed from REQUIRED to allow unverified users to access some endpoints
       emailDelivery: {
         override: (originalImplementation) => {
           return {

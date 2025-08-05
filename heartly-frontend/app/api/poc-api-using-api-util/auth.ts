@@ -11,11 +11,12 @@ export type LoggedInUserResponse = {
 };
 
 export type BasicUserInfoResponse = {
-  status: "OK";
-  userId: string;
-  email: string;
-  isEmailVerified: boolean;
-  tenantIds: string[];
+  status: "OK" | "UNAUTHORIZED" | "ERROR";
+  userId?: string;
+  email?: string;
+  isEmailVerified?: boolean;
+  tenantIds?: string[];
+  message?: string;
 };
 
 type FormField = {
@@ -108,14 +109,33 @@ export const signUpUser = async (
 };
 
 export const getLoggedInUser = async (): Promise<LoggedInUserResponse> => {
-  return new Promise((resolve, reject) => {
-    api
-      .post("/api/auth/getUserSession")
-      .then((response) => resolve(response.data))
-      .catch((error) => {
-        console.error("Error getting logged in user:", error);
-        reject(error);
-      });
+  return new Promise(async (resolve, reject) => {
+    try {
+      // First check if user is verified using getBasicUserInfo
+      const basicInfo = await getBasicUserInfo();
+      
+      if (basicInfo.status !== "OK") {
+        reject(new Error("User not authenticated"));
+        return;
+      }
+      
+      if (!basicInfo.isEmailVerified) {
+        reject(new Error("Email not verified - cannot get full user session"));
+        return;
+      }
+      
+      // User is verified, safe to call getUserSession
+      api
+        .post("/api/auth/getUserSession")
+        .then((response) => resolve(response.data))
+        .catch((error) => {
+          console.error("Error getting logged in user:", error);
+          reject(error);
+        });
+    } catch (error) {
+      console.error("Error checking user verification status:", error);
+      reject(error);
+    }
   });
 };
 
