@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -39,7 +40,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for facility creation');
+      throw new UnauthorizedException('Email verification required for facility creation');
     }
 
     return await this.facilityService.createFacility(
@@ -59,7 +60,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for accessing facility data');
+      throw new UnauthorizedException('Email verification required for accessing facility data');
     }
 
     return await this.facilityService.getFacilityById(id, session);
@@ -75,7 +76,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for accessing user facilities');
+      throw new UnauthorizedException('Email verification required for accessing user facilities');
     }
 
     return await this.facilityService.getLoggedInUserFacilities(session);
@@ -92,7 +93,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for updating facilities');
+      throw new UnauthorizedException('Email verification required for updating facilities');
     }
 
     return await this.facilityService.updateFacility(
@@ -114,7 +115,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for deleting facilities');
+      throw new UnauthorizedException('Email verification required for deleting facilities');
     }
 
     return await this.facilityService.deleteFacility(id, session);
@@ -133,7 +134,7 @@ export class FacilityController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for restoring facilities');
+      throw new UnauthorizedException('Email verification required for restoring facilities');
     }
 
     return await this.facilityService.restoreFacility(id, session);

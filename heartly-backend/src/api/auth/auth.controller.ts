@@ -1,5 +1,5 @@
 import { ApiPublic } from '@/decorators/http.decorators';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import {
@@ -37,7 +37,7 @@ export class AuthController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required');
+      throw new UnauthorizedException('Email verification required');
     }
 
     const recipeUserId = session.getRecipeUserId();
@@ -88,7 +88,7 @@ export class AuthController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for admin operations');
+      throw new UnauthorizedException('Email verification required for admin operations');
     }
   }
 

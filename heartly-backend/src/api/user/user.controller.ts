@@ -1,5 +1,5 @@
 import { ApiPublic } from '@/decorators/http.decorators';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   Session,
@@ -38,7 +38,7 @@ export class UserController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for user creation');
+      throw new UnauthorizedException('Email verification required for user creation');
     }
     const { metadata } = await UserMetadata.getUserMetadata(
       session.getUserId(),
@@ -59,7 +59,7 @@ export class UserController {
     const isEmailVerified = payload['st-ev']?.v || false;
     
     if (!isEmailVerified) {
-      throw new Error('Email verification required for accessing user data');
+      throw new UnauthorizedException('Email verification required for accessing user data');
     }
     const user = await this.userService.findById(body.userId);
     return user;
