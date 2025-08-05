@@ -1,11 +1,11 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateFacilityTable1754250022000 implements MigrationInterface {
-    name = 'CreateFacilityTable1754250022000'
+  name = 'CreateFacilityTable1754250022000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Create facility table
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create facility table
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS "facility" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" varchar(100) NOT NULL,
@@ -29,16 +29,22 @@ export class CreateFacilityTable1754250022000 implements MigrationInterface {
             )
         `);
 
-        // Create indexes
-        await queryRunner.query(`CREATE INDEX "IDX_facility_tenant_id" ON "facility" ("tenantId")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_deleted_at" ON "facility" ("deleted_at")`);
-        await queryRunner.query(`CREATE INDEX "IDX_facility_tenant_id_deleted_at" ON "facility" ("tenantId", "deleted_at")`);
-    }
+    // Create indexes
+    await queryRunner.query(
+      `CREATE INDEX "IDX_facility_tenant_id" ON "facility" ("tenantId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_facility_deleted_at" ON "facility" ("deleted_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_facility_tenant_id_deleted_at" ON "facility" ("tenantId", "deleted_at")`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id_deleted_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_deleted_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id"`);
-        await queryRunner.query(`DROP TABLE "facility"`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id_deleted_at"`);
+    await queryRunner.query(`DROP INDEX "IDX_facility_deleted_at"`);
+    await queryRunner.query(`DROP INDEX "IDX_facility_tenant_id"`);
+    await queryRunner.query(`DROP TABLE "facility"`);
+  }
 }
