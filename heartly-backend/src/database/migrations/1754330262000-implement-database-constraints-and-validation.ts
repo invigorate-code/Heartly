@@ -92,11 +92,11 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // Add improved email format validation
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_email_format" 
-      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
+      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_email_format" 
-      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
+      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
 
     // 2.3 Add tenant-scoped uniqueness for facility names
