@@ -102,7 +102,100 @@ export const frontendConfig = (): SuperTokensConfig => {
           },
         },
       }), // initializes signin / sign up features
-      Session.init(), // initializes session features
+      Session.init({
+        tokenTransferMethod: "cookie",
+        // Configure session persistence settings to match backend
+        sessionExpiredStatusCode: 401,
+        invalidClaimStatusCode: 403,
+        autoAddCredentials: true, // Automatically include credentials in requests
+        // Enable pre-API hooks for session handling
+        preAPIHook: async (context) => {
+          // Add any headers or modifications before API calls
+          return context;
+        },
+        onHandleEvent: (context) => {
+          // Handle session events for better UX
+          if (context.action === "SESSION_CREATED") {
+            console.log("Session created successfully");
+            // Store session creation timestamp for persistence tracking
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('supertokens-session-created', Date.now().toString());
+              window.dispatchEvent(new CustomEvent('supertokens-session-created'));
+            }
+          } else if (context.action === "SIGN_OUT") {
+            console.log("User signed out");
+            // Clear session persistence data
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('supertokens-session-created');
+              localStorage.removeItem('supertokens-remember-me');
+              window.dispatchEvent(new CustomEvent('supertokens-session-expired'));
+            }
+          } else if (context.action === "REFRESH_SESSION") {
+            console.log("Session refreshed");
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('supertokens-session-refreshed'));
+            }
+          } else if (context.action === "UNAUTHORISED") {
+            console.log("Unauthorized access - session may have expired");
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('supertokens-unauthorized'));
+            }
+          }
+        },
+        override: {
+          functions: (originalImplementation) => {
+            return {
+              ...originalImplementation,
+              // Override to handle session refresh and include tenant context
+              refresh: async function (input) {
+                try {
+                  const response = await originalImplementation.refresh(input);
+                  
+                  // Emit custom event for session refresh
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('supertokens-session-refreshed'));
+                  }
+                  
+                  return response;
+                } catch (error) {
+                  console.error('Session refresh failed:', error);
+                  throw error;
+                }
+              },
+              // Override doesSessionExist to improve persistence checking
+              doesSessionExist: async function (input) {
+                try {
+                  const exists = await originalImplementation.doesSessionExist(input);
+                  
+                  // If session doesn't exist, try to refresh if we have stored session data
+                  if (!exists && typeof window !== 'undefined') {
+                    const sessionCreated = localStorage.getItem('supertokens-session-created');
+                    const rememberMe = localStorage.getItem('supertokens-remember-me');
+                    
+                    if (sessionCreated && rememberMe === 'true') {
+                      // Attempt to refresh session
+                      try {
+                        await originalImplementation.attemptRefreshingSession(input);
+                        return await originalImplementation.doesSessionExist(input);
+                      } catch (refreshError) {
+                        console.log('Session refresh attempt failed:', refreshError);
+                        // Clean up stale session data
+                        localStorage.removeItem('supertokens-session-created');
+                        localStorage.removeItem('supertokens-remember-me');
+                      }
+                    }
+                  }
+                  
+                  return exists;
+                } catch (error) {
+                  console.error('Error checking session existence:', error);
+                  return false;
+                }
+              },
+            };
+          },
+        },
+      }), // initializes session features with enhanced handling and persistence
       EmailVerification.init({
         mode: "REQUIRED", // or "OPTIONAL"
       }),

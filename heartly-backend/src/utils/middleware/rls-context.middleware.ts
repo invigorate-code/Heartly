@@ -13,34 +13,56 @@ export class RlsContextMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Check if user is authenticated
-      const session = await Session.getSessionWithoutRequestResponse(
-        req.headers.authorization?.replace('Bearer ', '') || '',
-      );
+      // Check if user is authenticated using SuperTokens session
+      const session = await Session.getSession(req, res, {
+        sessionRequired: false, // Don't throw error for unauthenticated requests
+      });
 
       if (session) {
         // Get user information from session payload
         const userId = session.getUserId();
         const userPayload = session.getAccessTokenPayload();
 
-        // Extract tenant and role information
+        // Extract tenant and role information from the enhanced session payload
         const tenantId = userPayload.tenantId;
         const userRole = userPayload.role;
 
         if (tenantId && userRole) {
-          // Set database context for RLS policies
-          await this.dataSource.query(
-            `SELECT set_config('app.tenant_id', $1, true)`,
-            [tenantId],
-          );
-          await this.dataSource.query(
-            `SELECT set_config('app.user_id', $1, true)`,
-            [userId],
-          );
-          await this.dataSource.query(
-            `SELECT set_config('app.user_role', $1, true)`,
-            [userRole],
-          );
+          // Set database context for RLS policies and audit logging
+          try {
+            await this.dataSource.query(
+              `SELECT set_config('app.tenant_id', $1, true)`,
+              [tenantId],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.user_id', $1, true)`,
+              [userId],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.user_role', $1, true)`,
+              [userRole],
+            );
+
+            // Set additional context for audit logging
+            const sessionId = session.getHandle();
+            const ipAddress = req.ip || req.connection?.remoteAddress || 'unknown';
+            const userAgent = req.get('User-Agent') || 'unknown';
+
+            await this.dataSource.query(
+              `SELECT set_config('app.session_id', $1, true)`,
+              [sessionId],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.ip_address', $1, true)`,
+              [ipAddress],
+            );
+            await this.dataSource.query(
+              `SELECT set_config('app.user_agent', $1, true)`,
+              [userAgent],
+            );
+          } catch (error) {
+            throw error;
+          }
         }
       }
     } catch (error) {

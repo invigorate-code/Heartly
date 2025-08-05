@@ -104,3 +104,27 @@ export function isInputEmail(input: string): boolean {
     ) !== null
   );
 }
+
+export async function getUserTenantContext(
+  userId: string,
+): Promise<{ tenantId: string; role: UserRole; email: string } | undefined> {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
+  
+  const userRepository = AppDataSource.getRepository(UserEntity);
+  const user = await userRepository.findOne({
+    where: { id: userId },
+    relations: ['tenant'],
+  });
+
+  if (!user || !user.tenant) {
+    return undefined;
+  }
+
+  return {
+    tenantId: user.tenant.id,
+    role: user.role,
+    email: user.email,
+  };
+}
