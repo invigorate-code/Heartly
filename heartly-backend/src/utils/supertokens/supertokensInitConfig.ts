@@ -285,7 +285,6 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
               if (input.type === 'PASSWORD_RESET') {
                 const customInput = {
                   ...input,
-                  passwordResetLink: input.passwordResetLink,
                   // Add custom email template content here
                 };
                 return original.sendEmail(customInput);
