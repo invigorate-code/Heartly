@@ -135,19 +135,28 @@ export class AuthController {
     @Req() req: Request,
     @Body() body: { email: string },
   ) {
+    let session: SessionContainer | undefined;
     try {
       // Try to get session for unverified users
-      const session = await SessionNode.getSession(req, undefined, {
+      session = await SessionNode.getSession(req, undefined, {
         sessionRequired: false,
       });
+    } catch (sessionErr) {
+      console.error('Error retrieving session:', sessionErr);
+      return {
+        status: 'ERROR',
+        message: 'Failed to retrieve session for verification email',
+      };
+    }
 
-      if (!session) {
-        return {
-          status: 'ERROR',
-          message: 'Session required to resend verification email',
-        };
-      }
+    if (!session) {
+      return {
+        status: 'ERROR',
+        message: 'Session required to resend verification email',
+      };
+    }
 
+    try {
       const linkResponse = await EmailVerification.createEmailVerificationLink(
         'public',
         session.getRecipeUserId(),
