@@ -67,6 +67,7 @@ describe('Session Middleware Integration', () => {
         getHandle: () => 'test-session-handle',
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -82,6 +83,7 @@ describe('Session Middleware Integration', () => {
     });
 
     it('should handle unauthenticated request gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(null);
 
@@ -96,6 +98,7 @@ describe('Session Middleware Integration', () => {
     });
 
     it('should handle session errors gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest
         .fn()
@@ -131,6 +134,7 @@ describe('Session Middleware Integration', () => {
         getHandle: () => 'test-session-handle',
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -172,6 +176,7 @@ describe('Session Middleware Integration', () => {
     });
 
     it('should handle unauthenticated request gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(null);
 
@@ -186,6 +191,7 @@ describe('Session Middleware Integration', () => {
     });
 
     it('should handle session errors gracefully', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest
         .fn()
@@ -219,6 +225,7 @@ describe('Session Middleware Integration', () => {
         getHandle: () => 'test-session-handle',
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -245,6 +252,7 @@ describe('Session Middleware Integration', () => {
         getHandle: () => 'test-session-handle',
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
 
@@ -271,6 +279,7 @@ describe('Session Middleware Integration', () => {
         getHandle: () => 'test-session-handle',
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest.fn().mockResolvedValue(mockSession);
       mockDataSource.query.mockResolvedValue([]);
@@ -299,6 +308,7 @@ describe('Session Middleware Integration', () => {
     });
 
     it('should handle error in first middleware without affecting second', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Session = require('supertokens-node/recipe/session').default;
       Session.getSession = jest
         .fn()
