@@ -21,7 +21,7 @@ export class SessionContextInitMiddleware implements NestMiddleware {
       await sessionContextService.initializeFromRequest(req, res);
     } catch (error) {
       // Log error but don't block request - allow unauthenticated routes
-      console.warn('Session context initialization error:', error.message);
+      console.warn('Failed to initialize session context:', error.message);
     }
 
     next();

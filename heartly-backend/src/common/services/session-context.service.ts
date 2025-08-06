@@ -99,21 +99,21 @@ export class SessionContextService {
   /**
    * Get current user role (throws if not authenticated)
    */
-  getUserRole(): string {
+  getUserRole(): string | undefined {
     if (!this.isAuthenticated() || !this.sessionContext) {
       throw new Error('User not authenticated');
     }
-    return this.sessionContext.role;
+    return this.sessionContext.role || undefined;
   }
 
   /**
    * Get current user email (throws if not authenticated)
    */
-  getUserEmail(): string {
+  getUserEmail(): string | undefined {
     if (!this.isAuthenticated() || !this.sessionContext) {
       throw new Error('User not authenticated');
     }
-    return this.sessionContext.email;
+    return this.sessionContext.email || undefined;
   }
 
   /**

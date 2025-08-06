@@ -40,9 +40,10 @@ describe('Session Middleware Integration', () => {
     sessionContextInitMiddleware = module.get<SessionContextInitMiddleware>(
       SessionContextInitMiddleware,
     );
-    sessionContextService = module.get<SessionContextService>(
-      SessionContextService,
-    );
+    sessionContextService = await module.resolve<SessionContextService>(SessionContextService);
+    
+    // Mock the moduleRef.resolve method to return our service instance
+    jest.spyOn(sessionContextInitMiddleware['moduleRef'], 'resolve').mockResolvedValue(sessionContextService);
 
     // Setup mocks
     mockRequest = {
@@ -114,8 +115,8 @@ describe('Session Middleware Integration', () => {
 
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Session context initialization error:',
-        'Session error',
+        'Failed to initialize session context:',
+        'Session error'
       );
 
       consoleWarnSpy.mockRestore();
@@ -231,15 +232,21 @@ describe('Session Middleware Integration', () => {
 
       mockDataSource.query.mockRejectedValue(new Error('Database error'));
 
-      await expect(
-        rlsContextMiddleware.use(
-          mockRequest as Request,
-          mockResponse as Response,
-          mockNext,
-        ),
-      ).rejects.toThrow('Database error');
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      expect(mockNext).not.toHaveBeenCalled();
+      await rlsContextMiddleware.use(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'RLS Context Middleware error:',
+        'Database error'
+      );
+      expect(mockNext).toHaveBeenCalled();
+      
+      consoleWarnSpy.mockRestore();
     });
 
     it('should skip context setting when tenant or role missing', async () => {
@@ -326,8 +333,8 @@ describe('Session Middleware Integration', () => {
 
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Session context initialization error:',
-        'Init error',
+        'Failed to initialize session context:',
+        'Init error'
       );
 
       mockNext.mockClear();

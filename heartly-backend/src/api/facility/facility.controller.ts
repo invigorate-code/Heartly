@@ -21,6 +21,8 @@ import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityService } from './facility.service';
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('facility')
 @UseGuards(SuperTokensAuthGuard)
@@ -110,9 +112,9 @@ export class FacilityController {
   }
 
   @Delete('/:id')
-  @VerifySession({
-    roles: [UserRole.OWNER],
-  })
+  @UseGuards(SuperTokensRolesGuard)
+  @VerifySession()
+  @Roles(UserRole.OWNER)
   async deleteFacility(
     @Param('id') id: string,
     @Session() session: SessionContainer,
@@ -131,9 +133,9 @@ export class FacilityController {
   }
 
   @Patch('/:id/restore')
-  @VerifySession({
-    roles: [UserRole.OWNER],
-  })
+  @UseGuards(SuperTokensRolesGuard)
+  @VerifySession()
+  @Roles(UserRole.OWNER)
   async restoreFacility(
     @Param('id') id: string,
     @Session() session: SessionContainer,

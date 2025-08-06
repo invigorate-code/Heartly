@@ -145,10 +145,21 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
               const response = await original.signUpPOST!(input);
 
               if (response.status === 'OK') {
-                await createSubscriberProfileAndTenantRecord(
+                const tenant = await createSubscriberProfileAndTenantRecord(
                   input.formFields,
                   response.user.id,
                 );
+                
+                // Assign SuperTokens role to the new user
+                try {
+                  await UserRoles.addRoleToUser(
+                    tenant.id, // tenantId
+                    response.user.id, // userId
+                    'OWNER' // role - new users are owners of their tenant
+                  );
+                } catch (error) {
+                  console.error('Failed to assign role to user:', error);
+                }
               }
 
               return response;

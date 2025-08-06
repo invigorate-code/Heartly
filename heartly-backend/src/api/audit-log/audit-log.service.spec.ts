@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
 import { AuditLogService } from './audit-log.service';
+import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { FacilityEntity } from '../facility/entities/facility.entity';
 
 describe('AuditLogService', () => {
   let service: AuditLogService;
@@ -76,7 +78,7 @@ describe('AuditLogService', () => {
     });
 
     it('should reject invalid roles', () => {
-      const user = { role: 'INVALID' } as UserEntity;
+      const user = { role: 'INVALID' } as unknown as UserEntity;
       expect(() => service['validateAccessPermissions'](user)).toThrow();
     });
   });

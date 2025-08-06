@@ -18,6 +18,8 @@ import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { CreateUserDto } from './dto/create-user.req.dto';
 import { UserRole } from './entities/user.entity';
 import { UserService } from './user.service';
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('users')
 @Controller({ path: 'users' })
@@ -30,11 +32,10 @@ export class UserController {
     return 'test';
   }
 
-  @UseGuards(SuperTokensAuthGuard) // Will throw session not found error if missing supertoken auth guard decorator
+  @UseGuards(SuperTokensAuthGuard, SuperTokensRolesGuard) // Will throw session not found error if missing supertoken auth guard decorator
   @Post('/createUser')
-  @VerifySession({
-    roles: [UserRole.ADMIN, UserRole.OWNER],
-  })
+  @VerifySession()
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
   async createUser(
     @Session() session: SessionContainer,
     @Body() body: CreateUserDto,
@@ -75,11 +76,10 @@ export class UserController {
     return user;
   }
 
-  @UseGuards(SuperTokensAuthGuard) // Will throw session not found error if missing supertoken auth guard decorator
+  @UseGuards(SuperTokensAuthGuard, SuperTokensRolesGuard) // Will throw session not found error if missing supertoken auth guard decorator
   @Post('/getAllUserPermissions')
-  @VerifySession({
-    roles: [UserRole.ADMIN, UserRole.OWNER],
-  })
+  @VerifySession()
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
   async getAllUserPermissions(
     @Session() session: SessionContainer,
     @Body() body: { userId: string },
