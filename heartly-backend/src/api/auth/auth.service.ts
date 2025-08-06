@@ -11,6 +11,7 @@ import supertokens from 'supertokens-node';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
 import EmailVerification from 'supertokens-node/recipe/emailverification';
 import UserMetadata from 'supertokens-node/recipe/usermetadata';
+import UserRoles from 'supertokens-node/recipe/userroles';
 import { Repository } from 'typeorm';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { CreateInvitedUserDto } from './dto/create-invite-user.dto';
@@ -93,7 +94,18 @@ export class AuthService {
     user.facilities = [facility]; // Since this is the first facility, just assign it
     await this.userRepository.save(user); // Save again to persist the relationship in the join table
 
-    // 5) Return the created user info + temp password so the UI can show “here’s your creds”
+    // 4.5) Assign SuperTokens role to the invited user
+    try {
+      await UserRoles.addRoleToUser(
+        dto.tenantId, // tenantId
+        authUserId, // userId
+        dto.role // role - ADMIN or STAFF as specified in the DTO
+      );
+    } catch (error) {
+      console.error('Failed to assign role to invited user:', error);
+    }
+
+    // 5) Return the created user info + temp password so the UI can show "here's your creds"
     return {
       id: user.id,
       firstName: user.firstName,

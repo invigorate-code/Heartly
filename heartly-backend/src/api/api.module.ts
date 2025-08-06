@@ -7,6 +7,7 @@ import { FacilityModule } from './facility/facility.module';
 import { FormFieldContributionModule } from './form-field-contribution/form-field-contribution.module';
 import { HealthModule } from './health/health.module';
 import { PlacementInfoModule } from './placement-info/placement-info.module';
+import { CustomRoleModule } from './role/custom-role.module';
 import { TenantModule } from './tenant/tenant.module';
 import { UserActionAuditLogModule } from './user-action-audit-log/user-action-audit-log.module';
 import { UserModule } from './user/user.module';
@@ -19,6 +20,7 @@ import { UserModule } from './user/user.module';
     TenantModule,
     UserModule,
     ClientModule,
+    CustomRoleModule,
     UserActionAuditLogModule, // The module itself handles providers and controllers
     AuditLogModule,
     PHIModule,
