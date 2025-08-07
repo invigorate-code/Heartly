@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
   name = 'CreateCustomRolesTable1754370000000';
@@ -106,24 +106,22 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
     );
 
     // Create unique index for role name per tenant
-    await queryRunner.createIndex(
-      'custom_roles',
-      new Index('idx_custom_roles_name_tenant_unique', ['tenant_id', 'name'], {
-        isUnique: true,
-      }),
-    );
+    await queryRunner.query(`
+      CREATE UNIQUE INDEX "idx_custom_roles_name_tenant_unique" 
+      ON "custom_roles" ("tenant_id", "name")
+    `);
 
     // Create index for active roles per tenant
-    await queryRunner.createIndex(
-      'custom_roles',
-      new Index('idx_custom_roles_tenant_active', ['tenant_id', 'is_active']),
-    );
+    await queryRunner.query(`
+      CREATE INDEX "idx_custom_roles_tenant_active" 
+      ON "custom_roles" ("tenant_id", "is_active")
+    `);
 
     // Create index for system roles
-    await queryRunner.createIndex(
-      'custom_roles',
-      new Index('idx_custom_roles_is_system', ['is_system']),
-    );
+    await queryRunner.query(`
+      CREATE INDEX "idx_custom_roles_is_system" 
+      ON "custom_roles" ("is_system")
+    `);
 
     // Insert default system roles for documentation purposes
     // Note: These will be managed by SuperTokens but tracked here for UI purposes
