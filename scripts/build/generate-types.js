@@ -23,16 +23,16 @@ const __dirname = path.dirname(__filename);
 async function generate() {
   // Initialize ts-morph with your backend tsconfig
   const project = new Project({
-    tsConfigFilePath: path.join(__dirname, '../heartly-backend/tsconfig.json'),
+    tsConfigFilePath: path.join(__dirname, '../../heartly-backend/tsconfig.json'),
   });
 
   // Match all .entity.ts files
   const entityFiles = glob.sync(
-    path.join(__dirname, '../heartly-backend/src/**/*.entity.ts')
+    path.join(__dirname, '../../heartly-backend/src/**/*.entity.ts')
   );
 
   // Prepare output directory
-  const outDir = path.join(__dirname, '../heartly-frontend/generated/types');
+  const outDir = path.join(__dirname, '../../heartly-frontend/generated/types');
   fs.mkdirSync(outDir, { recursive: true });
 
   for (const filePath of entityFiles) {

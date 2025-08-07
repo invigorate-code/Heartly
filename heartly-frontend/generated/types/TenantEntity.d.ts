@@ -4,8 +4,6 @@ export interface TenantEntity {
   updatedAt: Date;
   deletedAt?: Date;
   name: string;
-  ownerId: string;
-  owner: UserEntity;
-  users: UserEntity[];
-  facilities: FacilityEntity[];
+  users?: UserEntity[];
+  facilities?: FacilityEntity[];
 }
