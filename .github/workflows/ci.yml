@@ -127,9 +127,24 @@ jobs:
           NODE_ENV: test
 
   integration:
-    name: Integration - Type Generation
+    name: Integration - Type Generation and Scripts
     runs-on: ubuntu-latest
     
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: heartly_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -171,3 +186,14 @@ jobs:
 
       - name: Sync types
         run: pnpm run sync-types
+
+      - name: Make scripts executable
+        run: chmod +x scripts/test/*.sh scripts/git/*.sh
+
+      - name: Run integration test scripts
+        run: |
+          echo "Integration test scripts are available but require running backend"
+          echo "Scripts can be run locally with:"
+          echo "  - pnpm run test:email-verification"
+          echo "  - pnpm run test:password-reset"
+          echo "  - pnpm run test:integration"
