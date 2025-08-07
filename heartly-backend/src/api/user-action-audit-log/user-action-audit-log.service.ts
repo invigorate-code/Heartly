@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { BaseTenantService } from '../../common/services/base-tenant.service';
+import { RlsContextService } from '../../common/services/rls-context.service';
 import { CreateUserActionAuditLogDto } from './dto/create-user-action-audit-log.dto';
 import { QueryUserActionAuditLogDto } from './dto/query-user-action-audit-log.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';
@@ -15,8 +16,9 @@ export class UserActionAuditLogService extends BaseTenantService {
   constructor(
     @InjectRepository(UserActionAuditLogEntity)
     private readonly userActionAuditLogRepository: Repository<UserActionAuditLogEntity>,
+    rlsContextService: RlsContextService,
   ) {
-    super();
+    super(rlsContextService);
   }
 
   async createUserActionAuditLog(

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset Notification - Heartly</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f8f9ff;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        .footer {
+            background: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .info-item {
+            margin: 10px 0;
+            padding: 15px;
+            background: white;
+            border-left: 4px solid #ff6b6b;
+            border-radius: 5px;
+        }
+        .security-notice {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Password Reset Notification</h1>
+        <p>Your account password has been reset</p>
+    </div>
+
+    <div class="content">
+        <h2>Security Alert</h2>
+        
+        <div class="alert">
+            <h3>⚠️ Your password has been reset</h3>
+            <p>An administrator has reset your password for security reasons.</p>
+        </div>
+
+        <p>Hello,</p>
+        
+        <p>This is to notify you that your password for your Heartly account has been reset by an administrator. Here are the details:</p>
+
+        <div class="info-item">
+            <strong>Reset Time:</strong> {{resetTime}}
+        </div>
+
+        <div class="info-item">
+            <strong>Reset By:</strong> System Administrator
+        </div>
+
+        <div class="info-item">
+            <strong>Reason:</strong> {{reason}}
+        </div>
+
+        <div class="security-notice">
+            <h3>🛡️ What happens next:</h3>
+            <ul>
+                <li>You will receive a separate email with your temporary password</li>
+                <li>Your temporary password will expire in 24 hours</li>
+                <li>You must set a new password on your first login</li>
+                <li>All existing sessions have been terminated for security</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{loginUrl}}" class="btn">Go to Login Page</a>
+        </div>
+
+        <div class="security-notice">
+            <h3>🚨 Didn't request this reset?</h3>
+            <p>If you didn't request this password reset or have concerns about your account security:</p>
+            <ul>
+                <li>Contact your facility administrator immediately</li>
+                <li>Do not use the temporary password if provided</li>
+                <li>Report this as a potential security incident</li>
+            </ul>
+        </div>
+
+        <h3>Security Best Practices:</h3>
+        <ul>
+            <li>Never share your login credentials with others</li>
+            <li>Use a unique, strong password for your Heartly account</li>
+            <li>Log out completely when using shared computers</li>
+            <li>Report any suspicious account activity immediately</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>This email was sent from Heartly - Healthcare Facility Management System</p>
+        <p>This is an automated security notification, please do not reply to this email.</p>
+        <p>&copy; 2024 Heartly. All rights reserved.</p>
+    </div>
+</body>
+</html>

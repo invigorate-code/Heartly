@@ -21,6 +21,7 @@ This file provides comprehensive direction for AI assistants working on the Hear
 - **Technical Structure**: `ai-workflow/heartly-technical-structure.md`
 - **HIPAA Compliance**: `ai-workflow/hipaa-compliance-developers-guide-master/`
 - **Comprehensive Overview**: `ai-workflow/heartly-comprehensive-overview.md`
+- **Authentication Flow**: `heartly-frontend/docs/authentication-flow.md` - Complete SuperTokens authentication and routing documentation
 
 ### **Complete Context Understanding**
 **IMPORTANT**: AI assistants should read and understand ALL files in the `ai-workflow/` folder to gain complete context about the Heartly application. This includes:
@@ -44,6 +45,7 @@ This file provides comprehensive direction for AI assistants working on the Hear
 
 **Technical Guidance**:
 - `supertokens-ai-guidance.md` - Authentication system guidance
+- `../heartly-frontend/docs/authentication-flow.md` - Complete authentication flow implementation
 - `hipaa-compliance-developers-guide-master/` - Complete HIPAA compliance guide
 
 **Current State Analysis**:
@@ -83,7 +85,7 @@ This file provides comprehensive direction for AI assistants working on the Hear
 - **RESTful Design**: Follow REST conventions for endpoint design
 - **Validation**: Use DTOs with class-validator decorators
 - **Error Responses**: Consistent error response format across all endpoints
-- **Authentication**: Proper SuperTokens integration with role-based access
+- **Authentication**: Proper SuperTokens integration with role-based access (see `heartly-frontend/docs/authentication-flow.md`)
 - **Rate Limiting**: Implement appropriate rate limiting for security
 
 ### **Frontend Standards**
@@ -92,6 +94,14 @@ This file provides comprehensive direction for AI assistants working on the Hear
 - **Styling**: Use TailwindCSS utility classes, avoid custom CSS when possible
 - **Accessibility**: Ensure WCAG compliance for all components
 - **Responsive Design**: Mobile-first approach with proper breakpoints
+
+### **Authentication Standards**
+- **SuperTokens Integration**: Follow the complete authentication flow documented in `heartly-frontend/docs/authentication-flow.md`
+- **Email Verification**: All users must verify email before accessing protected routes
+- **Route Protection**: Use middleware-based route protection for consistent security
+- **Session Management**: Cookie-based sessions with tenant context and persistence
+- **CORS Configuration**: Proper CORS setup for SuperTokens (CORS before SuperTokens middleware)
+- **Error Handling**: Graceful handling of authentication errors and redirects
 
 ## 📝 **AI Development Notes Structure**
 

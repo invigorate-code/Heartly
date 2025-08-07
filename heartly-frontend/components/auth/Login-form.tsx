@@ -6,14 +6,16 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { Divider } from "@heroui/react";
 import { signInUser, SignInUserResponse } from "@/app/api/poc-api-using-api-util/index";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const [showPasswordText, setShowPasswordText] = useState(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<SignInUserResponse>();
   const [confirmLinkSent, setConfirmLinkSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const errorMessageParser = (error: string) => {
     switch(error) {
@@ -28,6 +30,9 @@ export function LoginForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
+    setError(undefined);
+
     const formData = {
       formFields: [
         {
@@ -40,15 +45,37 @@ export function LoginForm() {
         },
       ],
     };
-    signInUser(formData)
-      .then((response) => {
-        console.log("response", response);
-        redirect("/dashboard");
-      })
-      .catch((error) => {
-        console.dir(error);
-        setError(error);
-      });
+
+    try {
+      const response = await signInUser(formData);
+      console.log("Login response:", response);
+
+      // Check if user's email is verified from the login response
+      if (response.user && response.user.loginMethods && response.user.loginMethods.length > 0) {
+        // Find the email password login method
+        const emailLoginMethod = response.user.loginMethods.find(
+          (method) => method.recipeId === 'emailpassword'
+        );
+        
+        const isEmailVerified = emailLoginMethod?.verified || false;
+        console.log("Email verified from login response:", isEmailVerified);
+
+        if (isEmailVerified) {
+          router.push("/dashboard");
+        } else {
+          router.push("/email-verification-required");
+        }
+      } else {
+        // This should not happen with SuperTokens, but handle gracefully
+        console.error("No user login methods in response");
+        router.push("/email-verification-required");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleVisibility = () => setShowPasswordText((prev) => !prev);
@@ -139,7 +166,9 @@ export function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <SubmitButton pendingText="Signing In...">Sign In</SubmitButton>
+        <SubmitButton pendingText="Signing In..." disabled={isLoading}>
+          {isLoading ? "Signing In..." : "Sign In"}
+        </SubmitButton>
         <Divider />
         <p className="text-center">
           Don't have an account? <Link href="/sign-up">Sign Up</Link>

@@ -8,12 +8,17 @@ const emailVerificationRequiredRoute = "/email-verification-required";
 
 export async function updateSession(req: NextRequest) {
   const path = req.nextUrl.pathname;
+  
+  console.log("=== MIDDLEWARE DEBUG ===");
+  console.log("Path:", path);
+  console.log("Cookies:", req.headers.get("cookie"));
 
   // Allow direct access to verification routes with tokens and email verification required page
   if (
     path === "/auth/verify-email" ||
     path === emailVerificationRequiredRoute
   ) {
+    console.log("Allowing direct access to verification route");
     return NextResponse.next();
   }
 
@@ -32,18 +37,21 @@ export async function updateSession(req: NextRequest) {
 
   const isUnprotectedRoute = !isProtectedRoute && !isAuthRoute && !isVerificationRoute;
 
+  console.log("Route classification:", {
+    isProtectedRoute,
+    isAuthRoute,
+    isVerificationRoute,
+    isUnprotectedRoute,
+  });
+
   // Skip middleware for unprotected routes
   if (isUnprotectedRoute) {
-    return NextResponse.next();
-  }
-
-  // Skip middleware for non-protected and non-auth routes
-  if (!isProtectedRoute && !isAuthRoute && !isVerificationRoute) {
+    console.log("Skipping middleware for unprotected route");
     return NextResponse.next();
   }
 
   try {
-    // First try to get basic user info (works for unverified users)
+    // Check session using our basic user info endpoint (works for unverified users)
     const basicUserResponse = await fetch(`${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getBasicUserInfo`,
       {
         method: "POST",
@@ -54,91 +62,64 @@ export async function updateSession(req: NextRequest) {
       },
     );
 
-    if (basicUserResponse.ok) {
-      const basicUserInfo = await basicUserResponse.json();
-      const isAuthenticated = basicUserInfo?.status === "OK";
-      const isEmailVerified = basicUserInfo?.isEmailVerified === true;
+    const basicUserInfo = await basicUserResponse.json();
+    const isAuthenticated = basicUserInfo?.status === "OK";
+    const isEmailVerified = basicUserInfo?.isEmailVerified === true;
 
-      console.log("Basic user info:", {
-        isAuthenticated,
-        isEmailVerified,
-        email: basicUserInfo?.email,
-      });
+    console.log("Session check in middleware:", {
+      isAuthenticated,
+      isEmailVerified,
+      path,
+      email: basicUserInfo?.email,
+      status: basicUserInfo?.status,
+      willRedirect: isAuthenticated && isAuthRoute,
+    });
 
-      if (isAuthenticated) {
-        // User is authenticated, now check if email is verified for protected routes
-        if (isProtectedRoute && !isEmailVerified) {
-          return NextResponse.redirect(
-            new URL(emailVerificationRequiredRoute, req.url),
-          );
-        }
-
-        // For verified users, get full user profile for onboarding check
-        if (isEmailVerified) {
-          try {
-            const fullUserResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_NEST_API_URL}/api/auth/getUserSession`,
-              {
-                method: "POST",
-                headers: {
-                  Cookie: req.headers.get("cookie") || "",
-                },
-                credentials: "include",
-              },
-            );
-
-            if (fullUserResponse.ok) {
-              const response = await fullUserResponse.json();
-              const isOnboardingCompleted =
-                response?.userProfile?.onboarding_completed_at != null;
-              const isOwner = response?.userProfile?.role === "OWNER";
-              const isOnboardingRequired = isOwner && !isOnboardingCompleted;
-
-              // Redirect authenticated users from auth routes (including "/")
-              if (isAuthRoute) {
-                if (isOnboardingRequired) {
-                  return NextResponse.redirect(new URL("/onboarding", req.url));
-                }
-                return NextResponse.redirect(new URL("/dashboard", req.url));
-              }
-            }
-          } catch (error) {
-            console.error("Error getting full user session:", error);
-          }
-        } else {
-          // User is authenticated but not verified
-          if (isAuthRoute) {
+    if (isAuthenticated) {
+        // First handle auth route redirects for ALL authenticated users (verified or not)
+        if (isAuthRoute) {
+          console.log("User is authenticated and on auth route, redirecting...");
+          if (isEmailVerified) {
+            // For verified users, redirect to dashboard (we'll handle onboarding separately)
+            console.log("Redirecting verified user from auth page to dashboard");
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+          } else {
+            // User is authenticated but not verified - redirect to verification page
+            console.log("Redirecting unverified user from auth page to email verification");
             return NextResponse.redirect(
               new URL(emailVerificationRequiredRoute, req.url),
             );
           }
         }
+
+        // Then handle protected route access for authenticated users
+        if (isProtectedRoute && !isEmailVerified) {
+          return NextResponse.redirect(
+            new URL(emailVerificationRequiredRoute, req.url),
+          );
+        }
       } else {
         // User is not authenticated
+        console.log("User not authenticated, checking route access");
         if (isProtectedRoute) {
+          console.log("Redirecting unauthenticated user from protected route to login");
           return NextResponse.redirect(new URL("/login", req.url));
         }
+        // For auth routes and landing page, unauthenticated users should have access
+        console.log("Allowing unauthenticated access to:", path);
       }
-    } else {
-      // User is not authenticated at all
-      if (isProtectedRoute) {
-        return NextResponse.redirect(new URL("/login", req.url));
-      }
-    }
   } catch (error) {
     console.error("Session verification error:", error);
 
-    // On error during development, allow access to auth routes but redirect from protected routes
-    // In production, you might want to handle this differently
+    // On error, treat as unauthenticated
+    // Allow access to auth routes and landing page, redirect from protected routes
     if (isProtectedRoute) {
+      console.log("Error occurred, redirecting from protected route to login");
       return NextResponse.redirect(new URL("/login", req.url));
     }
-
-    // If we're trying to access the root path and backend is not available,
-    // allow it to proceed (this will show the landing page)
-    if (path === "/") {
-      return NextResponse.next();
-    }
+    
+    // Allow access to auth routes and landing page when there's an error
+    console.log("Error occurred, allowing access to auth route or landing page:", path);
   }
 
   return NextResponse.next();

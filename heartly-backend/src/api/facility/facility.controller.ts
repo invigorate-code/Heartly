@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,8 @@ import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityService } from './facility.service';
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('facility')
 @UseGuards(SuperTokensAuthGuard)
@@ -33,6 +36,16 @@ export class FacilityController {
     @Body() createFacilityDto: CreateFacilityDto,
     @Session() session: SessionContainer,
   ): Promise<FacilityResDto> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for facility creation',
+      );
+    }
+
     return await this.facilityService.createFacility(
       createFacilityDto,
       session,
@@ -45,6 +58,16 @@ export class FacilityController {
     @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<FacilityResDto> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for accessing facility data',
+      );
+    }
+
     return await this.facilityService.getFacilityById(id, session);
   }
 
@@ -53,6 +76,16 @@ export class FacilityController {
   async getLoggedInUserFacilities(
     @Session() session: SessionContainer,
   ): Promise<FacilityResDto[]> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for accessing user facilities',
+      );
+    }
+
     return await this.facilityService.getLoggedInUserFacilities(session);
   }
 
@@ -62,6 +95,16 @@ export class FacilityController {
     @Session() session: SessionContainer,
     @Body() updateFacilityDto: UpdateFacilityDto,
   ): Promise<FacilityResDto> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for updating facilities',
+      );
+    }
+
     return await this.facilityService.updateFacility(
       session,
       updateFacilityDto,
@@ -69,24 +112,44 @@ export class FacilityController {
   }
 
   @Delete('/:id')
-  @VerifySession({
-    roles: [UserRole.OWNER],
-  })
+  @UseGuards(SuperTokensRolesGuard)
+  @VerifySession()
+  @Roles(UserRole.OWNER)
   async deleteFacility(
     @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<void> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for deleting facilities',
+      );
+    }
+
     return await this.facilityService.deleteFacility(id, session);
   }
 
   @Patch('/:id/restore')
-  @VerifySession({
-    roles: [UserRole.OWNER],
-  })
+  @UseGuards(SuperTokensRolesGuard)
+  @VerifySession()
+  @Roles(UserRole.OWNER)
   async restoreFacility(
     @Param('id') id: string,
     @Session() session: SessionContainer,
   ): Promise<FacilityResDto> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for restoring facilities',
+      );
+    }
+
     return await this.facilityService.restoreFacility(id, session);
   }
 }

@@ -26,6 +26,7 @@ import path from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import loggerFactory from './logger-factory';
 import { SuperTokensInitModule } from './supertokens/supertokensInitConfig';
+import { SuperTokensRolesModule } from './supertokens/roles.module';
 
 function generateModulesSet() {
   const imports: ModuleMetadata['imports'] = [
@@ -128,6 +129,7 @@ function generateModulesSet() {
 
   customModules = [
     SuperTokensInitModule,
+    SuperTokensRolesModule,
     ApiModule,
     bullModule,
     BackgroundModule,

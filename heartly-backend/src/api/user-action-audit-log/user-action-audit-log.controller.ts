@@ -21,6 +21,8 @@ import { SearchAuditLogsDto } from './dto/search-audit-logs.req.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';
 import { UserActionAuditLogEntity } from './entities/user-action-audit-log.entity';
 import { UserActionAuditLogService } from './user-action-audit-log.service';
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('user-action-audit-logs')
 @UseGuards(SuperTokensAuthGuard)
@@ -111,7 +113,9 @@ export class UserActionAuditLogController {
 
   // Generic search endpoint: any FK filter + action/keyword
   @Get('search')
-  @VerifySession({ roles: [UserRole.ADMIN, UserRole.OWNER] })
+  @UseGuards(SuperTokensRolesGuard)
+  @VerifySession()
+  @Roles(UserRole.ADMIN, UserRole.OWNER)
   async searchLogs(
     @Session() session: SessionContainer,
     @Query() searchDto: SearchAuditLogsDto,

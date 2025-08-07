@@ -11,6 +11,7 @@ import {
   checkIfEmailAndCompanyNameAvailable,
   createSubscriberProfileAndTenantRecord,
   getEmailUsingUserId,
+  getUserTenantContext,
   getUserUsingEmail,
   isInputEmail,
 } from './supertokens-helper';
@@ -18,7 +19,8 @@ import {
 export const SuperTokensInitModule = SuperTokensModule.forRoot({
   framework: 'express',
   supertokens: {
-    connectionURI: 'http://localhost:3567',
+    connectionURI:
+      process.env.SUPERTOKENS_CONNECTION_URI || 'http://localhost:3567',
     apiKey: process.env.SUPERTOKENS_API_KEY,
   },
   appInfo: {
@@ -143,10 +145,21 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
               const response = await original.signUpPOST!(input);
 
               if (response.status === 'OK') {
-                await createSubscriberProfileAndTenantRecord(
+                const tenant = await createSubscriberProfileAndTenantRecord(
                   input.formFields,
                   response.user.id,
                 );
+                
+                // Assign SuperTokens role to the new user
+                try {
+                  await UserRoles.addRoleToUser(
+                    tenant.id, // tenantId
+                    response.user.id, // userId
+                    'OWNER' // role - new users are owners of their tenant
+                  );
+                } catch (error) {
+                  console.error('Failed to assign role to user:', error);
+                }
               }
 
               return response;
@@ -278,32 +291,81 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
             ...original,
             sendEmail: async function (input) {
               input.user.email = (await getEmailUsingUserId(input.user.id))!;
+
+              // Custom email content for Heartly branding
+              if (input.type === 'PASSWORD_RESET') {
+                const customInput = {
+                  ...input,
+                  // Add custom email template content here
+                };
+                return original.sendEmail(customInput);
+              }
+
               return original.sendEmail(input);
             },
           };
         },
       },
     }), // initializes signin / sign up features
-    Session.init({ getTokenTransferMethod: () => 'cookie' }), // initializes session features
+    Session.init({
+      getTokenTransferMethod: () => 'cookie',
+      // Configure session persistence and security
+      sessionExpiredStatusCode: 401,
+      invalidClaimStatusCode: 403,
+      cookieDomain:
+        process.env.NODE_ENV === 'production' ? '.yourdomain.com' : 'localhost',
+      cookieSecure: process.env.NODE_ENV === 'production',
+      cookieSameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      override: {
+        functions: (original) => {
+          return {
+            ...original,
+            createNewSession: async function (input) {
+              // Get user tenant context before creating session
+              const tenantContext = await getUserTenantContext(input.userId);
+
+              if (tenantContext) {
+                // Add tenant context to the access token payload
+                const accessTokenPayload = {
+                  ...input.accessTokenPayload,
+                  tenantId: tenantContext.tenantId,
+                  role: tenantContext.role,
+                  email: tenantContext.email,
+                };
+
+                return original.createNewSession({
+                  ...input,
+                  accessTokenPayload,
+                });
+              }
+
+              return original.createNewSession(input);
+            },
+          };
+        },
+      },
+    }), // initializes session features with tenant context and persistence
     EmailVerification.init({
-      mode: 'REQUIRED', // or "OPTIONAL"
+      mode: 'REQUIRED', // Email verification is required for all new user accounts
       emailDelivery: {
         override: (originalImplementation) => {
           return {
             ...originalImplementation,
             sendEmail: async function (input) {
-              // TODO: create and send email verification email
               input.user.email = (await getEmailUsingUserId(input.user.id))!;
 
-              // Or use the original implementation which calls the default service,
-              // or a service that you may have specified in the emailDelivery object.
-              return originalImplementation.sendEmail({
+              // Customize verification email with Heartly branding
+              const customInput = {
                 ...input,
                 emailVerifyLink: input.emailVerifyLink.replace(
                   'http://localhost:3000/auth/verify-email',
                   'http://localhost:3000/verify-email',
                 ),
-              });
+                // Custom email template variables can be added here
+                tenantId: input.tenantId || 'public',
+              };
+
+              return originalImplementation.sendEmail(customInput);
             },
           };
         },

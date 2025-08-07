@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -33,6 +34,16 @@ export class ClientController {
     @Body() client: CreateClientDto,
     @Session() session: SessionContainer,
   ): Promise<ClientResDto> {
+    // Check email verification manually
+    const payload = session.getAccessTokenPayload();
+    const isEmailVerified = payload['st-ev']?.v || false;
+
+    if (!isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email verification required for client creation',
+      );
+    }
+
     return await this.clientService.createClient(client, session);
   }
 

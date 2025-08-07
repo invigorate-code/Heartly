@@ -1,11 +1,13 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateFacilityStaffTable1754250025000 implements MigrationInterface {
-    name = 'CreateFacilityStaffTable1754250025000'
+export class CreateFacilityStaffTable1754250025000
+  implements MigrationInterface
+{
+  name = 'CreateFacilityStaffTable1754250025000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Create facility_staff junction table
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Create facility_staff junction table
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS "facility_staff" (
                 "facilityId" uuid NOT NULL,
                 "userId" uuid NOT NULL,
@@ -18,15 +20,23 @@ export class CreateFacilityStaffTable1754250025000 implements MigrationInterface
             )
         `);
 
-        // Create only essential indexes here - others will be added in performance migration
-        // This avoids PostgreSQL timing issues with column recognition
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_facility_staff_facility_id" ON "facility_staff" ("facilityId")`);
-        await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_facility_staff_user_id" ON "facility_staff" ("userId")`);
-    }
+    // Create only essential indexes here - others will be added in performance migration
+    // This avoids PostgreSQL timing issues with column recognition
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_facility_staff_facility_id" ON "facility_staff" ("facilityId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_facility_staff_user_id" ON "facility_staff" ("userId")`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_facility_staff_user_id"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS "IDX_facility_staff_facility_id"`);
-        await queryRunner.query(`DROP TABLE "facility_staff"`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_facility_staff_user_id"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_facility_staff_facility_id"`,
+    );
+    await queryRunner.query(`DROP TABLE "facility_staff"`);
+  }
 }

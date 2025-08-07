@@ -34,12 +34,18 @@ export async function checkIfEmailAndCompanyNameAvailable(
   });
 
   if (userEmailLookup.length > 0) {
-    console.log('found user in checkIfEmailAndCompanyNameAvailable', userEmailLookup);
+    console.log(
+      'found user in checkIfEmailAndCompanyNameAvailable',
+      userEmailLookup,
+    );
     return 'EMAIL_ALREADY_IN_USE';
   }
 
   if (userCompanyLookup.length > 0) {
-    console.log('found user in checkIfEmailAndCompanyNameAvailable', userCompanyLookup);
+    console.log(
+      'found user in checkIfEmailAndCompanyNameAvailable',
+      userCompanyLookup,
+    );
     return 'COMPANY_NAME_ALREADY_IN_USE';
   }
 
@@ -97,4 +103,28 @@ export function isInputEmail(input: string): boolean {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     ) !== null
   );
+}
+
+export async function getUserTenantContext(
+  userId: string,
+): Promise<{ tenantId: string; role: UserRole; email: string } | undefined> {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
+
+  const userRepository = AppDataSource.getRepository(UserEntity);
+  const user = await userRepository.findOne({
+    where: { id: userId },
+    relations: ['tenant'],
+  });
+
+  if (!user || !user.tenant) {
+    return undefined;
+  }
+
+  return {
+    tenantId: user.tenant.id,
+    role: user.role,
+    email: user.email,
+  };
 }

@@ -36,6 +36,9 @@ export class FacilityEntity extends AbstractEntity {
   @Column('boolean', { default: false })
   isDeleted!: boolean;
 
+  @Column('uuid')
+  tenantId!: string;
+
   /** Which tenant (subscriber) this facility belongs to */
   @ManyToOne(() => TenantEntity, (t) => t.facilities, {
     nullable: false,
