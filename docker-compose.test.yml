@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:16
+    container_name: postgres-test
+    environment:
+      POSTGRES_DB: heartly_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "UTC"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: redis-test
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redispass
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+  supertokens-test:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:10.1.3
+    container_name: supertokens-test
+    depends_on:
+      postgres-supertokens-test:
+        condition: service_healthy
+    ports:
+      - "3567:3567"
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://postgres:postgres@postgres-supertokens-test:5432/supertokens"
+      API_KEYS: "test-api-key"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3567/hello || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+  postgres-supertokens-test:
+    image: postgres:16
+    container_name: postgres-supertokens-test
+    environment:
+      POSTGRES_DB: supertokens
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "UTC"
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge

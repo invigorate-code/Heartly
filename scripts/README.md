@@ -26,6 +26,21 @@ Testing and validation scripts:
 
 ## Usage
 
+### Docker Test Environment
+```bash
+# Start test environment (PostgreSQL, Redis, SuperTokens)
+pnpm run test:env:start
+
+# Stop test environment
+pnpm run test:env:stop
+
+# Run all tests with Docker environment
+pnpm run test:with-docker
+
+# Run all tests including frontend
+pnpm run test:all
+```
+
 ### Running Test Scripts
 ```bash
 # Run email verification tests
