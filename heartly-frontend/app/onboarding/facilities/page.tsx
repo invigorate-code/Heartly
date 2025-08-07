@@ -8,7 +8,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@heroui/modal";
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import {
   Form,
   Input,

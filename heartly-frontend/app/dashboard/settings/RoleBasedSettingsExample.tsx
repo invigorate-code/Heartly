@@ -8,8 +8,7 @@ import {
   useHasRole,
   useHasPermission,
 } from "@/components/auth/RoleBasedAccess";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 
 export const RoleBasedSettingsExample: React.FC = () => {
   const isOwner = useHasRole("OWNER");
