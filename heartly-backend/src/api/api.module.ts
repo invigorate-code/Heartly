@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PHIModule } from 'src/phi/phi.module';
 import { AuditLogModule } from './audit-log/audit-log.module';
 import { AuthModule } from './auth/auth.module';
+// import { PasswordResetModule } from './auth/password-reset.module';
 import { ClientModule } from './client/client.module';
 import { FacilityModule } from './facility/facility.module';
 import { FormFieldContributionModule } from './form-field-contribution/form-field-contribution.module';
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
   imports: [
     HealthModule,
     AuthModule,
+    // PasswordResetModule, // Temporarily disabled due to bcrypt native module issue
     FacilityModule,
     TenantModule,
     UserModule,
