@@ -26,7 +26,6 @@ import { validateFacility } from "@/app/onboarding/facilities/utils";
 import {
   facilityTableColumns,
   componentFacility,
-  FacilityWithoutId,
 } from "@/app/onboarding/facilities/model";
 import { redirect } from "next/navigation";
 import { useUser } from "@/shared/context/UserContext";
@@ -98,7 +97,7 @@ const FacilitiesPage = () => {
   };
 
   const handleSubmit = (onClose: () => void) => {
-    const validationErrors = validateFacility(formData as FacilityWithoutId);
+    const validationErrors = validateFacility(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -291,7 +290,7 @@ const FacilitiesPage = () => {
                   onPress={() => {
                     onClose();
                     setIsEditing(false);
-                    setFormData({} as Facility);
+                    setFormData({} as componentFacility);
                   }}
                   type="reset"
                 >

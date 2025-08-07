@@ -28,6 +28,10 @@ export const authApi = {
   logout: async () => {
     console.log("authApi.logout - needs SuperTokens implementation");
     return null;
+  },
+  signOut: async () => {
+    console.log("authApi.signOut - needs SuperTokens implementation");
+    return null;
   }
 };
 

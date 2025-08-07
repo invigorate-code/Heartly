@@ -21,7 +21,9 @@ export default function EmailVerificationRequired() {
     const getUserInfo = async () => {
       try {
         const userInfo = await getBasicUserInfo();
-        setUserEmail(userInfo.email);
+        if (userInfo.email) {
+          setUserEmail(userInfo.email);
+        }
 
         // If user is actually verified, redirect to dashboard
         if (userInfo.isEmailVerified) {
