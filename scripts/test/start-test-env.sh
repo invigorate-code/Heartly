@@ -52,7 +52,7 @@ echo -e " ${GREEN}✅${NC}"
 
 # Wait for SuperTokens
 echo -n "Waiting for SuperTokens..."
-until curl --fail http://localhost:3567/hello > /dev/null 2>&1; do
+until curl --fail http://localhost:13567/hello > /dev/null 2>&1; do
     echo -n "."
     sleep 1
 done
@@ -62,10 +62,10 @@ echo ""
 echo -e "${GREEN}✅ Test environment is ready!${NC}"
 echo ""
 echo "Services running:"
-echo "  - PostgreSQL: localhost:5432"
-echo "  - Redis: localhost:6379"
-echo "  - SuperTokens: localhost:3567"
-echo "  - PostgreSQL (SuperTokens): localhost:5433"
+echo "  - PostgreSQL: localhost:15432"
+echo "  - Redis: localhost:16379"
+echo "  - SuperTokens: localhost:13567"
+echo "  - PostgreSQL (SuperTokens): localhost:15433"
 echo ""
 echo "To stop the test environment, run:"
 echo "  ./scripts/test/stop-test-env.sh"

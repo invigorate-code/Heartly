@@ -39,9 +39,17 @@ export class SuperTokensPermissionsGuard implements CanActivate {
       const userId = session.getUserId();
       const tenantId = await session.getTenantId();
 
-      // Get user permissions from SuperTokens
-      const { permissions: userPermissions } =
-        await UserRoles.getPermissionsForUser(tenantId, userId);
+      // Get user roles from SuperTokens
+      const { roles } = await UserRoles.getRolesForUser(tenantId, userId);
+      
+      // Get all permissions for user's roles
+      const userPermissions: string[] = [];
+      for (const role of roles) {
+        const result = await UserRoles.getPermissionsForRole(role);
+        if (result.status === 'OK') {
+          userPermissions.push(...result.permissions);
+        }
+      }
 
       // Check if user has all required permissions
       const hasAllRequiredPermissions = requiredPermissions.every((permission) =>

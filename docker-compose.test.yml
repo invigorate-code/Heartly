@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres-test:
     image: postgres:16
@@ -10,7 +8,7 @@ services:
       POSTGRES_PASSWORD: postgres
       TZ: "UTC"
     ports:
-      - "5432:5432"
+      - "15432:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
@@ -23,7 +21,7 @@ services:
     image: redis:7-alpine
     container_name: redis-test
     ports:
-      - "6379:6379"
+      - "16379:6379"
     command: redis-server --requirepass redispass
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
@@ -40,7 +38,7 @@ services:
       postgres-supertokens-test:
         condition: service_healthy
     ports:
-      - "3567:3567"
+      - "13567:3567"
     environment:
       POSTGRESQL_CONNECTION_URI: "postgresql://postgres:postgres@postgres-supertokens-test:5432/supertokens"
       API_KEYS: "test-api-key"
@@ -61,7 +59,7 @@ services:
       POSTGRES_PASSWORD: postgres
       TZ: "UTC"
     ports:
-      - "5433:5432"
+      - "15433:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
