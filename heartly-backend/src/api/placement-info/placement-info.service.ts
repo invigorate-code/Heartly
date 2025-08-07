@@ -13,7 +13,7 @@ import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { MedicationEntity } from '../medication/entities/medication.entity';
 import { TenantService } from '../tenant/tenant.service';
-import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
 import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import {

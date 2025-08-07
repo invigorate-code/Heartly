@@ -7,11 +7,11 @@ import { MetadataEntity } from '@/common/entities/form-metadata.entity';
 import { EntityRelationshipRequirement } from '@/common/interfaces/form-definitions.interface';
 import { PHIService } from 'src/phi/phi.service';
 import { CreateAddressDto } from '../address/dto/createAddress.req.dto';
-import { CreateMedicationDto } from '../medication/dto/createMedication.req.dto';
+import { CreateMedicationDto } from '../medication/dto/CreateMedication.req.dto';
 import { MedicationEntity } from '../medication/entities/medication.entity';
 import { CreateSpecialistDto } from '../specialist/dto/createSpecialist.req.dto';
 import { SpecialistEntity } from '../specialist/entities/specialist.entity';
-import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
 import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 

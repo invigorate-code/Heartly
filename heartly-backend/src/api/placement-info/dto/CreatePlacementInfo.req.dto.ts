@@ -1,5 +1,5 @@
 import { CreateAddressDto } from '@/api/address/dto/createAddress.req.dto';
-import { CreateMedicationDto } from '@/api/medication/dto/createMedication.req.dto';
+import { CreateMedicationDto } from '@/api/medication/dto/CreateMedication.req.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
