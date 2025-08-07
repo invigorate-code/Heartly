@@ -45,7 +45,7 @@ jobs:
 
       - name: Wait for SuperTokens
         run: |
-          until curl --fail http://localhost:3567/hello; do
+          until curl --fail http://localhost:13567/hello; do
             echo "Waiting for SuperTokens..."
             sleep 2
           done
@@ -72,7 +72,7 @@ jobs:
           NODE_ENV=test
           PORT=3001
           DATABASE_HOST=localhost
-          DATABASE_PORT=5432
+          DATABASE_PORT=15432
           DATABASE_USER=postgres
           DATABASE_PASSWORD=postgres
           DATABASE_NAME=heartly_test
@@ -81,10 +81,10 @@ jobs:
           JWT_SECRET=test-jwt-secret-key-for-ci
           JWT_EXPIRES_IN=1h
           REDIS_HOST=localhost
-          REDIS_PORT=6379
+          REDIS_PORT=16379
           REDIS_PASSWORD=redispass
-          SUPERTOKENS_CONNECTION_URI=http://localhost:3567
-          SUPERTOKENS_API_KEY=test-api-key
+          SUPERTOKENS_CONNECTION_URI=http://localhost:13567
+          SUPERTOKENS_API_KEY=test-api-key-for-testing-purposes
           SUPERTOKENS_WEBSITE_DOMAIN=http://localhost:3000
           SUPERTOKENS_API_DOMAIN=http://localhost:3001
           MAIL_HOST=localhost
@@ -215,7 +215,7 @@ jobs:
           JWT_SECRET=test-jwt-secret-key-for-ci
           JWT_EXPIRES_IN=1h
           SUPERTOKENS_CONNECTION_URI=https://try.supertokens.com
-          SUPERTOKENS_API_KEY=test-api-key
+          SUPERTOKENS_API_KEY=test-api-key-for-testing-purposes
           SUPERTOKENS_WEBSITE_DOMAIN=http://localhost:3000
           SUPERTOKENS_API_DOMAIN=http://localhost:3001
           EOF
