@@ -1,4 +1,16 @@
-import { Facility } from "@/utils/supabase/db-model.ts";
+// TODO: Replace with proper type from backend API
+export interface Facility {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  projected_client_count: number;
+  tenant_id: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 export const facilityTableColumns = [
   {

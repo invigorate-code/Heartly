@@ -97,6 +97,13 @@ const FacilitiesPage = () => {
     );
   };
 
+  const handleSubmit = (onClose: () => void) => {
+    const validationErrors = validateFacility(formData as FacilityWithoutId);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     if (isEditing) {
       // TODO: Implement facility update API call
       console.log("Updating facility:", formData);

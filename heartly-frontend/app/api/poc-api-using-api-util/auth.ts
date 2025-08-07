@@ -19,6 +19,18 @@ export type BasicUserInfoResponse = {
   message?: string;
 };
 
+// TODO: Implement proper auth API with SuperTokens
+export const authApi = {
+  getLoggedInUser: async () => {
+    console.log("authApi.getLoggedInUser - needs SuperTokens implementation");
+    return null;
+  },
+  logout: async () => {
+    console.log("authApi.logout - needs SuperTokens implementation");
+    return null;
+  }
+};
+
 type FormField = {
   id: string;
   value: string;
