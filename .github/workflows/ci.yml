@@ -1,0 +1,173 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend - Build and Test
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: heartly_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create backend .env file
+        working-directory: ./heartly-backend
+        run: |
+          cat > .env << EOF
+          NODE_ENV=test
+          PORT=3001
+          DATABASE_HOST=localhost
+          DATABASE_PORT=5432
+          DATABASE_USER=postgres
+          DATABASE_PASSWORD=postgres
+          DATABASE_NAME=heartly_test
+          DATABASE_SYNCHRONIZE=false
+          DATABASE_LOGGING=false
+          JWT_SECRET=test-jwt-secret-key-for-ci
+          JWT_EXPIRES_IN=1h
+          SUPERTOKENS_CONNECTION_URI=https://try.supertokens.com
+          SUPERTOKENS_API_KEY=test-api-key
+          SUPERTOKENS_WEBSITE_DOMAIN=http://localhost:3000
+          SUPERTOKENS_API_DOMAIN=http://localhost:3001
+          EOF
+
+      - name: Build backend
+        run: pnpm run build:backend
+
+      - name: Run backend linting
+        working-directory: ./heartly-backend
+        run: pnpm run lint
+
+      - name: Run backend tests
+        working-directory: ./heartly-backend
+        run: pnpm run test
+        env:
+          NODE_ENV: test
+
+      - name: Run backend e2e tests
+        working-directory: ./heartly-backend
+        run: pnpm run test:e2e
+        env:
+          NODE_ENV: test
+
+  frontend:
+    name: Frontend - Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create frontend .env.local file
+        working-directory: ./heartly-frontend
+        run: |
+          cat > .env.local << EOF
+          NEXT_PUBLIC_API_URL=http://localhost:3001
+          NEXT_PUBLIC_SUPERTOKENS_WEBSITE_DOMAIN=http://localhost:3000
+          NEXT_PUBLIC_SUPERTOKENS_API_DOMAIN=http://localhost:3001
+          EOF
+
+      - name: Build frontend
+        working-directory: ./heartly-frontend
+        run: pnpm run build
+
+      - name: Run frontend tests
+        working-directory: ./heartly-frontend
+        run: pnpm run test
+        env:
+          NODE_ENV: test
+
+  integration:
+    name: Integration - Type Generation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create backend .env file
+        working-directory: ./heartly-backend
+        run: |
+          cat > .env << EOF
+          NODE_ENV=test
+          PORT=3001
+          DATABASE_HOST=localhost
+          DATABASE_PORT=5432
+          DATABASE_USER=postgres
+          DATABASE_PASSWORD=postgres
+          DATABASE_NAME=heartly_test
+          DATABASE_SYNCHRONIZE=false
+          DATABASE_LOGGING=false
+          JWT_SECRET=test-jwt-secret-key-for-ci
+          JWT_EXPIRES_IN=1h
+          SUPERTOKENS_CONNECTION_URI=https://try.supertokens.com
+          SUPERTOKENS_API_KEY=test-api-key
+          SUPERTOKENS_WEBSITE_DOMAIN=http://localhost:3000
+          SUPERTOKENS_API_DOMAIN=http://localhost:3001
+          EOF
+
+      - name: Sync types
+        run: pnpm run sync-types
