@@ -91,10 +91,7 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     );
 
     // Add improved email format validation
-    await queryRunner.query(`
-      ALTER TABLE "user" ADD CONSTRAINT "CHK_user_email_format" 
-      CHECK ("email" IS NULL OR "email" ~* E'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
-    `);
+    // Note: User email constraint already exists from CreateUserTable migration, skip it
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_email_format" 
       CHECK ("email" IS NULL OR "email" ~* E'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
@@ -280,9 +277,7 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_user_phone"`);
 
     // Drop constraints
-    await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "CHK_user_email_format"`,
-    );
+    // Note: CHK_user_email_format is handled by CreateUserTable migration
     await queryRunner.query(
       `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "CHK_user_onboarding_date_logic"`,
     );
