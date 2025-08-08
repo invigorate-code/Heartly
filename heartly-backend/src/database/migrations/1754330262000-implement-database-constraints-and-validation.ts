@@ -7,14 +7,15 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // ===== PHASE 1: Fix Existing Constraint Issues =====
 
     // 1.1 Fix User table uniqueness constraints (make them tenant-scoped)
+    // Drop existing constraints using IF EXISTS to handle TypeORM-generated names
     await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT "UQ_user_email"`,
+      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "UQ_e12875dfb3b1d92d7d7c5377e22"`, // email constraint
     );
     await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT "UQ_user_username"`,
+      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "UQ_78a916df40e02a9deb1c4b75edb"`, // username constraint
     );
     await queryRunner.query(
-      `ALTER TABLE "user" DROP CONSTRAINT "UQ_user_company"`,
+      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "UQ_1deceaa2e6008b9a3241252c778"`, // company constraint
     );
 
     // Create tenant-scoped unique constraints
@@ -91,6 +92,10 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
 
     // Add improved email format validation
     await queryRunner.query(`
+      ALTER TABLE "user" ADD CONSTRAINT "CHK_user_email_format" 
+      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+    `);
+    await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_email_format" 
       CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
@@ -146,8 +151,8 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
       CHECK (
         LENGTH("firstName") >= 1 AND LENGTH("firstName") <= 50 AND 
         LENGTH("lastName") >= 1 AND LENGTH("lastName") <= 50 AND
-        "firstName" ~ '^[A-Za-z\\s\\'-]+$' AND 
-        "lastName" ~ '^[A-Za-z\\s\\'-]+$'
+        "firstName" ~ '^[A-Za-z[:space:]''-]+$' AND 
+        "lastName" ~ '^[A-Za-z[:space:]''-]+$'
       )
     `);
     await queryRunner.query(`
@@ -155,8 +160,8 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
       CHECK (
         LENGTH("firstName") >= 1 AND LENGTH("firstName") <= 50 AND 
         LENGTH("lastName") >= 1 AND LENGTH("lastName") <= 50 AND
-        "firstName" ~ '^[A-Za-z\\s\\'-]+$' AND 
-        "lastName" ~ '^[A-Za-z\\s\\'-]+$'
+        "firstName" ~ '^[A-Za-z[:space:]''-]+$' AND 
+        "lastName" ~ '^[A-Za-z[:space:]''-]+$'
       )
     `);
 
@@ -171,7 +176,7 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_city_format" 
-      CHECK (LENGTH(city) >= 2 AND LENGTH(city) <= 100 AND city ~ '^[A-Za-z\\s\\'-]+$')
+      CHECK (LENGTH(city) >= 2 AND LENGTH(city) <= 100 AND city ~ '^[A-Za-z[:space:]''-]+$')
     `);
 
     // 3.4 Add financial field constraints (future-proofing)
@@ -250,25 +255,8 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
       `CREATE INDEX "IDX_audit_log_action_date" ON "user_action_audit_log" ("action", "created_at")`,
     );
 
-    // ===== PHASE 5: Add Meaningful Error Messages =====
-
-    // Update constraint names with meaningful messages (PostgreSQL will use constraint name in error)
-    await queryRunner.query(`
-      COMMENT ON CONSTRAINT "CHK_user_email_format" ON "user" IS 
-      'Email must be in valid format (user@domain.com)'
-    `);
-    await queryRunner.query(`
-      COMMENT ON CONSTRAINT "CHK_user_phone_format" ON "user" IS 
-      'Phone number must be in international format (+1234567890)'
-    `);
-    await queryRunner.query(`
-      COMMENT ON CONSTRAINT "CHK_client_uci_format" ON "client" IS 
-      'UCI must be 6-20 characters, uppercase letters and numbers only'
-    `);
-    await queryRunner.query(`
-      COMMENT ON CONSTRAINT "CHK_facility_zip_format" ON "facility" IS 
-      'ZIP code must be in format 12345 or 12345-6789'
-    `);
+    // ===== PHASE 5: Comments section removed =====
+    // Note: PostgreSQL doesn't support COMMENT ON CONSTRAINT directly
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -292,6 +280,9 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_user_phone"`);
 
     // Drop constraints
+    await queryRunner.query(
+      `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "CHK_user_email_format"`,
+    );
     await queryRunner.query(
       `ALTER TABLE "user" DROP CONSTRAINT IF EXISTS "CHK_user_onboarding_date_logic"`,
     );

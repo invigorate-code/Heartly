@@ -81,21 +81,21 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
         foreignKeys: [
           {
             columnNames: ['tenant_id'],
-            referencedTableName: 'tenants',
+            referencedTableName: 'tenant',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
             name: 'fk_custom_roles_tenant_id',
           },
           {
             columnNames: ['created_by'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'SET NULL',
             name: 'fk_custom_roles_created_by',
           },
           {
             columnNames: ['updated_by'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'SET NULL',
             name: 'fk_custom_roles_updated_by',
@@ -142,7 +142,7 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
           ('STAFF', 'Staff Member', 'Basic operational access for client management',
            '["users:read","facilities:read","clients:read","clients:write","audit:read"]')
       ) AS system_roles(role_name, display_name, description, permissions)
-      CROSS JOIN tenants t;
+      CROSS JOIN tenant t;
     `);
   }
 

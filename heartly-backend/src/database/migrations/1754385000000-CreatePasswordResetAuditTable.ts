@@ -51,7 +51,8 @@ export class CreatePasswordResetAuditTable1754385000000 implements MigrationInte
     `);
 
     // Grant necessary permissions
-    await queryRunner.query(`GRANT SELECT, INSERT, UPDATE ON password_reset_audit TO heartly_backend_user`);
+    // Note: The database user will be created by database admin
+    // await queryRunner.query(`GRANT SELECT, INSERT, UPDATE ON password_reset_audit TO heartly_backend_user`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
