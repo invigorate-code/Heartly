@@ -371,58 +371,121 @@ export class FixFacilityProjectedClientCount1754362686249
             ALTER TABLE "facility" DROP COLUMN IF EXISTS "projected_client_count"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility"
-            ADD "projectedClientCount" integer NOT NULL DEFAULT '0'
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='facility' AND column_name='projectedClientCount'
+                ) THEN
+                    ALTER TABLE "facility" ADD "projectedClientCount" integer NOT NULL DEFAULT '0';
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility"
-            ADD "roomCount" integer NOT NULL DEFAULT '0'
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='facility' AND column_name='roomCount'
+                ) THEN
+                    ALTER TABLE "facility" ADD "roomCount" integer NOT NULL DEFAULT '0';
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility"
-            ADD "isDeleted" boolean NOT NULL DEFAULT false
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='facility' AND column_name='isDeleted'
+                ) THEN
+                    ALTER TABLE "facility" ADD "isDeleted" boolean NOT NULL DEFAULT false;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "firstName"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "firstName" character varying NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='firstName'
+                ) THEN
+                    ALTER TABLE "client" ADD "firstName" character varying NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "lastName"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "lastName" character varying NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='lastName'
+                ) THEN
+                    ALTER TABLE "client" ADD "lastName" character varying NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "uci"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "uci" character varying NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='uci'
+                ) THEN
+                    ALTER TABLE "client" ADD "uci" character varying NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "photo"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "photo" character varying
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='photo'
+                ) THEN
+                    ALTER TABLE "client" ADD "photo" character varying;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "user_action_audit_log" DROP COLUMN IF EXISTS "action"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log"
-            ADD "action" character varying NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='user_action_audit_log' AND column_name='action'
+                ) THEN
+                    ALTER TABLE "user_action_audit_log" ADD "action" character varying NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs"
-            ADD "details" jsonb
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='system_audit_logs' AND column_name='details'
+                ) THEN
+                    ALTER TABLE "system_audit_logs" ADD "details" jsonb;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             CREATE INDEX "IDX_a92b15406515b60d366acaecc8" ON "data_audit_log" ("timestamp")
@@ -673,43 +736,85 @@ export class FixFacilityProjectedClientCount1754362686249
             ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs"
-            ADD "details" json
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='system_audit_logs' AND column_name='details'
+                ) THEN
+                    ALTER TABLE "system_audit_logs" ADD "details" json;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "user_action_audit_log" DROP COLUMN IF EXISTS "action"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log"
-            ADD "action" character varying(100) NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='user_action_audit_log' AND column_name='action'
+                ) THEN
+                    ALTER TABLE "user_action_audit_log" ADD "action" character varying(100) NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "photo"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "photo" character varying(500)
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='photo'
+                ) THEN
+                    ALTER TABLE "client" ADD "photo" character varying(500);
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "uci"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "uci" character varying(20) NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='uci'
+                ) THEN
+                    ALTER TABLE "client" ADD "uci" character varying(20) NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "lastName"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "lastName" character varying(50) NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='lastName'
+                ) THEN
+                    ALTER TABLE "client" ADD "lastName" character varying(50) NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "client" DROP COLUMN IF EXISTS "firstName"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client"
-            ADD "firstName" character varying(50) NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='client' AND column_name='firstName'
+                ) THEN
+                    ALTER TABLE "client" ADD "firstName" character varying(50) NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             ALTER TABLE "facility" DROP COLUMN IF EXISTS "isDeleted"
@@ -721,8 +826,15 @@ export class FixFacilityProjectedClientCount1754362686249
             ALTER TABLE "facility" DROP COLUMN IF EXISTS "projectedClientCount"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility"
-            ADD "projected_client_count" integer NOT NULL
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name='facility' AND column_name='projected_client_count'
+                ) THEN
+                    ALTER TABLE "facility" ADD "projected_client_count" integer NOT NULL;
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             DROP INDEX IF EXISTS "public"."IDX_e329d7ce38cd3c7df4b7437a0b"
