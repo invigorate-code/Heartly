@@ -474,12 +474,23 @@ export class FixFacilityProjectedClientCount1754362686249
             END $$;
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
+            DO $$ 
+            BEGIN 
+                IF EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'system_audit_logs' AND table_schema = 'public'
+                ) THEN
+                    ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details";
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             DO $$ 
             BEGIN 
-                IF NOT EXISTS (
+                IF EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'system_audit_logs' AND table_schema = 'public'
+                ) AND NOT EXISTS (
                     SELECT column_name FROM information_schema.columns 
                     WHERE table_name='system_audit_logs' AND column_name='details'
                 ) THEN
@@ -733,12 +744,23 @@ export class FixFacilityProjectedClientCount1754362686249
             DROP INDEX IF EXISTS "public"."IDX_a92b15406515b60d366acaecc8"
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
+            DO $$ 
+            BEGIN 
+                IF EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'system_audit_logs' AND table_schema = 'public'
+                ) THEN
+                    ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details";
+                END IF;
+            END $$;
         `);
     await queryRunner.query(`
             DO $$ 
             BEGIN 
-                IF NOT EXISTS (
+                IF EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'system_audit_logs' AND table_schema = 'public'
+                ) AND NOT EXISTS (
                     SELECT column_name FROM information_schema.columns 
                     WHERE table_name='system_audit_logs' AND column_name='details'
                 ) THEN
