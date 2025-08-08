@@ -71,15 +71,15 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // Add phone number format validation
     await queryRunner.query(`
       ALTER TABLE "user" ADD CONSTRAINT "CHK_user_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
+      CHECK ("phone" IS NULL OR "phone" ~ '^\+?[1-9]\d{1,14}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
+      CHECK ("phone" IS NULL OR "phone" ~ '^\+?[1-9]\d{1,14}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_phone_format" 
-      CHECK (phone IS NULL OR phone ~ '^\+?[1-9]\d{1,14}$')
+      CHECK ("phone" IS NULL OR "phone" ~ '^\+?[1-9]\d{1,14}$')
     `);
 
     // 2.2 Add email fields where missing and improve validation
@@ -93,15 +93,15 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // Add improved email format validation
     await queryRunner.query(`
       ALTER TABLE "user" ADD CONSTRAINT "CHK_user_email_format" 
-      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+      CHECK ("email" IS NULL OR "email" ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_email_format" 
-      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+      CHECK ("email" IS NULL OR "email" ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_email_format" 
-      CHECK (email IS NULL OR email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+      CHECK ("email" IS NULL OR "email" ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
     `);
 
     // 2.3 Add tenant-scoped uniqueness for facility names
@@ -142,7 +142,7 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // 3.1 Enhanced UCI format validation
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_uci_format" 
-      CHECK (LENGTH(uci) >= 6 AND LENGTH(uci) <= 20 AND uci ~ '^[A-Z0-9]+$')
+      CHECK (LENGTH("uci") >= 6 AND LENGTH("uci") <= 20 AND "uci" ~ '^[A-Z0-9]+$')
     `);
 
     // 3.2 Enhanced name validation (no special characters, reasonable length)
@@ -168,15 +168,15 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     // 3.3 Facility validation enhancements
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_name_length" 
-      CHECK (LENGTH(name) >= 3 AND LENGTH(name) <= 100)
+      CHECK (LENGTH("name") >= 3 AND LENGTH("name") <= 100)
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_address_length" 
-      CHECK (LENGTH(address) >= 5 AND LENGTH(address) <= 200)
+      CHECK (LENGTH("address") >= 5 AND LENGTH("address") <= 200)
     `);
     await queryRunner.query(`
       ALTER TABLE "facility" ADD CONSTRAINT "CHK_facility_city_format" 
-      CHECK (LENGTH(city) >= 2 AND LENGTH(city) <= 100 AND city ~ '^[A-Za-z[:space:]''-]+$')
+      CHECK (LENGTH("city") >= 2 AND LENGTH("city") <= 100 AND "city" ~ '^[A-Za-z[:space:]''-]+$')
     `);
 
     // 3.4 Add financial field constraints (future-proofing)
@@ -185,7 +185,7 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     );
     await queryRunner.query(`
       ALTER TABLE "client" ADD CONSTRAINT "CHK_client_balance_precision" 
-      CHECK (current_balance IS NULL OR (current_balance >= -999999.99 AND current_balance <= 999999.99))
+      CHECK ("current_balance" IS NULL OR ("current_balance" >= -999999.99 AND "current_balance" <= 999999.99))
     `);
 
     // 3.5 Enhanced audit log action validation
@@ -205,8 +205,8 @@ export class ImplementDatabaseConstraintsAndValidation1754330262000
     await queryRunner.query(`
       ALTER TABLE "user" ADD CONSTRAINT "CHK_user_onboarding_date_logic" 
       CHECK (
-        onboarding_completed_at IS NULL OR 
-        (onboarding_completed_at >= created_at AND onboarding_completed_at <= CURRENT_TIMESTAMP)
+        "onboarding_completed_at" IS NULL OR 
+        ("onboarding_completed_at" >= "created_at" AND "onboarding_completed_at" <= CURRENT_TIMESTAMP)
       )
     `);
 

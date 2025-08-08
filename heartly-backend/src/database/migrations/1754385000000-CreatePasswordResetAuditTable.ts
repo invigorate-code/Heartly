@@ -10,7 +10,7 @@ export class CreatePasswordResetAuditTable1754385000000 implements MigrationInte
         "tenant_id" character varying NOT NULL,
         "reset_by_user_id" character varying NOT NULL,
         "target_user_id" character varying NOT NULL,
-        "reset_method" character varying NOT NULL CHECK (reset_method IN ('self_service', 'administrative', 'temp_password')),
+        "reset_method" character varying NOT NULL CHECK ("reset_method" IN ('self_service', 'administrative', 'temp_password')),
         "ip_address" inet,
         "user_agent" text,
         "success" boolean NOT NULL DEFAULT false,
@@ -47,7 +47,7 @@ export class CreatePasswordResetAuditTable1754385000000 implements MigrationInte
     // Create RLS policy for tenant isolation
     await queryRunner.query(`
       CREATE POLICY password_reset_audit_tenant_isolation ON password_reset_audit
-      USING (tenant_id = current_setting('app.current_tenant_id', true))
+      USING ("tenant_id" = current_setting('app.current_tenant_id', true))
     `);
 
     // Grant necessary permissions
