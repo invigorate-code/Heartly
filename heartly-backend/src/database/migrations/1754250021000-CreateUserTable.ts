@@ -31,7 +31,7 @@ export class CreateUserTable1754250021000 implements MigrationInterface {
                 CONSTRAINT "UQ_user_email" UNIQUE ("email"),
                 CONSTRAINT "UQ_user_company" UNIQUE ("company"),
                 CONSTRAINT "FK_user_tenant" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT "CHK_user_email_format" CHECK ("email" IS NULL OR "email" ~* E'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}$'),
+                CONSTRAINT "CHK_user_email_format" CHECK ("email" IS NULL OR "email" ~* E'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),
                 CONSTRAINT "CHK_user_onboarding_step" CHECK ("onboarding_step" >= 0 AND "onboarding_step" <= 10)
             )
         `);

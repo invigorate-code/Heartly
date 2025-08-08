@@ -152,20 +152,21 @@ export class ImplementRowLevelSecurityPolicies1754252063000
     );
 
     // Drop performance indexes
+    // Note: CONCURRENTLY removed as it cannot run inside a transaction
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_user_tenant_id"`,
+      `DROP INDEX IF EXISTS "idx_user_tenant_id"`,
     );
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_client_tenant_facility"`,
+      `DROP INDEX IF EXISTS "idx_client_tenant_facility"`,
     );
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_facility_tenant_id"`,
+      `DROP INDEX IF EXISTS "idx_facility_tenant_id"`,
     );
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_audit_log_tenant_facility"`,
+      `DROP INDEX IF EXISTS "idx_audit_log_tenant_facility"`,
     );
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_facility_staff_user_facility"`,
+      `DROP INDEX IF EXISTS "idx_facility_staff_user_facility"`,
     );
 
     // Restore the original facility policy (from previous migration)
