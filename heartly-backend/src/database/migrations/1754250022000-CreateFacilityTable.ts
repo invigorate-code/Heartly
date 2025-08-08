@@ -25,7 +25,7 @@ export class CreateFacilityTable1754250022000 implements MigrationInterface {
                 CONSTRAINT "CHK_facility_projected_client_count" CHECK ("projectedClientCount" >= 0),
                 CONSTRAINT "CHK_facility_room_count" CHECK ("roomCount" IS NULL OR "roomCount" >= 0),
                 CONSTRAINT "CHK_facility_state_format" CHECK (LENGTH("state") = 2 AND "state" = UPPER("state")),
-                CONSTRAINT "CHK_facility_zip_format" CHECK ("zip" ~ '^[0-9]{5}(-[0-9]{4})?$')
+                CONSTRAINT "CHK_facility_zip_format" CHECK ("zip" ~ E'^[0-9]{5}(-[0-9]{4})?$')
             )
         `);
 
