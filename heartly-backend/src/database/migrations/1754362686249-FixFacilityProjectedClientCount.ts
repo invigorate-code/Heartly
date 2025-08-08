@@ -368,7 +368,7 @@ export class FixFacilityProjectedClientCount1754362686249
             CREATE INDEX "IDX_e329d7ce38cd3c7df4b7437a0b" ON "placement_info_specialists" ("specialistId")
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility" DROP COLUMN "projected_client_count"
+            ALTER TABLE "facility" DROP COLUMN IF EXISTS "projected_client_count"
         `);
     await queryRunner.query(`
             ALTER TABLE "facility"
@@ -383,42 +383,42 @@ export class FixFacilityProjectedClientCount1754362686249
             ADD "isDeleted" boolean NOT NULL DEFAULT false
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "firstName"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "firstName"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "firstName" character varying NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "lastName"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "lastName"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "lastName" character varying NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "uci"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "uci"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "uci" character varying NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "photo"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "photo"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "photo" character varying
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP COLUMN "action"
+            ALTER TABLE "user_action_audit_log" DROP COLUMN IF EXISTS "action"
         `);
     await queryRunner.query(`
             ALTER TABLE "user_action_audit_log"
             ADD "action" character varying NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs" DROP COLUMN "details"
+            ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
         `);
     await queryRunner.query(`
             ALTER TABLE "system_audit_logs"
@@ -670,55 +670,55 @@ export class FixFacilityProjectedClientCount1754362686249
             DROP INDEX IF EXISTS "public"."IDX_a92b15406515b60d366acaecc8"
         `);
     await queryRunner.query(`
-            ALTER TABLE "system_audit_logs" DROP COLUMN "details"
+            ALTER TABLE "system_audit_logs" DROP COLUMN IF EXISTS "details"
         `);
     await queryRunner.query(`
             ALTER TABLE "system_audit_logs"
             ADD "details" json
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP COLUMN "action"
+            ALTER TABLE "user_action_audit_log" DROP COLUMN IF EXISTS "action"
         `);
     await queryRunner.query(`
             ALTER TABLE "user_action_audit_log"
             ADD "action" character varying(100) NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "photo"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "photo"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "photo" character varying(500)
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "uci"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "uci"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "uci" character varying(20) NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "lastName"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "lastName"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "lastName" character varying(50) NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP COLUMN "firstName"
+            ALTER TABLE "client" DROP COLUMN IF EXISTS "firstName"
         `);
     await queryRunner.query(`
             ALTER TABLE "client"
             ADD "firstName" character varying(50) NOT NULL
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility" DROP COLUMN "isDeleted"
+            ALTER TABLE "facility" DROP COLUMN IF EXISTS "isDeleted"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility" DROP COLUMN "roomCount"
+            ALTER TABLE "facility" DROP COLUMN IF EXISTS "roomCount"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility" DROP COLUMN "projectedClientCount"
+            ALTER TABLE "facility" DROP COLUMN IF EXISTS "projectedClientCount"
         `);
     await queryRunner.query(`
             ALTER TABLE "facility"
@@ -731,7 +731,7 @@ export class FixFacilityProjectedClientCount1754362686249
             DROP INDEX IF EXISTS "public"."IDX_bd004c519ae7b2164d66895355"
         `);
     await queryRunner.query(`
-            DROP TABLE "placement_info_specialists"
+            DROP TABLE IF EXISTS "placement_info_specialists"
         `);
     await queryRunner.query(`
             DROP INDEX IF EXISTS "public"."IDX_4be92df1dfa5c24a494e3f6b33"
@@ -740,25 +740,25 @@ export class FixFacilityProjectedClientCount1754362686249
             DROP INDEX IF EXISTS "public"."IDX_3e58fa23a278b8393e76e26576"
         `);
     await queryRunner.query(`
-            DROP TABLE "contributor"
+            DROP TABLE IF EXISTS "contributor"
         `);
     await queryRunner.query(`
-            DROP TABLE "placement_info"
+            DROP TABLE IF EXISTS "placement_info"
         `);
     await queryRunner.query(`
-            DROP TABLE "medication"
+            DROP TABLE IF EXISTS "medication"
         `);
     await queryRunner.query(`
-            DROP TABLE "specialist"
+            DROP TABLE IF EXISTS "specialist"
         `);
     await queryRunner.query(`
-            DROP TABLE "address"
+            DROP TABLE IF EXISTS "address"
         `);
     await queryRunner.query(`
-            DROP TABLE "metadata"
+            DROP TABLE IF EXISTS "metadata"
         `);
     await queryRunner.query(`
-            DROP TABLE "form_field_contribution"
+            DROP TABLE IF EXISTS "form_field_contribution"
         `);
     await queryRunner.query(`
             ALTER TABLE "user_action_audit_log"
