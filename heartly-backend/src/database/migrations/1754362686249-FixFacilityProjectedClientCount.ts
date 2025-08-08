@@ -7,196 +7,196 @@ export class FixFacilityProjectedClientCount1754362686249
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            ALTER TABLE "client" DROP CONSTRAINT "FK_client_facility"
+            ALTER TABLE "client" DROP CONSTRAINT IF EXISTS "FK_client_facility"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP CONSTRAINT "FK_client_tenant"
+            ALTER TABLE "client" DROP CONSTRAINT IF EXISTS "FK_client_tenant"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_audit_log_user"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_audit_log_user"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_audit_log_client"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_audit_log_client"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_audit_log_target_user"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_audit_log_target_user"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_audit_log_target_facility"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_audit_log_target_facility"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_audit_log_target_tenant"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_audit_log_target_tenant"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility_staff" DROP CONSTRAINT "FK_f79a22d861415ebfc915028fc89"
+            ALTER TABLE "facility_staff" DROP CONSTRAINT IF EXISTS "FK_f79a22d861415ebfc915028fc89"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_tenant_id"
+            DROP INDEX IF EXISTS "public"."IDX_user_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_email"
+            DROP INDEX IF EXISTS "public"."IDX_user_email"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_username"
+            DROP INDEX IF EXISTS "public"."IDX_user_username"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_user_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_tenant_id_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_user_tenant_id_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_tenant_composite"
+            DROP INDEX IF EXISTS "public"."IDX_user_tenant_composite"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_role_performance"
+            DROP INDEX IF EXISTS "public"."IDX_user_role_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_onboarding_performance"
+            DROP INDEX IF EXISTS "public"."IDX_user_onboarding_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_user_created_performance"
+            DROP INDEX IF EXISTS "public"."IDX_user_created_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_user_tenant_id"
+            DROP INDEX IF EXISTS "public"."idx_user_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_audit_log_table_row"
+            DROP INDEX IF EXISTS "public"."idx_audit_log_table_row"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_audit_log_user_timestamp"
+            DROP INDEX IF EXISTS "public"."idx_audit_log_user_timestamp"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_audit_log_tenant_timestamp"
+            DROP INDEX IF EXISTS "public"."idx_audit_log_tenant_timestamp"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_audit_log_timestamp"
+            DROP INDEX IF EXISTS "public"."idx_audit_log_timestamp"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_tenant_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_tenant_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_tenant_id"
+            DROP INDEX IF EXISTS "public"."IDX_facility_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_facility_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_tenant_id_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_facility_tenant_id_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_facility_tenant_id"
+            DROP INDEX IF EXISTS "public"."idx_facility_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_tenant_id"
+            DROP INDEX IF EXISTS "public"."IDX_client_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_facility_id"
+            DROP INDEX IF EXISTS "public"."IDX_client_facility_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_client_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_is_deleted"
+            DROP INDEX IF EXISTS "public"."IDX_client_is_deleted"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_uci"
+            DROP INDEX IF EXISTS "public"."IDX_client_uci"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_birth_date"
+            DROP INDEX IF EXISTS "public"."IDX_client_birth_date"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_tenant_id_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_client_tenant_id_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_facility_id_is_deleted"
+            DROP INDEX IF EXISTS "public"."IDX_client_facility_id_is_deleted"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_tenant_id_facility_id"
+            DROP INDEX IF EXISTS "public"."IDX_client_tenant_id_facility_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_client_tenant_id_uci_unique"
+            DROP INDEX IF EXISTS "public"."IDX_client_tenant_id_uci_unique"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_client_tenant_facility"
+            DROP INDEX IF EXISTS "public"."idx_client_tenant_facility"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_user_id"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_user_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_target_tenant_id"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_target_tenant_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_target_facility_id"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_target_facility_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_client_id"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_client_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_action"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_action"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_deleted_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_deleted_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_tenant_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_tenant_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_facility_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_facility_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_client_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_client_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_user_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_user_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_tenant_action_created_at"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_tenant_action_created_at"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_details_gin"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_details_gin"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_active_logs"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_active_logs"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_user_performance"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_user_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_facility_performance"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_facility_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_audit_log_tenant_performance"
+            DROP INDEX IF EXISTS "public"."IDX_audit_log_tenant_performance"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_audit_log_tenant_facility"
+            DROP INDEX IF EXISTS "public"."idx_audit_log_tenant_facility"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_staff_facility_id"
+            DROP INDEX IF EXISTS "public"."IDX_facility_staff_facility_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_staff_user_id"
+            DROP INDEX IF EXISTS "public"."IDX_facility_staff_user_id"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_staff_performance_facility"
+            DROP INDEX IF EXISTS "public"."IDX_facility_staff_performance_facility"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_facility_staff_performance_user"
+            DROP INDEX IF EXISTS "public"."IDX_facility_staff_performance_user"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."idx_facility_staff_user_facility"
+            DROP INDEX IF EXISTS "public"."idx_facility_staff_user_facility"
         `);
     await queryRunner.query(`
-            ALTER TABLE "data_audit_log" DROP CONSTRAINT "data_audit_log_operation_check"
+            ALTER TABLE "data_audit_log" DROP CONSTRAINT IF EXISTS "data_audit_log_operation_check"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP CONSTRAINT "CHK_client_birth_date"
+            ALTER TABLE "client" DROP CONSTRAINT IF EXISTS "CHK_client_birth_date"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "CHK_audit_log_action_length"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "CHK_audit_log_action_length"
         `);
     await queryRunner.query(`
             CREATE TABLE "form_field_contribution" (
@@ -568,106 +568,106 @@ export class FixFacilityProjectedClientCount1754362686249
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            ALTER TABLE "placement_info_specialists" DROP CONSTRAINT "FK_e329d7ce38cd3c7df4b7437a0b3"
+            ALTER TABLE "placement_info_specialists" DROP CONSTRAINT IF EXISTS "FK_e329d7ce38cd3c7df4b7437a0b3"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info_specialists" DROP CONSTRAINT "FK_bd004c519ae7b2164d668953559"
+            ALTER TABLE "placement_info_specialists" DROP CONSTRAINT IF EXISTS "FK_bd004c519ae7b2164d668953559"
         `);
     await queryRunner.query(`
-            ALTER TABLE "contributor" DROP CONSTRAINT "FK_4be92df1dfa5c24a494e3f6b330"
+            ALTER TABLE "contributor" DROP CONSTRAINT IF EXISTS "FK_4be92df1dfa5c24a494e3f6b330"
         `);
     await queryRunner.query(`
-            ALTER TABLE "contributor" DROP CONSTRAINT "FK_3e58fa23a278b8393e76e265760"
+            ALTER TABLE "contributor" DROP CONSTRAINT IF EXISTS "FK_3e58fa23a278b8393e76e265760"
         `);
     await queryRunner.query(`
-            ALTER TABLE "facility_staff" DROP CONSTRAINT "FK_f79a22d861415ebfc915028fc89"
+            ALTER TABLE "facility_staff" DROP CONSTRAINT IF EXISTS "FK_f79a22d861415ebfc915028fc89"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_e22a676b732692689bee92469ba"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_e22a676b732692689bee92469ba"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_35af8c075cd665e7bfca8f73c7e"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_35af8c075cd665e7bfca8f73c7e"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_acd733393077348fcaca40c8aee"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_acd733393077348fcaca40c8aee"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_e2926900eab0e8465ca85172829"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_e2926900eab0e8465ca85172829"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_d617e5af4dc38dac1b0a816d81f"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_d617e5af4dc38dac1b0a816d81f"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_933cd46899c4f8b50f7f2cdc5de"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_933cd46899c4f8b50f7f2cdc5de"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_e967ae542303c31facaa3b1ac12"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_e967ae542303c31facaa3b1ac12"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_443f5aa7ed7e2efa0b55584b71a"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_443f5aa7ed7e2efa0b55584b71a"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_384be773910e2d2a6e8d41a98f8"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_384be773910e2d2a6e8d41a98f8"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_af57643966bd9a0e661a5f8910c"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_af57643966bd9a0e661a5f8910c"
         `);
     await queryRunner.query(`
-            ALTER TABLE "placement_info" DROP CONSTRAINT "FK_b68ed446c7c1a5806b6b2b2e3ed"
+            ALTER TABLE "placement_info" DROP CONSTRAINT IF EXISTS "FK_b68ed446c7c1a5806b6b2b2e3ed"
         `);
     await queryRunner.query(`
-            ALTER TABLE "medication" DROP CONSTRAINT "FK_48c7f0dfc82800011df120030c6"
+            ALTER TABLE "medication" DROP CONSTRAINT IF EXISTS "FK_48c7f0dfc82800011df120030c6"
         `);
     await queryRunner.query(`
-            ALTER TABLE "specialist" DROP CONSTRAINT "FK_772feb82534d81f3d3aaf085949"
+            ALTER TABLE "specialist" DROP CONSTRAINT IF EXISTS "FK_772feb82534d81f3d3aaf085949"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_34df2b06889612b97cc021ae819"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_34df2b06889612b97cc021ae819"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_26354ec7795d2db91ce4e21cf90"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_26354ec7795d2db91ce4e21cf90"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_7b52daf9ad061ef1feb3ae2ccd9"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_7b52daf9ad061ef1feb3ae2ccd9"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_3d45dfa67fef2e6403b52d52a86"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_3d45dfa67fef2e6403b52d52a86"
         `);
     await queryRunner.query(`
-            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT "FK_b832d46978373d040e3e0648598"
+            ALTER TABLE "user_action_audit_log" DROP CONSTRAINT IF EXISTS "FK_b832d46978373d040e3e0648598"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP CONSTRAINT "FK_810b65a0776d2aa7bd93115a682"
+            ALTER TABLE "client" DROP CONSTRAINT IF EXISTS "FK_810b65a0776d2aa7bd93115a682"
         `);
     await queryRunner.query(`
-            ALTER TABLE "client" DROP CONSTRAINT "FK_ad1d780ef85cdd11f011d693b3f"
+            ALTER TABLE "client" DROP CONSTRAINT IF EXISTS "FK_ad1d780ef85cdd11f011d693b3f"
         `);
     await queryRunner.query(`
-            ALTER TABLE "metadata" DROP CONSTRAINT "FK_a192f03fd67e096fd714e8a0d32"
+            ALTER TABLE "metadata" DROP CONSTRAINT IF EXISTS "FK_a192f03fd67e096fd714e8a0d32"
         `);
     await queryRunner.query(`
-            ALTER TABLE "form_field_contribution" DROP CONSTRAINT "FK_c640250a2e2260566e05115924a"
+            ALTER TABLE "form_field_contribution" DROP CONSTRAINT IF EXISTS "FK_c640250a2e2260566e05115924a"
         `);
     await queryRunner.query(`
-            ALTER TABLE "form_field_contribution" DROP CONSTRAINT "FK_2da711ad6aa781d74ab9dea89b3"
+            ALTER TABLE "form_field_contribution" DROP CONSTRAINT IF EXISTS "FK_2da711ad6aa781d74ab9dea89b3"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_34df2b06889612b97cc021ae81"
+            DROP INDEX IF EXISTS "public"."IDX_34df2b06889612b97cc021ae81"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_b832d46978373d040e3e064859"
+            DROP INDEX IF EXISTS "public"."IDX_b832d46978373d040e3e064859"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_d2b01148b69743bda5e369b3c5"
+            DROP INDEX IF EXISTS "public"."IDX_d2b01148b69743bda5e369b3c5"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_6dc6c7c9c18e926dc6acf3b965"
+            DROP INDEX IF EXISTS "public"."IDX_6dc6c7c9c18e926dc6acf3b965"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_f3108e5284d834716b3f890d88"
+            DROP INDEX IF EXISTS "public"."IDX_f3108e5284d834716b3f890d88"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_a92b15406515b60d366acaecc8"
+            DROP INDEX IF EXISTS "public"."IDX_a92b15406515b60d366acaecc8"
         `);
     await queryRunner.query(`
             ALTER TABLE "system_audit_logs" DROP COLUMN "details"
@@ -725,19 +725,19 @@ export class FixFacilityProjectedClientCount1754362686249
             ADD "projected_client_count" integer NOT NULL
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_e329d7ce38cd3c7df4b7437a0b"
+            DROP INDEX IF EXISTS "public"."IDX_e329d7ce38cd3c7df4b7437a0b"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_bd004c519ae7b2164d66895355"
+            DROP INDEX IF EXISTS "public"."IDX_bd004c519ae7b2164d66895355"
         `);
     await queryRunner.query(`
             DROP TABLE "placement_info_specialists"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_4be92df1dfa5c24a494e3f6b33"
+            DROP INDEX IF EXISTS "public"."IDX_4be92df1dfa5c24a494e3f6b33"
         `);
     await queryRunner.query(`
-            DROP INDEX "public"."IDX_3e58fa23a278b8393e76e26576"
+            DROP INDEX IF EXISTS "public"."IDX_3e58fa23a278b8393e76e26576"
         `);
     await queryRunner.query(`
             DROP TABLE "contributor"
