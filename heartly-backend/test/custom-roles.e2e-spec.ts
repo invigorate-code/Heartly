@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { CustomRoleService } from '../src/api/role/custom-role.service';
 import { UserRole } from '../src/api/user/entities/user.entity';
@@ -35,7 +35,7 @@ describe('Custom Roles API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     customRoleService = moduleFixture.get<CustomRoleService>(CustomRoleService);
-    rolesService = moduleFixture.get<SuperTokensRolesService>(
+    _rolesService = moduleFixture.get<SuperTokensRolesService>(
       SuperTokensRolesService,
     );
 

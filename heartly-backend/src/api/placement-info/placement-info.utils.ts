@@ -5,7 +5,7 @@ import { SpecialistResponseDto } from '@/api/specialist/dto/getSpecialist.res.dt
 import { MetadataResponseDto } from '@/common/dto/getFormMetadata.res.dto';
 import { MetadataEntity } from '@/common/entities/form-metadata.entity';
 import { EntityRelationshipRequirement } from '@/common/interfaces/form-definitions.interface';
-import { PHIService } from 'src/phi/phi.service';
+import { PHIService } from '../../phi/phi.service';
 import { CreateAddressDto } from '../address/dto/createAddress.req.dto';
 import { CreateMedicationDto } from '../medication/dto/CreateMedication.req.dto';
 import { MedicationEntity } from '../medication/entities/medication.entity';

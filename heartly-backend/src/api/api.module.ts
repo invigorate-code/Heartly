@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PHIModule } from 'src/phi/phi.module';
+import { PHIModule } from '../phi/phi.module';
 import { AuditLogModule } from './audit-log/audit-log.module';
 import { AuthModule } from './auth/auth.module';
 // import { PasswordResetModule } from './auth/password-reset.module';
