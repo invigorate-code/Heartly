@@ -1,3 +1,5 @@
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 import {
   Body,
   Controller,
@@ -21,8 +23,6 @@ import { SearchAuditLogsDto } from './dto/search-audit-logs.req.dto';
 import { UserActionAuditLogResDto } from './dto/user-action-audit-log.res.dto';
 import { UserActionAuditLogEntity } from './entities/user-action-audit-log.entity';
 import { UserActionAuditLogService } from './user-action-audit-log.service';
-import { Roles } from '@/decorators/roles.decorator';
-import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('user-action-audit-logs')
 @UseGuards(SuperTokensAuthGuard)

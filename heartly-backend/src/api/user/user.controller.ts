@@ -1,4 +1,6 @@
 import { ApiPublic } from '@/decorators/http.decorators';
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 import {
   Body,
   Controller,
@@ -18,8 +20,6 @@ import UserMetadata from 'supertokens-node/recipe/usermetadata';
 import { CreateUserDto } from './dto/create-user.req.dto';
 import { UserRole } from './entities/user.entity';
 import { UserService } from './user.service';
-import { Roles } from '@/decorators/roles.decorator';
-import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('users')
 @Controller({ path: 'users' })
@@ -28,7 +28,7 @@ export class UserController {
 
   @Get()
   @ApiPublic({ summary: 'user test' })
-  async test(@Session() session: SessionContainer) {
+  async test(@Session() _session: SessionContainer) {
     return 'test';
   }
 

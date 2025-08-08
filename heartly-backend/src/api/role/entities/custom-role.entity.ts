@@ -1,13 +1,7 @@
-import { AbstractEntity } from '@/common/entities/abstract.entity';
 import { TenantEntity } from '@/api/tenant/entities/tenant.entity';
 import { UserEntity } from '@/api/user/entities/user.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  Index,
-} from 'typeorm';
+import { AbstractEntity } from '@/common/entities/abstract.entity';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('custom_roles')
 @Index(['tenantId', 'name'], { unique: true }) // Unique role names per tenant
@@ -66,6 +60,6 @@ export class CustomRoleEntity extends AbstractEntity {
   }
 
   removePermission(permission: string): void {
-    this.permissions = this.permissions.filter(p => p !== permission);
+    this.permissions = this.permissions.filter((p) => p !== permission);
   }
 }

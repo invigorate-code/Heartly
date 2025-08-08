@@ -1,8 +1,8 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SuperTokensRolesService } from './roles.service';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { UserRole } from '../../api/user/entities/user.entity';
-import { Logger } from '@nestjs/common';
+import { SuperTokensRolesService } from './roles.service';
 
 jest.mock('supertokens-node/recipe/userroles');
 
@@ -16,7 +16,7 @@ describe('SuperTokensRolesService', () => {
     }).compile();
 
     service = module.get<SuperTokensRolesService>(SuperTokensRolesService);
-    
+
     // Mock logger
     mockLogger = jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
@@ -28,7 +28,9 @@ describe('SuperTokensRolesService', () => {
 
   describe('initializeRoles', () => {
     it('should initialize all roles with correct permissions', async () => {
-      (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockResolvedValue({});
+      (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockResolvedValue(
+        {},
+      );
 
       await service.initializeRoles();
 
@@ -82,12 +84,16 @@ describe('SuperTokensRolesService', () => {
         ]),
       );
 
-      expect(mockLogger).toHaveBeenCalledWith('SuperTokens system roles initialized successfully');
+      expect(mockLogger).toHaveBeenCalledWith(
+        'SuperTokens system roles initialized successfully',
+      );
     });
 
     it('should throw error when role initialization fails', async () => {
       const error = new Error('SuperTokens error');
-      (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockRejectedValue(error);
+      (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockRejectedValue(
+        error,
+      );
 
       await expect(service.initializeRoles()).rejects.toThrow(error);
       expect(Logger.prototype.error).toHaveBeenCalledWith(
@@ -108,7 +114,9 @@ describe('SuperTokensRolesService', () => {
         'user-id',
         UserRole.ADMIN,
       );
-      expect(mockLogger).toHaveBeenCalledWith('Assigned role ADMIN to user user-id');
+      expect(mockLogger).toHaveBeenCalledWith(
+        'Assigned role ADMIN to user user-id',
+      );
     });
 
     it('should handle errors when assigning role', async () => {
@@ -136,7 +144,9 @@ describe('SuperTokensRolesService', () => {
         'user-id',
         UserRole.STAFF,
       );
-      expect(mockLogger).toHaveBeenCalledWith('Removed role STAFF from user user-id');
+      expect(mockLogger).toHaveBeenCalledWith(
+        'Removed role STAFF from user user-id',
+      );
     });
   });
 
@@ -150,14 +160,19 @@ describe('SuperTokensRolesService', () => {
       const result = await service.getUserRoles('user-id', 'tenant-id');
 
       expect(result).toEqual(mockRoles);
-      expect(UserRoles.getRolesForUser).toHaveBeenCalledWith('tenant-id', 'user-id');
+      expect(UserRoles.getRolesForUser).toHaveBeenCalledWith(
+        'tenant-id',
+        'user-id',
+      );
     });
 
     it('should handle errors when getting roles', async () => {
       const error = new Error('Failed to get roles');
       (UserRoles.getRolesForUser as jest.Mock).mockRejectedValue(error);
 
-      await expect(service.getUserRoles('user-id', 'tenant-id')).rejects.toThrow(error);
+      await expect(
+        service.getUserRoles('user-id', 'tenant-id'),
+      ).rejects.toThrow(error);
     });
   });
 
@@ -165,7 +180,7 @@ describe('SuperTokensRolesService', () => {
     it('should return user permissions', async () => {
       const mockPermissions = ['users:read', 'users:write', 'clients:read'];
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
-        roles: ['ADMIN']
+        roles: ['ADMIN'],
       });
       (UserRoles.getPermissionsForRole as jest.Mock).mockResolvedValue({
         status: 'OK',
@@ -175,7 +190,10 @@ describe('SuperTokensRolesService', () => {
       const result = await service.getUserPermissions('user-id', 'tenant-id');
 
       expect(result).toEqual(mockPermissions);
-      expect(UserRoles.getRolesForUser).toHaveBeenCalledWith('tenant-id', 'user-id');
+      expect(UserRoles.getRolesForUser).toHaveBeenCalledWith(
+        'tenant-id',
+        'user-id',
+      );
     });
   });
 
@@ -185,7 +203,11 @@ describe('SuperTokensRolesService', () => {
         roles: [UserRole.ADMIN, UserRole.STAFF],
       });
 
-      const result = await service.userHasRole('user-id', UserRole.ADMIN, 'tenant-id');
+      const result = await service.userHasRole(
+        'user-id',
+        UserRole.ADMIN,
+        'tenant-id',
+      );
 
       expect(result).toBe(true);
     });
@@ -195,15 +217,25 @@ describe('SuperTokensRolesService', () => {
         roles: [UserRole.STAFF],
       });
 
-      const result = await service.userHasRole('user-id', UserRole.OWNER, 'tenant-id');
+      const result = await service.userHasRole(
+        'user-id',
+        UserRole.OWNER,
+        'tenant-id',
+      );
 
       expect(result).toBe(false);
     });
 
     it('should return false on error', async () => {
-      (UserRoles.getRolesForUser as jest.Mock).mockRejectedValue(new Error('Error'));
+      (UserRoles.getRolesForUser as jest.Mock).mockRejectedValue(
+        new Error('Error'),
+      );
 
-      const result = await service.userHasRole('user-id', UserRole.ADMIN, 'tenant-id');
+      const result = await service.userHasRole(
+        'user-id',
+        UserRole.ADMIN,
+        'tenant-id',
+      );
 
       expect(result).toBe(false);
       expect(Logger.prototype.error).toHaveBeenCalled();
@@ -213,28 +245,36 @@ describe('SuperTokensRolesService', () => {
   describe('userHasPermission', () => {
     it('should return true when user has permission', async () => {
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
-        roles: ['ADMIN']
+        roles: ['ADMIN'],
       });
       (UserRoles.getPermissionsForRole as jest.Mock).mockResolvedValue({
         status: 'OK',
         permissions: ['users:read', 'users:write'],
       });
 
-      const result = await service.userHasPermission('user-id', 'users:read', 'tenant-id');
+      const result = await service.userHasPermission(
+        'user-id',
+        'users:read',
+        'tenant-id',
+      );
 
       expect(result).toBe(true);
     });
 
     it('should return false when user lacks permission', async () => {
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
-        roles: ['STAFF']
+        roles: ['STAFF'],
       });
       (UserRoles.getPermissionsForRole as jest.Mock).mockResolvedValue({
         status: 'OK',
         permissions: ['users:read'],
       });
 
-      const result = await service.userHasPermission('user-id', 'users:delete', 'tenant-id');
+      const result = await service.userHasPermission(
+        'user-id',
+        'users:delete',
+        'tenant-id',
+      );
 
       expect(result).toBe(false);
     });
@@ -251,13 +291,27 @@ describe('SuperTokensRolesService', () => {
       await service.syncUserRole('user-id', UserRole.OWNER, 'tenant-id');
 
       // Should remove existing roles
-      expect(UserRoles.removeUserRole).toHaveBeenCalledWith('tenant-id', 'user-id', UserRole.STAFF);
-      expect(UserRoles.removeUserRole).toHaveBeenCalledWith('tenant-id', 'user-id', UserRole.ADMIN);
-      
+      expect(UserRoles.removeUserRole).toHaveBeenCalledWith(
+        'tenant-id',
+        'user-id',
+        UserRole.STAFF,
+      );
+      expect(UserRoles.removeUserRole).toHaveBeenCalledWith(
+        'tenant-id',
+        'user-id',
+        UserRole.ADMIN,
+      );
+
       // Should add new role
-      expect(UserRoles.addRoleToUser).toHaveBeenCalledWith('tenant-id', 'user-id', UserRole.OWNER);
-      
-      expect(mockLogger).toHaveBeenCalledWith('Synced role OWNER for user user-id');
+      expect(UserRoles.addRoleToUser).toHaveBeenCalledWith(
+        'tenant-id',
+        'user-id',
+        UserRole.OWNER,
+      );
+
+      expect(mockLogger).toHaveBeenCalledWith(
+        'Synced role OWNER for user user-id',
+      );
     });
 
     it('should handle errors during sync', async () => {
