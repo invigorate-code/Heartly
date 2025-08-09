@@ -39,7 +39,6 @@ export default async function Layout({ children }) {
         </NavbarContent>
       </Navbar>
       <div className="flex min-h-[calc(100vh-65px)] items-center justify-center">
-        <ToastProvider placement="top-right" />
         {children}
       </div>
     </div>
