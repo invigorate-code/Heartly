@@ -78,7 +78,67 @@ export const clearSessionPersistence = (): void => {
     localStorage.removeItem(STORAGE_KEYS.REMEMBER_ME);
     localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
     // Don't clear preference - user's choice should persist across sessions
+    
+    // Broadcast logout event to other tabs/windows
+    broadcastLogoutEvent();
   }
+};
+
+/**
+ * Broadcast logout event to other tabs/windows
+ */
+export const broadcastLogoutEvent = (): void => {
+  if (typeof window !== 'undefined') {
+    // Use localStorage event to communicate between tabs
+    localStorage.setItem('heartly-logout-broadcast', Date.now().toString());
+    localStorage.removeItem('heartly-logout-broadcast');
+    
+    // Also use BroadcastChannel API if available
+    if ('BroadcastChannel' in window) {
+      const channel = new BroadcastChannel('heartly-auth');
+      channel.postMessage({ type: 'LOGOUT', timestamp: Date.now() });
+      channel.close();
+    }
+  }
+};
+
+/**
+ * Listen for logout events from other tabs/windows
+ */
+export const setupLogoutListener = (onLogout: () => void): (() => void) => {
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+
+  // Listen for localStorage changes (works across tabs)
+  const handleStorageChange = (event: StorageEvent) => {
+    if (event.key === 'heartly-logout-broadcast') {
+      console.log('Logout event received from another tab');
+      onLogout();
+    }
+  };
+
+  // Listen for BroadcastChannel messages
+  let channel: BroadcastChannel | null = null;
+  if ('BroadcastChannel' in window) {
+    channel = new BroadcastChannel('heartly-auth');
+    channel.onmessage = (event) => {
+      if (event.data.type === 'LOGOUT') {
+        console.log('Logout event received via BroadcastChannel');
+        onLogout();
+      }
+    };
+  }
+
+  window.addEventListener('storage', handleStorageChange);
+
+  // Return cleanup function
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+    if (channel) {
+      channel.close();
+    }
+  };
 };
 
 /**
