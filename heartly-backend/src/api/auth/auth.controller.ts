@@ -192,4 +192,110 @@ export class AuthController {
       };
     }
   }
+
+  @UseGuards(SuperTokensAuthGuard)
+  @Post('/logout')
+  @VerifySession()
+  async logout(
+    @Session() session: SessionContainer,
+    @Req() req: Request,
+  ) {
+    try {
+      const userId = session.getUserId();
+      const payload = session.getAccessTokenPayload();
+      const tenantId = payload.tenantId || 'public';
+      const userRole = payload.role || 'UNKNOWN';
+      
+      // Get IP and user agent for audit logging
+      const ipAddress = req.ip || 'unknown';
+      const userAgent = req.get('User-Agent') || 'unknown';
+
+      console.log(`Logout initiated for user ${userId} from IP ${ipAddress}`);
+
+      // Revoke the session using SuperTokens
+      await session.revokeSession();
+
+      // Log logout event for audit purposes
+      console.log(`User logout successful:`, {
+        userId,
+        tenantId,
+        role: userRole,
+        sessionHandle: session.getHandle(),
+        ipAddress,
+        userAgent,
+        timestamp: new Date().toISOString(),
+      });
+
+      return {
+        status: 'OK',
+        message: 'Logged out successfully',
+        userId,
+        logoutTime: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('Error during logout:', error);
+      
+      // Even if there's an error, try to clear session state
+      try {
+        await session.revokeSession();
+      } catch (revokeError) {
+        console.error('Failed to revoke session during error handling:', revokeError);
+      }
+
+      return {
+        status: 'ERROR',
+        message: 'Logout completed with errors',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  @UseGuards(SuperTokensAuthGuard)
+  @Post('/logout-all-sessions')
+  @VerifySession()
+  async logoutAllSessions(
+    @Session() session: SessionContainer,
+    @Req() req: Request,
+  ) {
+    try {
+      const userId = session.getUserId();
+      const payload = session.getAccessTokenPayload();
+      const tenantId = payload.tenantId || 'public';
+      const userRole = payload.role || 'UNKNOWN';
+      
+      // Get IP and user agent for audit logging
+      const ipAddress = req.ip || 'unknown';
+      const userAgent = req.get('User-Agent') || 'unknown';
+
+      console.log(`Logout all sessions initiated for user ${userId} from IP ${ipAddress}`);
+
+      // Revoke all sessions for this user
+      await SessionNode.revokeAllSessionsForUser(userId, tenantId);
+
+      // Log logout all event for audit purposes
+      console.log(`User logout all sessions successful:`, {
+        userId,
+        tenantId,
+        role: userRole,
+        ipAddress,
+        userAgent,
+        timestamp: new Date().toISOString(),
+      });
+
+      return {
+        status: 'OK',
+        message: 'Logged out from all sessions successfully',
+        userId,
+        logoutTime: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('Error during logout all sessions:', error);
+
+      return {
+        status: 'ERROR',
+        message: 'Failed to logout from all sessions',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
 }

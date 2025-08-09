@@ -5,7 +5,9 @@ import {
   updateLastActivity, 
   shouldPersistSession, 
   clearSessionPersistence,
-  initializeSessionPersistence 
+  initializeSessionPersistence,
+  setupLogoutListener,
+  broadcastLogoutEvent
 } from '@/shared/lib/auth/sessionPersistence';
 
 export interface SessionContext {
@@ -25,6 +27,7 @@ export interface UseSessionReturn {
   hasAnyRole: (roles: string[]) => boolean;
   refreshSession: () => Promise<void>;
   signOut: () => Promise<void>;
+  signOutAllSessions: () => Promise<void>;
 }
 
 /**
@@ -101,16 +104,89 @@ export const useSession = (): UseSessionReturn => {
     }
   }, [initializeSession]);
 
-  // Sign out user
+  // Sign out user from current session
   const signOut = useCallback(async () => {
     try {
+      console.log('Initiating logout for current session...');
+      
+      // Call backend logout endpoint for audit logging
+      try {
+        const response = await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Backend logout successful:', result);
+        }
+      } catch (backendError) {
+        console.warn('Backend logout call failed, proceeding with client logout:', backendError);
+      }
+
+      // Sign out from SuperTokens
       await Session.signOut();
-      clearSessionPersistence(); // Clear persistence data on sign out
+      
+      // Clear persistence data and broadcast to other tabs
+      clearSessionPersistence();
+      
+      // Clear local state
       setSession(null);
       setSessionContext(null);
+      
+      console.log('Logout completed successfully');
     } catch (error) {
       console.error('Failed to sign out:', error);
-      clearSessionPersistence(); // Clear even if sign out fails
+      
+      // Even if sign out fails, clear local state
+      clearSessionPersistence();
+      setSession(null);
+      setSessionContext(null);
+    }
+  }, []);
+
+  // Sign out user from all sessions
+  const signOutAllSessions = useCallback(async () => {
+    try {
+      console.log('Initiating logout for all sessions...');
+      
+      // Call backend logout-all-sessions endpoint
+      try {
+        const response = await fetch('/api/auth/logout-all-sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Backend logout all sessions successful:', result);
+        }
+      } catch (backendError) {
+        console.warn('Backend logout all sessions call failed, proceeding with client logout:', backendError);
+      }
+
+      // Sign out from SuperTokens (this will invalidate current session)
+      await Session.signOut();
+      
+      // Clear persistence data and broadcast to other tabs
+      clearSessionPersistence();
+      
+      // Clear local state
+      setSession(null);
+      setSessionContext(null);
+      
+      console.log('Logout all sessions completed successfully');
+    } catch (error) {
+      console.error('Failed to sign out from all sessions:', error);
+      
+      // Even if sign out fails, clear local state
+      clearSessionPersistence();
+      setSession(null);
+      setSessionContext(null);
     }
   }, []);
 
@@ -136,6 +212,16 @@ export const useSession = (): UseSessionReturn => {
       initializeSession();
     };
 
+    // Handle logout events from other tabs
+    const handleCrossTabLogout = () => {
+      console.log('Cross-tab logout detected, clearing session state');
+      setSession(null);
+      setSessionContext(null);
+    };
+
+    // Set up cross-tab logout listener
+    const cleanupLogoutListener = setupLogoutListener(handleCrossTabLogout);
+
     // Add event listeners for session changes
     window.addEventListener('supertokens-session-created', handleSessionChange);
     window.addEventListener('supertokens-session-expired', handleSessionChange);
@@ -146,6 +232,7 @@ export const useSession = (): UseSessionReturn => {
       window.removeEventListener('supertokens-session-created', handleSessionChange);
       window.removeEventListener('supertokens-session-expired', handleSessionChange);
       window.removeEventListener('supertokens-session-refreshed', handleSessionChange);
+      cleanupLogoutListener();
     };
   }, [initializeSession]);
 
@@ -158,5 +245,6 @@ export const useSession = (): UseSessionReturn => {
     hasAnyRole,
     refreshSession,
     signOut,
+    signOutAllSessions,
   };
 };
