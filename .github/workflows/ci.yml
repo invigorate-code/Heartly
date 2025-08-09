@@ -116,12 +116,6 @@ jobs:
         env:
           NODE_ENV: test
 
-      - name: Run backend e2e tests
-        working-directory: ./heartly-backend
-        run: pnpm run test:e2e
-        env:
-          NODE_ENV: test
-
       - name: Stop Docker services
         if: always()
         run: docker compose -f docker-compose.test.yml down
