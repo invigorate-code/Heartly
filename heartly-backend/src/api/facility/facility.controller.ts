@@ -1,3 +1,5 @@
+import { Roles } from '@/decorators/roles.decorator';
+import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 import {
   Body,
   Controller,
@@ -21,8 +23,6 @@ import { CreateFacilityDto } from './dto/createFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityService } from './facility.service';
-import { Roles } from '@/decorators/roles.decorator';
-import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
 
 @ApiTags('facility')
 @UseGuards(SuperTokensAuthGuard)

@@ -1,5 +1,11 @@
-import { SupportedStorage } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+
+// Define storage interface locally
+interface SupportedStorage {
+  getItem: (key: string) => string | null;
+  setItem: (key: string, value: string) => void;
+  removeItem: (key: string) => void;
+}
 
 /**
  * Redirects to a specified path with an encoded message as a query parameter.

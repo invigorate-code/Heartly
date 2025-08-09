@@ -1,13 +1,17 @@
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { CustomRoleService } from './custom-role.service';
-import { CustomRoleEntity } from './entities/custom-role.entity';
 import { SuperTokensRolesService } from '../../utils/supertokens/roles.service';
+import { UserRole } from '../user/entities/user.entity';
+import { CustomRoleService } from './custom-role.service';
 import { CreateCustomRoleDto } from './dto/create-custom-role.dto';
 import { UpdateCustomRoleDto } from './dto/update-custom-role.dto';
-import { UserRole } from '../user/entities/user.entity';
+import { CustomRoleEntity } from './entities/custom-role.entity';
 
 describe('CustomRoleService', () => {
   let service: CustomRoleService;
@@ -63,17 +67,27 @@ describe('CustomRoleService', () => {
       // Setup
       rolesService.isSystemRole.mockReturnValue(false);
       rolesService.getAllAvailablePermissions.mockReturnValue([
-        'users:read', 'clients:read', 'users:write'
+        'users:read',
+        'clients:read',
+        'users:write',
       ]);
       repository.findOne.mockResolvedValue(null); // Role doesn't exist
-      
-      const savedRole = { id: 'role-id', ...createDto, tenantId: mockTenantId } as CustomRoleEntity;
+
+      const savedRole = {
+        id: 'role-id',
+        ...createDto,
+        tenantId: mockTenantId,
+      } as CustomRoleEntity;
       repository.create.mockReturnValue(savedRole);
       repository.save.mockResolvedValue(savedRole);
       rolesService.createCustomRole.mockResolvedValue();
 
       // Execute
-      const result = await service.createCustomRole(createDto, mockTenantId, mockUserId);
+      const result = await service.createCustomRole(
+        createDto,
+        mockTenantId,
+        mockUserId,
+      );
 
       // Assert
       expect(rolesService.isSystemRole).toHaveBeenCalledWith('test_role');
@@ -151,7 +165,7 @@ describe('CustomRoleService', () => {
       const mockCustomRoles = [
         { id: '1', name: 'custom_role', isActive: true },
       ] as CustomRoleEntity[];
-      
+
       repository.find.mockResolvedValue(mockCustomRoles);
       rolesService.getRolePermissions.mockImplementation((role) => {
         const permissions = {
@@ -186,21 +200,21 @@ describe('CustomRoleService', () => {
         name: 'test_role',
         isSystem: false,
       } as CustomRoleEntity;
-      
+
       repository.findOne.mockResolvedValue(existingRole);
       rolesService.getAllAvailablePermissions.mockReturnValue(['users:write']);
       rolesService.updateCustomRolePermissions.mockResolvedValue();
-      const updatedRole = { 
-        ...existingRole, 
+      const updatedRole = {
+        ...existingRole,
         ...updateDto,
         hasPermission: jest.fn(),
         addPermission: jest.fn(),
-        removePermission: jest.fn()
+        removePermission: jest.fn(),
       };
       repository.save.mockResolvedValue(updatedRole);
 
       // Execute
-      const result = await service.updateCustomRole(
+      const _result = await service.updateCustomRole(
         roleId,
         updateDto,
         mockTenantId,
@@ -237,15 +251,15 @@ describe('CustomRoleService', () => {
         name: 'test_role',
         isSystem: false,
       } as CustomRoleEntity;
-      
+
       repository.findOne.mockResolvedValue(customRole);
       rolesService.deleteCustomRole.mockResolvedValue();
-      const deletedRole = { 
-        ...customRole, 
+      const deletedRole = {
+        ...customRole,
         isActive: false,
         hasPermission: jest.fn(),
         addPermission: jest.fn(),
-        removePermission: jest.fn()
+        removePermission: jest.fn(),
       };
       repository.save.mockResolvedValue(deletedRole);
 
@@ -322,10 +336,20 @@ describe('CustomRoleService', () => {
   describe('validatePermissions', () => {
     it('should validate permissions correctly', () => {
       // Setup
-      const availablePermissions = ['users:read', 'users:write', 'clients:read'];
-      rolesService.getAllAvailablePermissions.mockReturnValue(availablePermissions);
+      const availablePermissions = [
+        'users:read',
+        'users:write',
+        'clients:read',
+      ];
+      rolesService.getAllAvailablePermissions.mockReturnValue(
+        availablePermissions,
+      );
 
-      const testPermissions = ['users:read', 'invalid:permission', 'clients:read'];
+      const testPermissions = [
+        'users:read',
+        'invalid:permission',
+        'clients:read',
+      ];
 
       // Execute
       const result = service.validatePermissions(testPermissions);

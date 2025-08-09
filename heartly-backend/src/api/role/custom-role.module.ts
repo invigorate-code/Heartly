@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomRoleEntity } from './entities/custom-role.entity';
-import { CustomRoleService } from './custom-role.service';
-import { CustomRoleController } from './custom-role.controller';
 import { SuperTokensRolesModule } from '../../utils/supertokens/roles.module';
+import { CustomRoleController } from './custom-role.controller';
+import { CustomRoleService } from './custom-role.service';
+import { CustomRoleEntity } from './entities/custom-role.entity';
 
 @Module({
   imports: [
