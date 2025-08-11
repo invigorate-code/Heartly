@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { UserRole } from '../src/api/user/entities/user.entity';
 import { AppModule } from '../src/app.module';
@@ -24,7 +24,7 @@ describe('Role-based Access Control (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    rolesService = moduleFixture.get<SuperTokensRolesService>(
+    _rolesService = moduleFixture.get<SuperTokensRolesService>(
       SuperTokensRolesService,
     );
 

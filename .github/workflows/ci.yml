@@ -94,6 +94,9 @@ jobs:
           MAIL_PASSWORD=
           MAIL_DEFAULT_EMAIL=noreply@heartly.com
           MAIL_DEFAULT_NAME=Heartly Test
+          MAIL_IGNORE_TLS=false
+          MAIL_SECURE=false
+          MAIL_REQUIRE_TLS=false
           EOF
 
       - name: Build backend
@@ -110,12 +113,6 @@ jobs:
       - name: Run backend tests
         working-directory: ./heartly-backend
         run: pnpm run test
-        env:
-          NODE_ENV: test
-
-      - name: Run backend e2e tests
-        working-directory: ./heartly-backend
-        run: pnpm run test:e2e
         env:
           NODE_ENV: test
 

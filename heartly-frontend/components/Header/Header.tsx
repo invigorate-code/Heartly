@@ -16,14 +16,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@heroui/react";
-
-import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from "@heroui/dropdown";
+} from "@heroui/react";
 import NotificationsCard from "./NotificationsCard";
 import { logger } from "@/utils/logger";
 import { redirect } from "next/navigation";

@@ -6,7 +6,7 @@ import { RlsContextService } from '@/common/services/rls-context.service';
 import { FORM_TYPE } from '@/constants/form-types.constant';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PHIService } from 'src/phi/phi.service';
+import { PHIService } from '../../phi/phi.service';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../client/entities/client.entity';
