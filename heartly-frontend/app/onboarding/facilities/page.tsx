@@ -7,9 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@heroui/modal";
-import { Button } from "@heroui/react";
-import {
+  Button,
   Form,
   Input,
   Table,
