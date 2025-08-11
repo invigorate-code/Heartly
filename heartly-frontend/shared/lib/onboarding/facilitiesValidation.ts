@@ -108,7 +108,7 @@ export const validateFacilitiesStep = async (): Promise<FacilityValidationResult
       errors,
       warnings,
       canProceed,
-      requiredActions: canProceed ? [] : requiredActions,
+      requiredActions,
       facilitiesCount: facilities.length,
       validFacilities: validFacilities.length,
     };
