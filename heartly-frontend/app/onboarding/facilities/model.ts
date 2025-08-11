@@ -1,4 +1,3 @@
-// TODO: Replace with proper type from backend API
 export interface Facility {
   id: string;
   name: string;
@@ -7,7 +6,10 @@ export interface Facility {
   state: string;
   zip: string;
   projected_client_count: number;
+  room_count?: number;
   tenant_id: string;
+  phone?: string;
+  email?: string;
   created_at: Date;
   updated_at: Date;
 }
