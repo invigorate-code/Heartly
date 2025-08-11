@@ -27,6 +27,8 @@ import {
 } from "@/app/onboarding/facilities/model";
 import { redirect } from "next/navigation";
 import { useUser } from "@/shared/context/UserContext";
+import { facilityAPI, FacilityResponse } from "@/lib/api/facility";
+import { toast } from "react-hot-toast";
 const FacilitiesPage = () => {
   const [facilitiesState, setFacilitiesState] = useState<componentFacility[]>(
     []
@@ -54,16 +56,33 @@ const FacilitiesPage = () => {
 
         if (!response.ok) {
           console.error('Error fetching user and facilities:', data.error);
+          toast.error('Failed to load facilities');
           return;
         }
 
-        // For now, set empty data until API is properly implemented
-        setTenantId(null);
-        setOwner(null);
-        setFacilitiesState([]);
+        setTenantId(data.tenantId);
+        setOwner(data.owner);
+        
+        // Map backend facility format to component format
+        const mappedFacilities: componentFacility[] = data.facilities.map((facility: FacilityResponse) => ({
+          id: facility.id,
+          name: facility.name,
+          address: facility.address,
+          city: facility.city,
+          state: facility.state,
+          zip: facility.zip,
+          projected_client_count: facility.projected_client_count,
+          room_count: facility.room_count,
+          tenant_id: facility.tenant_id,
+          phone: facility.phone,
+          email: facility.email,
+        }));
+        
+        setFacilitiesState(mappedFacilities);
 
       } catch (error) {
         console.error('Error calling API:', error);
+        toast.error('Failed to load facilities');
       }
     };
 
@@ -86,46 +105,110 @@ const FacilitiesPage = () => {
   };
 
   const handleDelete = async (facilityId: string) => {
-    // TODO: Implement facility deletion API call
-    console.log("Deleting facility:", facilityId);
-
-    setFacilitiesState(
-      facilitiesState.filter((facility) => facility.id !== facilityId)
-    );
+    try {
+      await facilityAPI.delete(facilityId);
+      
+      toast.success('Facility deleted successfully');
+      setFacilitiesState(
+        facilitiesState.filter((facility) => facility.id !== facilityId)
+      );
+    } catch (error) {
+      console.error('Error deleting facility:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete facility');
+    }
   };
 
-  const handleSubmit = (onClose: () => void) => {
+  const handleSubmit = async (onClose: () => void) => {
     const validationErrors = validateFacility(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    if (isEditing) {
-      // TODO: Implement facility update API call
-      console.log("Updating facility:", formData);
+    try {
+      if (isEditing) {
+        // Update existing facility
+        const updateData = {
+          id: formData.id,
+          name: formData.name,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          projectedClientCount: formData.projected_client_count || 0,
+          roomCount: formData.room_count || 0,
+          phone: formData.phone,
+          email: formData.email,
+        };
 
-      setFacilitiesState(
-        facilitiesState.map((facility) =>
-          facility.id === formData.id ? formData : facility
-        )
-      );
-    } else {
-      // TODO: Implement facility creation API call
-      const newFacility = {
-        ...formData,
-        id: Date.now().toString(), // Temporary ID
-        tenant_id: tenantId as string,
-      };
+        const updatedFacility = await facilityAPI.update(updateData);
+        
+        toast.success('Facility updated successfully');
+        
+        // Update local state with the response
+        const mappedFacility: componentFacility = {
+          id: updatedFacility.id,
+          name: updatedFacility.name,
+          address: updatedFacility.address,
+          city: updatedFacility.city,
+          state: updatedFacility.state,
+          zip: updatedFacility.zip,
+          projected_client_count: updatedFacility.projected_client_count,
+          room_count: updatedFacility.room_count,
+          tenant_id: updatedFacility.tenant_id,
+          phone: updatedFacility.phone,
+          email: updatedFacility.email,
+        };
+        
+        setFacilitiesState(
+          facilitiesState.map((facility) =>
+            facility.id === formData.id ? mappedFacility : facility
+          )
+        );
+      } else {
+        // Create new facility
+        const createData = {
+          name: formData.name,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          projectedClientCount: formData.projected_client_count || 0,
+          roomCount: formData.room_count || 0,
+          tenantId: tenantId as string,
+          phone: formData.phone,
+          email: formData.email,
+        };
 
-      console.log("Creating facility:", newFacility);
+        const newFacility = await facilityAPI.create(createData);
+        
+        toast.success('Facility created successfully');
+        
+        // Add to local state
+        const mappedFacility: componentFacility = {
+          id: newFacility.id,
+          name: newFacility.name,
+          address: newFacility.address,
+          city: newFacility.city,
+          state: newFacility.state,
+          zip: newFacility.zip,
+          projected_client_count: newFacility.projected_client_count,
+          room_count: newFacility.room_count,
+          tenant_id: newFacility.tenant_id,
+          phone: newFacility.phone,
+          email: newFacility.email,
+        };
+        
+        setFacilitiesState([...facilitiesState, mappedFacility]);
+      }
 
-      setFacilitiesState([...facilitiesState, newFacility]);
+      setFormData({} as componentFacility);
+      setErrors({});
+      onClose();
+    } catch (error) {
+      console.error('Error submitting facility:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save facility');
     }
-
-    setFormData({} as componentFacility);
-    setErrors({});
-    onClose();
   };
 
   const completeFacilityOnboarding = async () => {
@@ -265,22 +348,66 @@ const FacilitiesPage = () => {
                       }
                     />
                   </div>
-                  <Input
-                    isRequired
-                    errorMessage="Please enter a valid amount of clients"
-                    label="Amount of Clients"
-                    labelPlacement="inside"
-                    name="projected_client_count"
-                    type="number"
-                    size="sm"
-                    value={formData.projected_client_count?.toString() || ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        projected_client_count: parseInt(e.target.value),
-                      })
-                    }
-                  />
+                  <div className="flex flex-row gap-2">
+                    <Input
+                      isRequired
+                      errorMessage="Please enter a valid amount of clients"
+                      label="Amount of Clients"
+                      labelPlacement="inside"
+                      name="projected_client_count"
+                      type="number"
+                      size="sm"
+                      value={formData.projected_client_count?.toString() || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          projected_client_count: parseInt(e.target.value) || 0,
+                        })
+                      }
+                    />
+                    <Input
+                      isRequired
+                      errorMessage="Please enter a valid room count"
+                      label="Room Count"
+                      labelPlacement="inside"
+                      name="room_count"
+                      type="number"
+                      size="sm"
+                      value={formData.room_count?.toString() || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          room_count: parseInt(e.target.value) || 0,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <Input
+                      label="Phone Number"
+                      labelPlacement="inside"
+                      name="phone"
+                      type="tel"
+                      size="sm"
+                      placeholder="+1 (555) 123-4567"
+                      value={formData.phone || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                    />
+                    <Input
+                      label="Email Address"
+                      labelPlacement="inside"
+                      name="email"
+                      type="email"
+                      size="sm"
+                      placeholder="facility@example.com"
+                      value={formData.email || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
               </ModalBody>
               <ModalFooter className="flex flex-row justify-between gap-2 w-full">
