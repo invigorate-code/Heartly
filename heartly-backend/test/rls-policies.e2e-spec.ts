@@ -5,7 +5,7 @@ import { ClientEntity } from '../src/api/client/entities/client.entity';
 import { FacilityEntity } from '../src/api/facility/entities/facility.entity';
 import { TenantEntity } from '../src/api/tenant/entities/tenant.entity';
 import { UserActionAuditLogEntity } from '../src/api/user-action-audit-log/entities/user-action-audit-log.entity';
-import { UserEntity } from '../src/api/user/entities/user.entity';
+import { UserEntity, UserRole } from '../src/api/user/entities/user.entity';
 import { AppModule } from '../src/app.module';
 import { RlsContextService } from '../src/common/services/rls-context.service';
 
@@ -36,25 +36,25 @@ describe('RLS Policies (e2e)', () => {
     owner1: {
       id: 'owner-1',
       tenantId: 'tenant-1',
-      role: 'OWNER',
+      role: UserRole.OWNER,
       email: 'owner1@test.com',
     },
     admin1a: {
       id: 'admin-1a',
       tenantId: 'tenant-1',
-      role: 'ADMIN',
+      role: UserRole.ADMIN,
       email: 'admin1a@test.com',
     },
     staff1a: {
       id: 'staff-1a',
       tenantId: 'tenant-1',
-      role: 'STAFF',
+      role: UserRole.STAFF,
       email: 'staff1a@test.com',
     },
     owner2: {
       id: 'owner-2',
       tenantId: 'tenant-2',
-      role: 'OWNER',
+      role: UserRole.OWNER,
       email: 'owner2@test.com',
     },
     client1a1: {
@@ -339,7 +339,7 @@ describe('RLS Policies (e2e)', () => {
     ]);
 
     // Create users
-    await dataSource.getRepository(UserEntity).save([
+    const users: Partial<UserEntity>[] = [
       {
         ...testData.owner1,
         firstName: 'Owner',
@@ -364,7 +364,8 @@ describe('RLS Policies (e2e)', () => {
         lastName: 'Two',
         username: 'owner2',
       },
-    ]);
+    ];
+    await dataSource.getRepository(UserEntity).save(users);
 
     // Create clients
     await dataSource.getRepository(ClientEntity).save([

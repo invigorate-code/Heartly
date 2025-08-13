@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, IsOptional, Length, ArrayMinSize, ArrayUnique } from 'class-validator';
+import {
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateCustomRoleDto {
   @ApiProperty({

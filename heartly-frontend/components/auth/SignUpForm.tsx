@@ -1,12 +1,12 @@
 "use client";
 
-import { signUpAction } from "@/app/(auth-pages)/actions";
+import { useAuthActions } from "@/app/(auth-pages)/actions";
 import { SubmitButton } from "@/components/submit-button";
 import { Input, Button, Link, Divider } from "@heroui/react";
 import { useState, Suspense } from "react";
 import { EyeFilledIcon } from "@/components/icons/eye";
 import { EyeSlashFilledIcon } from "@/components/icons/eyeSlash";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export function SignUpForm() {
   const [showPasswordText, setShowPasswordText] = useState(false);
@@ -23,8 +23,12 @@ export function SignUpForm() {
   );
 }
 
-function SignUpFormContent({ showPasswordText, toggleVisibility }) {
+function SignUpFormContent({ showPasswordText, toggleVisibility }: { showPasswordText: boolean; toggleVisibility: () => void }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { signUpAction } = useAuthActions();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const status = searchParams.get("status");
   const message = searchParams.get("message");
 
@@ -42,10 +46,34 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
     );
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    
+    const formData = new FormData(e.currentTarget);
+    
+    try {
+      const result = await signUpAction(formData);
+      if (result.status === 'success') {
+        router.push(`/sign-up?status=success&message=${encodeURIComponent(result.message)}`);
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during sign up');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex w-full max-w-lg flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
       <p className="pb-2 text-2xl font-bold">Get Started with Heartly</p>
-      <form className="flex flex-col gap-3">
+      {error && (
+        <div className="text-red-500 text-sm">{error}</div>
+      )}
+      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <div className="flex gap-3">
           <Input name="firstName" placeholder="First Name" type="text" />
           <Input name="lastName" placeholder="Last Name" type="text" />
@@ -77,8 +105,8 @@ function SignUpFormContent({ showPasswordText, toggleVisibility }) {
             type={showPasswordText ? "text" : "password"}
           />
         </div>
-        <SubmitButton pendingText={"Signing Up..."} formAction={signUpAction}>
-          {"Sign Up"}
+        <SubmitButton pendingText={"Signing Up..."} disabled={isLoading}>
+          {isLoading ? "Signing Up..." : "Sign Up"}
         </SubmitButton>
         <Divider />
         <p className="text-center">

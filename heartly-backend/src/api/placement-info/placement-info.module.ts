@@ -3,7 +3,7 @@ import { FormFieldContributionEntity } from '@/common/entities/form-field-contri
 import { MetadataEntity } from '@/common/entities/form-metadata.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PHIModule } from 'src/phi/phi.module';
+import { PHIModule } from '../../phi/phi.module';
 import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { MedicationEntity } from '../medication/entities/medication.entity';

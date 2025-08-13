@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuditLogService } from './audit-log.service';
 import { DataAuditLog } from '../../common/entities/data-audit-log.entity';
-import { UserEntity } from '../user/entities/user.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { AuditLogService } from './audit-log.service';
 
 describe('AuditLogService', () => {
   let service: AuditLogService;
-  let auditLogRepository: Repository<DataAuditLog>;
-  let userRepository: Repository<UserEntity>;
-  let facilityRepository: Repository<FacilityEntity>;
+  let _auditLogRepository: Repository<DataAuditLog>;
+  let _userRepository: Repository<UserEntity>;
+  let _facilityRepository: Repository<FacilityEntity>;
 
   const mockAuditLogRepository = {
     createQueryBuilder: jest.fn(),
@@ -46,13 +46,13 @@ describe('AuditLogService', () => {
     }).compile();
 
     service = module.get<AuditLogService>(AuditLogService);
-    auditLogRepository = module.get<Repository<DataAuditLog>>(
+    _auditLogRepository = module.get<Repository<DataAuditLog>>(
       getRepositoryToken(DataAuditLog),
     );
-    userRepository = module.get<Repository<UserEntity>>(
+    _userRepository = module.get<Repository<UserEntity>>(
       getRepositoryToken(UserEntity),
     );
-    facilityRepository = module.get<Repository<FacilityEntity>>(
+    _facilityRepository = module.get<Repository<FacilityEntity>>(
       getRepositoryToken(FacilityEntity),
     );
   });
