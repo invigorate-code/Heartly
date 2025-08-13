@@ -1,42 +1,32 @@
-import { GET } from './route';
-import { NextRequest } from 'next/server';
-import { apiCall } from '@/lib/api-util';
-import { getSSRSession } from 'supertokens-node/nextjs';
+/**
+ * @jest-environment node
+ */
 
-// Mock dependencies
-jest.mock('@/lib/api-util');
-jest.mock('supertokens-node/nextjs');
-jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({})),
-}));
+import { NextRequest } from 'next/server';
+
+// Mock fetch before importing route
+global.fetch = jest.fn();
+
+// Now import the route after mocking
+import { GET } from './route';
 
 describe('GET /api/getUserAndFacilities', () => {
-  const mockApiCall = apiCall as jest.MockedFunction<typeof apiCall>;
-  const mockGetSSRSession = getSSRSession as jest.MockedFunction<typeof getSSRSession>;
+  const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    process.env.NEXT_PUBLIC_NEST_API_URL = 'http://localhost:4000';
   });
 
   it('should return user and facilities when authenticated', async () => {
-    // Mock session
-    const mockSession = {
-      getUserId: jest.fn().mockReturnValue('user-123'),
-      getTenantId: jest.fn().mockReturnValue('tenant-456'),
-    };
-    mockGetSSRSession.mockResolvedValueOnce(mockSession as any);
-
     // Mock user info response
     const mockUserInfo = {
+      status: 'OK',
+      userId: 'user-123',
       email: 'test@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
+      tenantIds: ['tenant-456'],
     };
-    mockApiCall.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce(mockUserInfo),
-    } as any);
-
+    
     // Mock facilities response
     const mockFacilities = [
       {
@@ -55,10 +45,16 @@ describe('GET /api/getUserAndFacilities', () => {
         updated_at: '2024-01-01T00:00:00Z',
       },
     ];
-    mockApiCall.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce(mockFacilities),
-    } as any);
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce(mockUserInfo),
+      } as any)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce(mockFacilities),
+      } as any);
 
     // Make request
     const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
@@ -77,17 +73,43 @@ describe('GET /api/getUserAndFacilities', () => {
       facilities: mockFacilities,
     });
 
-    expect(mockApiCall).toHaveBeenCalledTimes(2);
-    expect(mockApiCall).toHaveBeenNthCalledWith(1, '/api/user/getBasicUserInfo', {
-      method: 'GET',
-    });
-    expect(mockApiCall).toHaveBeenNthCalledWith(2, '/api/facility/getLoggedInUserFacilities', {
-      method: 'GET',
-    });
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(mockFetch).toHaveBeenNthCalledWith(1, 
+      'http://localhost:4000/api/user/getBasicUserInfo',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+      })
+    );
+    expect(mockFetch).toHaveBeenNthCalledWith(2,
+      'http://localhost:4000/api/facility/getLoggedInUserFacilities',
+      expect.objectContaining({
+        method: 'GET',
+        credentials: 'include',
+      })
+    );
   });
 
   it('should return 401 when not authenticated', async () => {
-    mockGetSSRSession.mockResolvedValueOnce(null);
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: jest.fn().mockResolvedValueOnce({ error: 'Not authenticated' }),
+    } as any);
+
+    const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data).toEqual({ error: 'Failed to authenticate' });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 401 when user info status is not OK', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValueOnce({ status: 'ERROR' }),
+    } as any);
 
     const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
     const response = await GET(request);
@@ -95,72 +117,48 @@ describe('GET /api/getUserAndFacilities', () => {
 
     expect(response.status).toBe(401);
     expect(data).toEqual({ error: 'Not authenticated' });
-    expect(mockApiCall).not.toHaveBeenCalled();
-  });
-
-  it('should return 500 when user info fetch fails', async () => {
-    const mockSession = {
-      getUserId: jest.fn().mockReturnValue('user-123'),
-      getTenantId: jest.fn().mockReturnValue('tenant-456'),
-    };
-    mockGetSSRSession.mockResolvedValueOnce(mockSession as any);
-
-    mockApiCall.mockResolvedValueOnce({
-      ok: false,
-      json: jest.fn().mockResolvedValueOnce({ message: 'User not found' }),
-    } as any);
-
-    const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
-    const response = await GET(request);
-    const data = await response.json();
-
-    expect(response.status).toBe(500);
-    expect(data).toEqual({ error: 'Failed to fetch user info' });
   });
 
   it('should return 500 when facilities fetch fails', async () => {
-    const mockSession = {
-      getUserId: jest.fn().mockReturnValue('user-123'),
-      getTenantId: jest.fn().mockReturnValue('tenant-456'),
-    };
-    mockGetSSRSession.mockResolvedValueOnce(mockSession as any);
-
     // Mock successful user info
-    mockApiCall.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce({ email: 'test@example.com' }),
-    } as any);
-
-    // Mock failed facilities fetch
-    mockApiCall.mockResolvedValueOnce({
-      ok: false,
-      json: jest.fn().mockResolvedValueOnce({ message: 'Database error' }),
-    } as any);
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce({
+          status: 'OK',
+          userId: 'user-123',
+          email: 'test@example.com',
+          tenantIds: ['tenant-456'],
+        }),
+      } as any)
+      .mockResolvedValueOnce({
+        ok: false,
+        json: jest.fn().mockResolvedValueOnce({ message: 'Database error' }),
+      } as any);
 
     const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
     const response = await GET(request);
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data).toEqual({ error: 'Failed to fetch facilities' });
+    expect(data.error).toContain('Failed to fetch facilities');
   });
 
   it('should handle empty facilities array', async () => {
-    const mockSession = {
-      getUserId: jest.fn().mockReturnValue('user-123'),
-      getTenantId: jest.fn().mockReturnValue('tenant-456'),
-    };
-    mockGetSSRSession.mockResolvedValueOnce(mockSession as any);
-
-    mockApiCall.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce({ email: 'test@example.com' }),
-    } as any);
-
-    mockApiCall.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce([]),
-    } as any);
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce({
+          status: 'OK',
+          userId: 'user-123',
+          email: 'test@example.com',
+          tenantIds: ['tenant-456'],
+        }),
+      } as any)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValueOnce([]),
+      } as any);
 
     const request = new NextRequest('http://localhost:3000/api/getUserAndFacilities');
     const response = await GET(request);
