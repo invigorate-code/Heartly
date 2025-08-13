@@ -8,7 +8,10 @@ export interface FacilityEntity {
   city: string;
   state: string;
   zip: string;
-  projected_client_count: number;
+  projectedClientCount: number;
+  roomCount?: number;
+  isDeleted: boolean;
+  tenantId: string;
   tenant: TenantEntity;
-  staff: UserEntity[];
+  users: UserEntity[];
 }

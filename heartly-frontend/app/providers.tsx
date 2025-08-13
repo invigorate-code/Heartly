@@ -2,7 +2,6 @@ import { FacilityProvider } from "@/shared/context/FacilityContext";
 import { UserProvider } from "@/shared/context/UserContext";
 import { SessionProvider } from "@/shared/context/SessionContext";
 import { HeroUIProvider } from "@heroui/react";
-import { ToastProvider } from "@heroui/toast";
 import { DrawerProvider } from "@/shared/context/DrawerContext";
 import { GlobalDrawer } from "@/components/GlobalDrawer";
 
@@ -13,7 +12,6 @@ export default function Providers({ children }) {
         <UserProvider>
           <FacilityProvider>
             <DrawerProvider>
-              <ToastProvider placement="top-right" />
               {children}
               <GlobalDrawer />
             </DrawerProvider>

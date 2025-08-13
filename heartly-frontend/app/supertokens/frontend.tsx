@@ -146,52 +146,9 @@ export const frontendConfig = (): SuperTokensConfig => {
           functions: (originalImplementation) => {
             return {
               ...originalImplementation,
-              // Override to handle session refresh and include tenant context
-              refresh: async function (input) {
-                try {
-                  const response = await originalImplementation.refresh(input);
-                  
-                  // Emit custom event for session refresh
-                  if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('supertokens-session-refreshed'));
-                  }
-                  
-                  return response;
-                } catch (error) {
-                  console.error('Session refresh failed:', error);
-                  throw error;
-                }
-              },
-              // Override doesSessionExist to improve persistence checking
-              doesSessionExist: async function (input) {
-                try {
-                  const exists = await originalImplementation.doesSessionExist(input);
-                  
-                  // If session doesn't exist, try to refresh if we have stored session data
-                  if (!exists && typeof window !== 'undefined') {
-                    const sessionCreated = localStorage.getItem('supertokens-session-created');
-                    const rememberMe = localStorage.getItem('supertokens-remember-me');
-                    
-                    if (sessionCreated && rememberMe === 'true') {
-                      // Attempt to refresh session
-                      try {
-                        await originalImplementation.attemptRefreshingSession(input);
-                        return await originalImplementation.doesSessionExist(input);
-                      } catch (refreshError) {
-                        console.log('Session refresh attempt failed:', refreshError);
-                        // Clean up stale session data
-                        localStorage.removeItem('supertokens-session-created');
-                        localStorage.removeItem('supertokens-remember-me');
-                      }
-                    }
-                  }
-                  
-                  return exists;
-                } catch (error) {
-                  console.error('Error checking session existence:', error);
-                  return false;
-                }
-              },
+              // TODO: Override session refresh when SuperTokens API supports it
+              // The refresh method may not be available in the current version
+              // TODO: Add session persistence checking when API is available
             };
           },
         },

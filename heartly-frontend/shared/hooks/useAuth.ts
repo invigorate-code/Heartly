@@ -2,22 +2,21 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { createClient } from "@/utils/supabase/client.ts";
 
 const useAuth = () => {
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
-        router.push("/login");
-      }
-    };
+    // TODO: Implement SuperTokens authentication check
+    console.log("Auth hook needs SuperTokens implementation");
+  }, [router]);
 
-    checkAuth();
-  }, [router, supabase]);
+  return {
+    // Placeholder return - implement with SuperTokens
+    isAuthenticated: true,
+    user: null,
+    loading: false
+  };
 };
 
 export default useAuth;

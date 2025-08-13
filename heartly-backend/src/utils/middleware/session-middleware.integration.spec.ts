@@ -40,10 +40,14 @@ describe('Session Middleware Integration', () => {
     sessionContextInitMiddleware = module.get<SessionContextInitMiddleware>(
       SessionContextInitMiddleware,
     );
-    sessionContextService = await module.resolve<SessionContextService>(SessionContextService);
-    
+    sessionContextService = await module.resolve<SessionContextService>(
+      SessionContextService,
+    );
+
     // Mock the moduleRef.resolve method to return our service instance
-    jest.spyOn(sessionContextInitMiddleware['moduleRef'], 'resolve').mockResolvedValue(sessionContextService);
+    jest
+      .spyOn(sessionContextInitMiddleware['moduleRef'], 'resolve')
+      .mockResolvedValue(sessionContextService);
 
     // Setup mocks
     mockRequest = {
@@ -116,7 +120,7 @@ describe('Session Middleware Integration', () => {
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Failed to initialize session context:',
-        'Session error'
+        'Session error',
       );
 
       consoleWarnSpy.mockRestore();
@@ -237,15 +241,15 @@ describe('Session Middleware Integration', () => {
       await rlsContextMiddleware.use(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext
+        mockNext,
       );
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'RLS Context Middleware error:',
-        'Database error'
+        'Database error',
       );
       expect(mockNext).toHaveBeenCalled();
-      
+
       consoleWarnSpy.mockRestore();
     });
 
@@ -334,7 +338,7 @@ describe('Session Middleware Integration', () => {
       expect(mockNext).toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         'Failed to initialize session context:',
-        'Init error'
+        'Init error',
       );
 
       mockNext.mockClear();

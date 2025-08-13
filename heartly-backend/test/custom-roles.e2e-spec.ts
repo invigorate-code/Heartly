@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { CustomRoleService } from '../src/api/role/custom-role.service';
-import { SuperTokensRolesService } from '../src/utils/supertokens/roles.service';
-import { UserRole } from '../src/api/user/entities/user.entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import request from 'supertest';
 import UserRoles from 'supertokens-node/recipe/userroles';
+import { CustomRoleService } from '../src/api/role/custom-role.service';
+import { UserRole } from '../src/api/user/entities/user.entity';
+import { AppModule } from '../src/app.module';
+import { SuperTokensRolesService } from '../src/utils/supertokens/roles.service';
 
 jest.mock('supertokens-node/recipe/userroles');
 
 describe('Custom Roles API (e2e)', () => {
   let app: INestApplication;
   let customRoleService: CustomRoleService;
-  let rolesService: SuperTokensRolesService;
+  let _rolesService: SuperTokensRolesService;
 
   const mockTenantId = 'test-tenant-id';
   const mockOwnerUser = {
@@ -20,7 +20,7 @@ describe('Custom Roles API (e2e)', () => {
     sessionToken: 'mock-owner-session-token',
   };
   const mockAdminUser = {
-    id: 'admin-user-id', 
+    id: 'admin-user-id',
     sessionToken: 'mock-admin-session-token',
   };
   const mockStaffUser = {
@@ -35,15 +35,17 @@ describe('Custom Roles API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     customRoleService = moduleFixture.get<CustomRoleService>(CustomRoleService);
-    rolesService = moduleFixture.get<SuperTokensRolesService>(SuperTokensRolesService);
-    
+    _rolesService = moduleFixture.get<SuperTokensRolesService>(
+      SuperTokensRolesService,
+    );
+
     await app.init();
 
     // Mock SuperTokens session verification
-    const mockSession = (userId: string, role: UserRole) => ({
+    const _mockSession = (userId: string, role: UserRole) => ({
       getUserId: () => userId,
       getTenantId: async () => mockTenantId,
-      getAccessTokenPayload: () => ({ 
+      getAccessTokenPayload: () => ({
         role,
         tenantId: mockTenantId,
         'st-ev': { v: true }, // Email verified
@@ -52,23 +54,29 @@ describe('Custom Roles API (e2e)', () => {
     });
 
     // Mock UserRoles responses based on user
-    (UserRoles.getRolesForUser as jest.Mock).mockImplementation((tenantId: string, userId: string) => {
-      switch (userId) {
-        case mockOwnerUser.id:
-          return Promise.resolve({ roles: [UserRole.OWNER] });
-        case mockAdminUser.id:
-          return Promise.resolve({ roles: [UserRole.ADMIN] });
-        case mockStaffUser.id:
-          return Promise.resolve({ roles: [UserRole.STAFF] });
-        default:
-          return Promise.resolve({ roles: [] });
-      }
-    });
+    (UserRoles.getRolesForUser as jest.Mock).mockImplementation(
+      (tenantId: string, userId: string) => {
+        switch (userId) {
+          case mockOwnerUser.id:
+            return Promise.resolve({ roles: [UserRole.OWNER] });
+          case mockAdminUser.id:
+            return Promise.resolve({ roles: [UserRole.ADMIN] });
+          case mockStaffUser.id:
+            return Promise.resolve({ roles: [UserRole.STAFF] });
+          default:
+            return Promise.resolve({ roles: [] });
+        }
+      },
+    );
 
     // Mock other SuperTokens functions
-    (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockResolvedValue({});
+    (UserRoles.createNewRoleOrAddPermissions as jest.Mock).mockResolvedValue(
+      {},
+    );
     (UserRoles.deleteRole as jest.Mock).mockResolvedValue({});
-    (UserRoles.getPermissionsForRole as jest.Mock).mockResolvedValue({ permissions: [] });
+    (UserRoles.getPermissionsForRole as jest.Mock).mockResolvedValue({
+      permissions: [],
+    });
     (UserRoles.getAllRoles as jest.Mock).mockResolvedValue({ roles: [] });
   });
 
@@ -301,7 +309,7 @@ describe('Custom Roles API (e2e)', () => {
   });
 
   describe('Role Assignment', () => {
-    let testRoleId: string;
+    let _testRoleId: string;
     const testRoleName = 'assignable_role';
 
     beforeAll(async () => {
@@ -314,7 +322,7 @@ describe('Custom Roles API (e2e)', () => {
         mockTenantId,
         mockOwnerUser.id,
       );
-      testRoleId = role.id;
+      _testRoleId = role.id;
     });
 
     it('should allow OWNER to assign custom roles to users', async () => {
@@ -358,10 +366,10 @@ describe('Custom Roles API (e2e)', () => {
   describe('Email Verification Requirements', () => {
     it('should require email verification for role creation', async () => {
       // Mock unverified session
-      const unverifiedSession = {
+      const _unverifiedSession = {
         getUserId: () => mockOwnerUser.id,
         getTenantId: async () => mockTenantId,
-        getAccessTokenPayload: () => ({ 
+        getAccessTokenPayload: () => ({
           role: UserRole.OWNER,
           tenantId: mockTenantId,
           'st-ev': { v: false }, // Email NOT verified
