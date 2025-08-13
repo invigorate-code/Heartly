@@ -27,6 +27,8 @@ import {
 } from "@/app/onboarding/facilities/model";
 import { redirect } from "next/navigation";
 import { useUser } from "@/shared/context/UserContext";
+import { useOnboarding } from "@/shared/hooks/useOnboarding";
+import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { facilityAPI, FacilityResponse } from "@/lib/api/facility";
 import { toast } from "react-hot-toast";
 const FacilitiesPage = () => {
