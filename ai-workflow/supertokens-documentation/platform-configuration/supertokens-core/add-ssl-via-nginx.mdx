@@ -1,0 +1,121 @@
+---
+title: Add SSL via NGINX
+hide_title: true
+sidebar_position: 5
+description: >-
+  Set up SSL for secure SuperTokens Core connections using NGINX as a reverse
+  proxy.
+page_type: guide
+category: platform-configuration
+---
+
+# Add SSL via nginx
+
+## Overview
+
+This section guides you through setting up SSL via Nginx to query the SuperTokens Core with a secure connection.
+
+## Before you start
+
+:::caution no-title
+This page is only relevant if you are self hosting SuperTokens. 
+:::
+
+This guide assumes you have already installed Nginx on your server.
+
+## Steps
+
+The following example guide runs SuperTokens `localhost:3567`
+
+### 1. Reverse proxy the SuperTokens core with nginx
+
+The SuperTokens core does not support SSL, and Nginx is needed as a reverse proxy to set up a secure connection.
+
+Start by opening the default Nginx site configuration file in a code editor. This file resides at:
+  - Linux: `/etc/nginx/sites-available/default`.
+  - Mac: `/usr/local/etc/nginx/sites-available/default`.
+  - Windows: `C:\nginx\conf\nginx.conf`. 
+
+In the configuration, scroll down to the `server` directive.
+
+- By default it should look like this:
+
+  ```text title="/etc/nginx/sites-available/default"
+  server {
+    listen       80;
+    server_name  localhost;
+    ...
+  }
+  ```
+
+- Configure the `server` directive by adding the `location` directive with the following values:
+
+  ```text title="/etc/nginx/sites-available/default"
+  server {
+    listen       80;
+    server_name  localhost;
+    // highlight-start
+    location / {
+      proxy_pass http://localhost:3567;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+    }
+    // highlight-end
+  }
+  ```
+
+The `location` directive tells Nginx what to do with the incoming request, `proxy_pass` points the redirect to `localhost:3567`.
+
+- Test and apply the changes to Nginx by running the following command:
+
+  ```bash
+  nginx -t && service nginx restart
+  ```
+
+We can use the `/hello` API of the SuperTokens core to test the connection.
+
+Navigate to `http://localhost/hello` and check if it gives a valid response from the core.
+
+### 2. Set up SSL
+
+Obtain a digital certificate to enable a secure connection with a user's browser.
+
+Self-signed certificates will be used since development is local. However, certificate authorities like [Let's Encrypt](https://letsencrypt.org/) can also generate valid certificates.
+
+- Run the following command to generate a self signed certificate using OpenSSL:
+
+  ```bash
+  openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt
+  ```
+
+- Set the values `ssl_certificate` and `ssl_certificate_key` in the Nginx configuration to specify the locations of the newly generated certificates.
+
+  ```text title="/etc/nginx/sites-available/default"
+  server {
+    listen       80;
+    listen       443 ssl;
+    server_name  localhost;
+    // highlight-start
+    ssl_certificate  /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
+    // highlight-end
+    location / {
+      proxy_pass http://localhost:3000;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+    }
+  }
+  ```
+
+- Run the test and restart commands to test and apply your changes:
+
+```bash
+nginx -t && service nginx restart
+```
+

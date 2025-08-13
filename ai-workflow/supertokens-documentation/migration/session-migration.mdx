@@ -1,0 +1,132 @@
+---
+id: session-migration
+title: Session Migration
+hide_title: true
+sidebar_position: 3
+pagination_next: null
+description: >-
+  Migrate user sessions from your previous authentication provider to
+  SuperTokens using backend and frontend changes.
+page_type: tutorial
+category: migration
+---
+
+
+# Session Migration
+
+<DescriptionText>
+  This guide will show you how to migrate your user sessions from you previous authentication provider to **SuperTokens**.
+</DescriptionText>
+
+<Separator />
+
+## Overview
+
+To achieve a seamless transition process, you will also have to migrate the active sessions that use your previous authentication provider to **SuperTokens**.
+To do this you should create a new flow that will determine if an existing user session needs to be migrated, and call the migration API if necessary.
+
+You can see a detailed illustration of the process below.
+
+<img src="/img/migration/session-migration-diagram.png" alt="Session migration flow chart" />
+
+## Steps
+
+### 1. Add the session migration endpoint
+
+Create a new endpoint on your backend that will generate a new **SuperTokens Session** based on the current authentication token.
+This will be called by the frontend if a user is still logged in through your previous authentication provider.
+
+```tsx title="Backend changes"
+import express from "express";
+import Session from "supertokens-node/recipe/session";
+
+let app = express();
+
+app.post("/migrate-session", async (req, res) => {
+
+    // extract the access token from the request object
+    if(req.headers.authorization !== undefined){
+        let access_token = req.headers.authorization.split("Bearer ")[1];
+
+        // verify the access token and retrieve the old userId
+        let customUserId = await verifyAccessTokenAndRetriveUserId(access_token);
+
+        // create a new SuperTokens session using the customUserId
+        // the createNewSession function will attach the SuperTokens session tokens to the response object.
+        // @ts-ignore
+        await Session.createNewSession(req, res, customUserId)
+        res.send({
+            status: "OK"
+        })
+    }
+
+    // handle access_token not present in request
+    
+})
+
+async function verifyAccessTokenAndRetriveUserId(access_token: string): Promise<string> {
+    // verify the access_token and return the decoded userId
+    return "...";
+}
+
+```
+
+:::info Important
+
+Verifying the access token will require you to access your previous providers JWKS endpoint.
+This means that you will have to continue to use your previous auth provider even after switching to SuperTokens.
+
+If you want to immediately stop querying your previous authentication provider you can use the JWKS public keys and provide them as a secret to the JWT verification function.
+You can follow our [guide](/docs/additional-verification/session-verification/protect-api-routes#with-the-public-key-string) on how to do this.
+:::
+
+### 2. Call the migration endpoint from your frontend app
+
+On your frontend, on page load, check if a session with your previous authentication provider exists.
+- If a session exists, send a request to the `/migrate-session` API with the access token to create a new SuperTokens session.
+- Revoke the old session.
+
+```tsx title="Frontend changes"
+import axios from "axios";
+
+import Session from "supertokens-web-js/recipe/session";
+
+// Call this function on page load
+async function migrateUserSessions() {
+    let apiDomain = "...";
+    // On page load retrieve the users access token if a session exists
+    let accessToken = await getAccessTokenFromOldProvider()
+
+    if (accessToken !== undefined) {
+
+        // send a request to your migrate session endpoint with the bearer token
+        await axios.post(`${apiDomain}/migrate-session`, {
+            headers: {
+                "Authorization": `Bearer ${accessToken}`
+            }
+        })
+        await revokeSessionFromOldProvider()
+    }
+}
+
+async function getAccessTokenFromOldProvider(): Promise<string | undefined> {
+    // Check if a session with your your previous provider exists and return the access_token. Return undefined otherwise
+    return "..."
+}
+
+async function revokeSessionFromOldProvider() {
+    // Revoke the session associated with the previous provider
+}
+
+```
+---
+
+## See also
+
+<ReferenceCard.Grid>
+  <ReferenceCard href="/docs/migration/account-migration" label="Account migration" />
+  <ReferenceCard href="/docs/migration/legacy/about" label="Legacy migration" />
+  <ReferenceCard href="/docs/post-authentication/session-management/introduction" label="Session management" />
+</ReferenceCard.Grid>
+
+

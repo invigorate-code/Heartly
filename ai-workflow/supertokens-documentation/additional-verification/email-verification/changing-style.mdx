@@ -1,0 +1,372 @@
+---
+title: Customize the pre-built UI
+hide_title: true
+sidebar_position: 7
+description: Update SuperTokens component styles using CSS for customized UI appearance.
+page_type: guide
+recipe: emailverification
+category: email-verification
+---
+
+
+# Customize the pre-built UI
+
+## Overview
+
+Updating the CSS allows you to change the UI of the components to meet your needs.
+This section guides you through an example of updating the look of buttons.
+Note that you can apply the process to update any HTML tag from within SuperTokens components.
+
+## Before you start
+
+This guide is only relevant if you are using the **pre-built UI** components. If you are using your own UI, you can skip this section.
+
+---
+
+## Global style changes
+
+Each stylable component contains the `data-supertokens` attribute (in this example `data-supertokens="link"`). 
+For more information on how to find a specific selector look over the [changing style page](/docs/references/frontend-sdks/prebuilt-ui/changing-style).
+Let's add a `border` to the `link` elements. The syntax for styling is plain CSS.
+
+<FrontendPrebuiltUITabs>
+<FrontendPrebuiltUITabs.TabItem value="reactjs">
+
+```tsx preview="/img/emailverification/resend-with-border.png" previewAlt="Prebuilt form with custom submit button"
+import SuperTokens from "supertokens-auth-react";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
+import Session from "supertokens-auth-react/recipe/session";
+
+SuperTokens.init({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        EmailVerification.init({
+            // highlight-start
+            style: `
+                [data-supertokens~=link] {
+                    border: 2px solid #0076ff;
+                    border-radius: 5;
+                    width: 30%;
+                    margin: 0 auto;
+                }
+            `,
+            // highlight-end
+        }),
+        Session.init()
+    ]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+
+<FrontendPrebuiltUITabs.TabItem value="angular">
+
+```tsx
+// this goes in the auth route config of your frontend app (once the pre-built UI script has been loaded)
+import {init as supertokensUIInit} from "supertokens-auth-react-script";
+import supertokensUIEmailVerification from "supertokens-auth-react-script/recipe/emailverification";
+supertokensUIInit({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        supertokensUIEmailVerification.init({
+            // highlight-start
+            style: `
+                [data-supertokens~=link] {
+                    border: 2px solid #0076ff;
+                    border-radius: 5px;
+                    width: 30%;
+                    margin: 0 auto;
+                }
+            `,
+            // highlight-end
+        })
+    ]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+
+</FrontendPrebuiltUITabs>
+
+
+### Change fonts
+
+By default, SuperTokens uses the `Arial` font. The best way to override this is to add a `font-family` styling to the `container` component in the recipe configuration.
+
+<FrontendPrebuiltUITabs>
+<FrontendPrebuiltUITabs.TabItem value="reactjs">
+
+```tsx
+import SuperTokens from "supertokens-auth-react";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
+import Session from "supertokens-auth-react/recipe/session";
+
+SuperTokens.init({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        EmailVerification.init({
+            // highlight-start
+            style: `
+                [data-supertokens~=container] {
+                    font-family: cursive
+                }
+            `
+            // highlight-end
+        }),
+        Session.init()
+    ]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+<FrontendPrebuiltUITabs.TabItem value="angular">
+
+```tsx
+// this goes in the auth route config of your frontend app (once the pre-built UI script has been loaded)
+import {init as supertokensUIInit} from "supertokens-auth-react-script";
+import supertokensUIEmailVerification from "supertokens-auth-react-script/recipe/emailverification";
+supertokensUIInit({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        supertokensUIEmailVerification.init({
+            // highlight-start
+            style: `
+                [data-supertokens~=container] {
+                    font-family: cursive
+                }
+            `
+            // highlight-end
+        }),
+    ]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+</FrontendPrebuiltUITabs>
+
+### Use media queries
+
+You may want to have different CSS for different `viewports`.
+You can achieve this via media queries like this:
+
+<FrontendPrebuiltUITabs>
+<FrontendPrebuiltUITabs.TabItem value="reactjs">
+
+```tsx
+import SuperTokens from "supertokens-auth-react";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
+
+SuperTokens.init({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+    recipeList: [
+        // ...
+        EmailVerification.init({
+            // ...
+            style: `
+                [data-supertokens~=link] {
+                    border: 2px solid #0076ff;
+                    borderRadius: 5;
+                    width: 30%;
+                    margin: 0 auto;
+                }
+
+                // highlight-start
+                @media (max-width: 440px) {
+                    [data-supertokens~=link] {
+                        width: 90%;
+                    }
+                }
+                // highlight-end
+            `,
+        }),
+    ],
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+<FrontendPrebuiltUITabs.TabItem value="angular">
+
+```tsx
+// this goes in the auth route config of your frontend app (once the pre-built UI script has been loaded)
+import {init as supertokensUIInit} from "supertokens-auth-react-script";
+import supertokensUIEmailVerification from "supertokens-auth-react-script/recipe/emailverification";
+supertokensUIInit({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+    recipeList: [
+        // ...
+        supertokensUIEmailVerification.init({
+            // ...
+            style: `
+                [data-supertokens~=link] {
+                    border: 2px solid #0076ff;
+                    borderRadius: 5;
+                    width: 30%;
+                    margin: 0 auto;
+                }
+
+                // highlight-start
+                @media (max-width: 440px) {
+                    [data-supertokens~=link] {
+                        width: 90%;
+                    }
+                }
+                // highlight-end
+            `,
+        }),
+    ],
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+</FrontendPrebuiltUITabs>
+
+## Customize individual screens
+
+### Send email screen
+
+This screen is where the system redirects the user if you set `mode` to `REQUIRED` and they visit a path that requires a verified email.
+
+<FrontendPrebuiltUITabs>
+<FrontendPrebuiltUITabs.TabItem value="reactjs">
+
+```tsx
+import SuperTokens from "supertokens-auth-react";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
+import Session from "supertokens-auth-react/recipe/session";
+
+SuperTokens.init({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+	recipeList: [
+        EmailVerification.init({
+            // highlight-start
+            sendVerifyEmailScreen: {
+                style: ` ... `
+            }
+            // highlight-end
+        }),
+        Session.init()
+	]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+<FrontendPrebuiltUITabs.TabItem value="angular">
+
+```tsx
+// this goes in the auth route config of your frontend app (once the pre-built UI script has been loaded)
+import {init as supertokensUIInit} from "supertokens-auth-react-script";
+import supertokensUIEmailVerification from "supertokens-auth-react-script/recipe/emailverification";
+
+supertokensUIInit({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+	recipeList: [
+        supertokensUIEmailVerification.init({
+            // highlight-start
+            sendVerifyEmailScreen: {
+                style: ` ... `
+            }
+            // highlight-end
+        })
+	]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+</FrontendPrebuiltUITabs>
+
+### Verify link clicked screen
+
+This is the screen shown to users that click the email verification link in the email.
+
+<FrontendPrebuiltUITabs>
+<FrontendPrebuiltUITabs.TabItem value="reactjs">
+
+```tsx
+import SuperTokens from "supertokens-auth-react";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
+import Session from "supertokens-auth-react/recipe/session";
+
+SuperTokens.init({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+	recipeList: [
+        EmailVerification.init({
+            // highlight-start
+            verifyEmailLinkClickedScreen: {
+                style: ` ... `,
+            }
+            // highlight-end
+        }), 
+        Session.init()
+	]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+
+<FrontendPrebuiltUITabs.TabItem value="angular">
+
+```tsx
+// this goes in the auth route config of your frontend app (once the pre-built UI script has been loaded)
+import {init as supertokensUIInit} from "supertokens-auth-react-script";
+import supertokensUIEmailVerification from "supertokens-auth-react-script/recipe/emailverification";
+
+supertokensUIInit({
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "...",
+    },
+	recipeList: [
+        supertokensUIEmailVerification.init({
+            // highlight-start
+            verifyEmailLinkClickedScreen: {
+                style: ` ... `,
+            }
+            // highlight-end
+        })
+	]
+});
+```
+</FrontendPrebuiltUITabs.TabItem>
+</FrontendPrebuiltUITabs>
+
+
+---
+
+## See also
+
+<ReferenceCard.Grid>
+  <ReferenceCard href="/docs/additional-verification/email-verification/manual-actions" label="Manual actions" />
+  <ReferenceCard href="/docs/additional-verification/email-verification/protecting-routes" label="Protect routes" />
+  <ReferenceCard href="/docs/additional-verification/email-verification/hooks-and-overrides" label="Hooks and overrides" />
+  <ReferenceCard href="/docs/additional-verification/session-verification/claim-validation" label="Claim validation" />
+  <ReferenceCard href="/docs/additional-verification/session-verification/protect-api-routes" label="Backend session validation" />
+  <ReferenceCard href="/docs/authentication/passwordless/configure-email-and-sms-behavior" label="Configure email behavior" />
+</ReferenceCard.Grid>
