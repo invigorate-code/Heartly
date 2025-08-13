@@ -9,7 +9,7 @@ export class CreateAuditLoggingTriggers1754252064000
       CREATE TABLE IF NOT EXISTS "data_audit_log" (
         "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
         "table_name" varchar NOT NULL,
-        "operation" varchar NOT NULL CHECK (operation IN ('INSERT', 'UPDATE', 'DELETE')),
+        "operation" varchar NOT NULL CHECK ("operation" IN ('INSERT', 'UPDATE', 'DELETE')),
         "row_id" uuid NOT NULL,
         "user_id" uuid,
         "tenant_id" uuid,

@@ -99,7 +99,7 @@ export class AuthService {
       await UserRoles.addRoleToUser(
         dto.tenantId, // tenantId
         authUserId, // userId
-        dto.role // role - ADMIN or STAFF as specified in the DTO
+        dto.role, // role - ADMIN or STAFF as specified in the DTO
       );
     } catch (error) {
       console.error('Failed to assign role to invited user:', error);

@@ -6,14 +6,14 @@ import { RlsContextService } from '@/common/services/rls-context.service';
 import { FORM_TYPE } from '@/constants/form-types.constant';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PHIService } from 'src/phi/phi.service';
+import { PHIService } from '../../phi/phi.service';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Repository } from 'typeorm';
 import { ClientEntity } from '../client/entities/client.entity';
 import { FacilityEntity } from '../facility/entities/facility.entity';
 import { MedicationEntity } from '../medication/entities/medication.entity';
 import { TenantService } from '../tenant/tenant.service';
-import { CreatePlacementInfoDto } from './dto/createPlacementInfo.req.dto';
+import { CreatePlacementInfoDto } from './dto/CreatePlacementInfo.req.dto';
 import { PlacementInfoResponseDto } from './dto/getPlacementInfo.res.dto';
 import { PlacementInfoEntity } from './entities/placement-info.entity';
 import {

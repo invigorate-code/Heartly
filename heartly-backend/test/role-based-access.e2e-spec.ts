@@ -1,18 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import { Test, TestingModule } from '@nestjs/testing';
+import request from 'supertest';
+import UserRoles from 'supertokens-node/recipe/userroles';
+import { UserRole } from '../src/api/user/entities/user.entity';
 import { AppModule } from '../src/app.module';
 import { SuperTokensRolesService } from '../src/utils/supertokens/roles.service';
-import { UserRole } from '../src/api/user/entities/user.entity';
-import UserRoles from 'supertokens-node/recipe/userroles';
-import EmailPassword from 'supertokens-node/recipe/emailpassword';
 
 jest.mock('supertokens-node/recipe/userroles');
 jest.mock('supertokens-node/recipe/emailpassword');
 
 describe('Role-based Access Control (e2e)', () => {
   let app: INestApplication;
-  let rolesService: SuperTokensRolesService;
+  let _rolesService: SuperTokensRolesService;
   let testUsers: {
     owner: { id: string; sessionToken: string };
     admin: { id: string; sessionToken: string };
@@ -25,8 +24,10 @@ describe('Role-based Access Control (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    rolesService = moduleFixture.get<SuperTokensRolesService>(SuperTokensRolesService);
-    
+    _rolesService = moduleFixture.get<SuperTokensRolesService>(
+      SuperTokensRolesService,
+    );
+
     await app.init();
 
     // Setup test users with different roles
@@ -36,7 +37,7 @@ describe('Role-based Access Control (e2e)', () => {
         sessionToken: 'mock-owner-session-token',
       },
       admin: {
-        id: 'admin-user-id', 
+        id: 'admin-user-id',
         sessionToken: 'mock-admin-session-token',
       },
       staff: {
@@ -54,33 +55,38 @@ describe('Role-based Access Control (e2e)', () => {
     });
 
     // Mock UserRoles responses based on user
-    (UserRoles.getRolesForUser as jest.Mock).mockImplementation((tenantId: string, userId: string) => {
-      switch (userId) {
-        case testUsers.owner.id:
-          return Promise.resolve({ roles: [UserRole.OWNER] });
-        case testUsers.admin.id:
-          return Promise.resolve({ roles: [UserRole.ADMIN] });
-        case testUsers.staff.id:
-          return Promise.resolve({ roles: [UserRole.STAFF] });
-        default:
-          return Promise.resolve({ roles: [] });
-      }
-    });
+    (UserRoles.getRolesForUser as jest.Mock).mockImplementation(
+      (tenantId: string, userId: string) => {
+        switch (userId) {
+          case testUsers.owner.id:
+            return Promise.resolve({ roles: [UserRole.OWNER] });
+          case testUsers.admin.id:
+            return Promise.resolve({ roles: [UserRole.ADMIN] });
+          case testUsers.staff.id:
+            return Promise.resolve({ roles: [UserRole.STAFF] });
+          default:
+            return Promise.resolve({ roles: [] });
+        }
+      },
+    );
 
     // Mock session middleware to inject appropriate session based on token
-    jest.doMock('../src/utils/middleware/session-middleware.integration.spec.ts', () => ({
-      sessionMiddleware: (req: any, res: any, next: any) => {
-        const authHeader = req.headers.authorization;
-        if (authHeader?.includes(testUsers.owner.sessionToken)) {
-          req.session = mockSession(testUsers.owner.id, UserRole.OWNER);
-        } else if (authHeader?.includes(testUsers.admin.sessionToken)) {
-          req.session = mockSession(testUsers.admin.id, UserRole.ADMIN);
-        } else if (authHeader?.includes(testUsers.staff.sessionToken)) {
-          req.session = mockSession(testUsers.staff.id, UserRole.STAFF);
-        }
-        next();
-      },
-    }));
+    jest.doMock(
+      '../src/utils/middleware/session-middleware.integration.spec.ts',
+      () => ({
+        sessionMiddleware: (req: any, res: any, next: any) => {
+          const authHeader = req.headers.authorization;
+          if (authHeader?.includes(testUsers.owner.sessionToken)) {
+            req.session = mockSession(testUsers.owner.id, UserRole.OWNER);
+          } else if (authHeader?.includes(testUsers.admin.sessionToken)) {
+            req.session = mockSession(testUsers.admin.id, UserRole.ADMIN);
+          } else if (authHeader?.includes(testUsers.staff.sessionToken)) {
+            req.session = mockSession(testUsers.staff.id, UserRole.STAFF);
+          }
+          next();
+        },
+      }),
+    );
   });
 
   afterAll(async () => {
@@ -266,9 +272,7 @@ describe('Role-based Access Control (e2e)', () => {
 
   describe('Unauthorized Access', () => {
     it('should return 401 for requests without session token', async () => {
-      await request(app.getHttpServer())
-        .get('/audit-logs')
-        .expect(401);
+      await request(app.getHttpServer()).get('/audit-logs').expect(401);
     });
 
     it('should return 401 for requests with invalid session token', async () => {

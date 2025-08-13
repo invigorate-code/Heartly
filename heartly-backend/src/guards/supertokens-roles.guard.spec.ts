@@ -1,10 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { SuperTokensRolesGuard } from './supertokens-roles.guard';
-import { SuperTokensRolesService } from '../utils/supertokens/roles.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { UserRole } from '../api/user/entities/user.entity';
+import { SuperTokensRolesService } from '../utils/supertokens/roles.service';
+import { SuperTokensRolesGuard } from './supertokens-roles.guard';
 
 jest.mock('supertokens-node/recipe/userroles');
 
@@ -41,7 +45,9 @@ describe('SuperTokensRolesGuard', () => {
     mockSession = {
       getUserId: jest.fn().mockReturnValue('test-user-id'),
       getTenantId: jest.fn().mockResolvedValue('test-tenant-id'),
-      getAccessTokenPayload: jest.fn().mockReturnValue({ role: UserRole.STAFF }),
+      getAccessTokenPayload: jest
+        .fn()
+        .mockReturnValue({ role: UserRole.STAFF }),
     };
 
     // Mock request
@@ -79,7 +85,7 @@ describe('SuperTokensRolesGuard', () => {
     it('should return true when user has required role', async () => {
       const requiredRoles = [UserRole.STAFF, UserRole.ADMIN];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
         roles: [UserRole.STAFF],
       });
@@ -96,20 +102,22 @@ describe('SuperTokensRolesGuard', () => {
     it('should throw ForbiddenException when user lacks required role', async () => {
       const requiredRoles = [UserRole.ADMIN, UserRole.OWNER];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
         roles: [UserRole.STAFF],
       });
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
-        new ForbiddenException('User does not have required roles: ADMIN, OWNER'),
+        new ForbiddenException(
+          'User does not have required roles: ADMIN, OWNER',
+        ),
       );
     });
 
     it('should throw UnauthorizedException when session is missing', async () => {
       const requiredRoles = [UserRole.ADMIN];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       mockRequest.session = null;
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
@@ -120,29 +128,35 @@ describe('SuperTokensRolesGuard', () => {
     it('should throw ForbiddenException when session role does not match SuperTokens roles', async () => {
       const requiredRoles = [UserRole.ADMIN];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       // User has ADMIN in SuperTokens but session shows STAFF
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
         roles: [UserRole.ADMIN],
       });
-      
-      mockSession.getAccessTokenPayload.mockReturnValue({ role: UserRole.STAFF });
+
+      mockSession.getAccessTokenPayload.mockReturnValue({
+        role: UserRole.STAFF,
+      });
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(
-        new ForbiddenException('Session role does not match user roles. Please re-authenticate.'),
+        new ForbiddenException(
+          'Session role does not match user roles. Please re-authenticate.',
+        ),
       );
     });
 
     it('should handle multiple roles correctly', async () => {
       const requiredRoles = [UserRole.OWNER];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       // User has multiple roles including the required one
       (UserRoles.getRolesForUser as jest.Mock).mockResolvedValue({
         roles: [UserRole.STAFF, UserRole.ADMIN, UserRole.OWNER],
       });
-      
-      mockSession.getAccessTokenPayload.mockReturnValue({ role: UserRole.OWNER });
+
+      mockSession.getAccessTokenPayload.mockReturnValue({
+        role: UserRole.OWNER,
+      });
 
       const result = await guard.canActivate(mockExecutionContext);
 
@@ -152,7 +166,7 @@ describe('SuperTokensRolesGuard', () => {
     it('should handle errors from SuperTokens gracefully', async () => {
       const requiredRoles = [UserRole.ADMIN];
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(requiredRoles);
-      
+
       (UserRoles.getRolesForUser as jest.Mock).mockRejectedValue(
         new Error('SuperTokens error'),
       );

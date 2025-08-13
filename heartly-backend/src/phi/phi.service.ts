@@ -235,7 +235,7 @@ export class PHIService {
     // Try to parse as JSON in case it was an object
     try {
       return JSON.parse(decryptedString);
-    } catch (e) {
+    } catch (_e) {
       // If not JSON, return as string
       return decryptedString;
     }

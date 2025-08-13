@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSession } from '../useSession';
 
 // Mock SuperTokens Session
@@ -52,9 +52,11 @@ describe('useSession', () => {
         sessionHandle: 'test-session-handle',
       });
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isAuthenticated).toBe(true);
@@ -71,9 +73,11 @@ describe('useSession', () => {
       mockSession.doesSessionExist.mockRejectedValue(new Error('Session error'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isAuthenticated).toBe(false);
@@ -96,9 +100,11 @@ describe('useSession', () => {
     });
 
     it('should correctly check for specific role', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.hasRole('ADMIN')).toBe(true);
       expect(result.current.hasRole('OWNER')).toBe(false);
@@ -106,9 +112,11 @@ describe('useSession', () => {
     });
 
     it('should correctly check for any of multiple roles', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.hasAnyRole(['ADMIN', 'OWNER'])).toBe(true);
       expect(result.current.hasAnyRole(['OWNER', 'STAFF'])).toBe(false);
@@ -118,9 +126,11 @@ describe('useSession', () => {
     it('should return false for role checks when not authenticated', async () => {
       mockSession.doesSessionExist.mockResolvedValue(false);
       
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.hasRole('ADMIN')).toBe(false);
       expect(result.current.hasAnyRole(['ADMIN', 'OWNER'])).toBe(false);
@@ -138,9 +148,11 @@ describe('useSession', () => {
       });
       mockSession.attemptRefreshingSession.mockResolvedValue(true);
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         await result.current.refreshSession();
@@ -161,9 +173,11 @@ describe('useSession', () => {
       
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         await result.current.refreshSession();
@@ -188,9 +202,11 @@ describe('useSession', () => {
       });
       mockSession.signOut.mockResolvedValue(undefined);
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         await result.current.signOut();
@@ -213,9 +229,11 @@ describe('useSession', () => {
       
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         await result.current.signOut();
@@ -257,9 +275,11 @@ describe('useSession', () => {
       mockSession.getUserId.mockResolvedValue('test-user-id');
       mockSession.getAccessTokenPayloadSecurely.mockResolvedValue(null);
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isAuthenticated).toBe(false);
@@ -274,9 +294,11 @@ describe('useSession', () => {
         // Missing role and email
       });
 
-      const { result, waitForNextUpdate } = renderHook(() => useSession());
+      const { result } = renderHook(() => useSession());
 
-      await waitForNextUpdate();
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.sessionContext?.tenantId).toBe('test-tenant-id');

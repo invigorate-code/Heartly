@@ -1,5 +1,4 @@
-import { Facility } from "@/utils/supabase/db-model.ts";
-import { componentFacility } from "./model.ts";
+import { componentFacility } from "./model";
 
 export const validateFacility = (data: componentFacility) => {
   const errors: Record<string, string> = {};

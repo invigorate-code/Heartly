@@ -1,5 +1,11 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsString, IsArray, IsOptional, Length, ArrayUnique } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  ArrayUnique,
+  IsArray,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class UpdateCustomRoleDto {
   @ApiProperty({

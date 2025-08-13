@@ -1,31 +1,33 @@
 import {
-  Injectable,
-  UnauthorizedException,
   BadRequestException,
-  NotFoundException,
   ForbiddenException,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Request } from 'express';
 import * as crypto from 'crypto';
+import { Request } from 'express';
+import { Repository } from 'typeorm';
 // import * as bcrypt from 'bcrypt';
 import SuperTokens from 'supertokens-node';
 import EmailPassword from 'supertokens-node/recipe/emailpassword';
-import UserRoles from 'supertokens-node/recipe/userroles';
 import { SessionContainer } from 'supertokens-node/recipe/session';
+import UserRoles from 'supertokens-node/recipe/userroles';
 
-import { PasswordResetAuditEntity, PasswordResetMethod } from '../entities/password-reset-audit.entity';
-import {
-  OwnerPasswordResetRequestDto,
-  OwnerPasswordResetConfirmDto,
-  AdminPasswordResetDto,
-  TempPasswordChangeDto,
-  GenerateTempPasswordResponseDto,
-  PasswordResetAuditResponseDto,
-} from '../dto/password-reset.dto';
-import { UserService } from '../../user/user.service';
 import { MailService } from '../../../mail/mail.service';
+import { UserService } from '../../user/user.service';
+import {
+  AdminPasswordResetDto,
+  GenerateTempPasswordResponseDto,
+  OwnerPasswordResetConfirmDto,
+  OwnerPasswordResetRequestDto,
+  PasswordResetAuditResponseDto,
+  TempPasswordChangeDto,
+} from '../dto/password-reset.dto';
+import {
+  PasswordResetAuditEntity,
+  PasswordResetMethod,
+} from '../entities/password-reset-audit.entity';
 
 export enum UserRole {
   OWNER = 'OWNER',
@@ -60,11 +62,16 @@ export class PasswordResetService {
       }
 
       const targetUser = user[0];
-      
+
       // Check if user has OWNER role
-      const { roles } = await UserRoles.getRolesForUser('public', targetUser.id);
+      const { roles } = await UserRoles.getRolesForUser(
+        'public',
+        targetUser.id,
+      );
       if (!roles.includes(UserRole.OWNER)) {
-        throw new ForbiddenException('Only OWNER users can self-reset passwords');
+        throw new ForbiddenException(
+          'Only OWNER users can self-reset passwords',
+        );
       }
 
       // Get tenant context for the user
@@ -74,7 +81,9 @@ export class PasswordResetService {
       }
 
       // Generate password reset token using SuperTokens
-      const loginMethod = targetUser.loginMethods.find(lm => lm.recipeId === 'emailpassword');
+      const loginMethod = targetUser.loginMethods.find(
+        (lm) => lm.recipeId === 'emailpassword',
+      );
       if (!loginMethod?.email) {
         throw new BadRequestException('User email not found');
       }
@@ -85,7 +94,9 @@ export class PasswordResetService {
       );
 
       if (response.status !== 'OK') {
-        throw new BadRequestException('Failed to generate password reset token');
+        throw new BadRequestException(
+          'Failed to generate password reset token',
+        );
       }
 
       // Log the password reset attempt
@@ -119,47 +130,47 @@ export class PasswordResetService {
     dto: OwnerPasswordResetConfirmDto,
     request: Request,
   ): Promise<{ message: string }> {
-    try {
-      // Reset password using SuperTokens
-      const response = await EmailPassword.resetPasswordUsingToken(
-        'public', // tenantId for password reset
-        dto.token,
-        dto.newPassword,
-      );
+    // Reset password using SuperTokens
+    const response = await EmailPassword.resetPasswordUsingToken(
+      'public', // tenantId for password reset
+      dto.token,
+      dto.newPassword,
+    );
 
-      if (response.status !== 'OK') {
-        if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
-          throw new BadRequestException('Invalid or expired password reset token');
-        }
-        throw new BadRequestException('Failed to reset password');
+    if (response.status !== 'OK') {
+      if (response.status === 'RESET_PASSWORD_INVALID_TOKEN_ERROR') {
+        throw new BadRequestException(
+          'Invalid or expired password reset token',
+        );
       }
-
-      // Get user info for audit logging
-      const user = await SuperTokens.getUser((response as any).userId);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const tenantContext = await this.getUserTenantContext((response as any).userId);
-      if (!tenantContext) {
-        throw new BadRequestException('User tenant context not found');
-      }
-
-      // Log successful password reset
-      await this.logPasswordResetAudit({
-        tenantId: tenantContext.tenantId,
-        resetByUserId: (response as any).userId,
-        targetUserId: (response as any).userId,
-        resetMethod: PasswordResetMethod.SELF_SERVICE,
-        ipAddress: request.ip,
-        userAgent: request.get('User-Agent'),
-        success: true,
-      });
-
-      return { message: 'Password reset successfully' };
-    } catch (error) {
-      throw error;
+      throw new BadRequestException('Failed to reset password');
     }
+
+    // Get user info for audit logging
+    const user = await SuperTokens.getUser((response as any).userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const tenantContext = await this.getUserTenantContext(
+      (response as any).userId,
+    );
+    if (!tenantContext) {
+      throw new BadRequestException('User tenant context not found');
+    }
+
+    // Log successful password reset
+    await this.logPasswordResetAudit({
+      tenantId: tenantContext.tenantId,
+      resetByUserId: (response as any).userId,
+      targetUserId: (response as any).userId,
+      resetMethod: PasswordResetMethod.SELF_SERVICE,
+      ipAddress: request.ip,
+      userAgent: request.get('User-Agent'),
+      success: true,
+    });
+
+    return { message: 'Password reset successfully' };
   }
 
   /**
@@ -174,7 +185,11 @@ export class PasswordResetService {
     const adminTenantId = session.getAccessTokenPayload().tenantId;
 
     // Verify admin has permission to reset this user's password
-    await this.verifyResetPermission(adminUserId, dto.targetUserId, adminTenantId);
+    await this.verifyResetPermission(
+      adminUserId,
+      dto.targetUserId,
+      adminTenantId,
+    );
 
     try {
       // Generate secure temporary password
@@ -183,8 +198,8 @@ export class PasswordResetService {
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       // Hash the temporary password for storage
-      // const hashedTempPassword = await bcrypt.hash(tempPassword, 12);
-      const hashedTempPassword = tempPassword; // Temporary: will be fixed after bcrypt native module is rebuilt
+      // const _hashedTempPassword = await bcrypt.hash(tempPassword, 12);
+      const _hashedTempPassword = tempPassword; // Temporary: will be fixed after bcrypt native module is rebuilt
 
       // Create audit record with temporary password info
       const auditRecord = await this.logPasswordResetAudit({
@@ -255,13 +270,17 @@ export class PasswordResetService {
     });
 
     if (!auditRecord || !auditRecord.isValidTempPassword()) {
-      throw new BadRequestException('Invalid or expired temporary password token');
+      throw new BadRequestException(
+        'Invalid or expired temporary password token',
+      );
     }
 
     try {
       // Update user's password using SuperTokens
       const response = await EmailPassword.updateEmailOrPassword({
-        recipeUserId: SuperTokens.convertToRecipeUserId(auditRecord.targetUserId),
+        recipeUserId: SuperTokens.convertToRecipeUserId(
+          auditRecord.targetUserId,
+        ),
         password: dto.newPassword,
       });
 
@@ -323,7 +342,9 @@ export class PasswordResetService {
       .where('audit.tenantId = :tenantId', { tenantId });
 
     if (targetUserId) {
-      queryBuilder.andWhere('audit.targetUserId = :targetUserId', { targetUserId });
+      queryBuilder.andWhere('audit.targetUserId = :targetUserId', {
+        targetUserId,
+      });
     }
 
     const records = await queryBuilder
@@ -353,10 +374,16 @@ export class PasswordResetService {
     tenantId: string,
   ): Promise<void> {
     // Get admin roles
-    const { roles: adminRoles } = await UserRoles.getRolesForUser(tenantId, adminUserId);
-    
+    const { roles: adminRoles } = await UserRoles.getRolesForUser(
+      tenantId,
+      adminUserId,
+    );
+
     // Get target user roles
-    const { roles: targetRoles } = await UserRoles.getRolesForUser(tenantId, targetUserId);
+    const { roles: targetRoles } = await UserRoles.getRolesForUser(
+      tenantId,
+      targetUserId,
+    );
 
     // OWNER can reset anyone in their tenant
     if (adminRoles.includes(UserRole.OWNER)) {
@@ -368,7 +395,9 @@ export class PasswordResetService {
       if (targetRoles.includes(UserRole.STAFF)) {
         return;
       }
-      throw new ForbiddenException('ADMIN users can only reset STAFF passwords');
+      throw new ForbiddenException(
+        'ADMIN users can only reset STAFF passwords',
+      );
     }
 
     throw new ForbiddenException('Insufficient permissions to reset passwords');
@@ -379,9 +408,10 @@ export class PasswordResetService {
    */
   private generateSecurePassword(): string {
     const length = 12;
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    const charset =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
     let password = '';
-    
+
     // Ensure at least one character from each category
     password += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 26)]; // uppercase
     password += 'abcdefghijklmnopqrstuvwxyz'[Math.floor(Math.random() * 26)]; // lowercase
@@ -394,7 +424,10 @@ export class PasswordResetService {
     }
 
     // Shuffle the password
-    return password.split('').sort(() => Math.random() - 0.5).join('');
+    return password
+      .split('')
+      .sort(() => Math.random() - 0.5)
+      .join('');
   }
 
   /**
@@ -407,7 +440,9 @@ export class PasswordResetService {
     expiresAt: Date,
     reason?: string,
   ): Promise<void> {
-    const loginMethod = user.loginMethods.find(lm => lm.recipeId === 'emailpassword');
+    const loginMethod = user.loginMethods.find(
+      (lm) => lm.recipeId === 'emailpassword',
+    );
     if (!loginMethod?.email) {
       throw new BadRequestException('User email not found');
     }

@@ -1,13 +1,12 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
-  IsOptional,
-  IsEnum,
   MinLength,
-  IsNotEmpty,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PasswordResetMethod } from '../entities/password-reset-audit.entity';
 
 export class OwnerPasswordResetRequestDto {

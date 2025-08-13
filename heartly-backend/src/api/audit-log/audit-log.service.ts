@@ -159,7 +159,7 @@ export class AuditLogService {
 
   async cleanupOldLogs(): Promise<{ deletedCount: number }> {
     // Use the database function for cleanup
-    const result = await this.auditLogRepository.query(
+    const _result = await this.auditLogRepository.query(
       'SELECT cleanup_old_audit_logs()',
     );
 
