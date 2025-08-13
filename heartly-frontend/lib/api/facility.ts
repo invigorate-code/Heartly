@@ -38,7 +38,7 @@ export interface FacilityResponse {
 
 export const facilityAPI = {
   create: async (data: CreateFacilityDto): Promise<FacilityResponse> => {
-    return await apiCall<FacilityResponse>('/api/facility/create', {
+    return await apiCall('/api/facility/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const facilityAPI = {
   },
 
   update: async (data: UpdateFacilityDto): Promise<FacilityResponse> => {
-    return await apiCall<FacilityResponse>('/api/facility/updateFacility', {
+    return await apiCall('/api/facility/updateFacility', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -58,25 +58,25 @@ export const facilityAPI = {
   },
 
   delete: async (id: string): Promise<void> => {
-    await apiCall<void>(`/api/facility/${id}`, {
+    await apiCall(`/api/facility/${id}`, {
       method: 'DELETE',
     });
   },
 
   restore: async (id: string): Promise<FacilityResponse> => {
-    return await apiCall<FacilityResponse>(`/api/facility/${id}/restore`, {
+    return await apiCall(`/api/facility/${id}/restore`, {
       method: 'PATCH',
     });
   },
 
   getById: async (id: string): Promise<FacilityResponse> => {
-    return await apiCall<FacilityResponse>(`/api/facility/getFacilityById/${id}`, {
+    return await apiCall(`/api/facility/getFacilityById/${id}`, {
       method: 'GET',
     });
   },
 
   getUserFacilities: async (): Promise<FacilityResponse[]> => {
-    return await apiCall<FacilityResponse[]>('/api/facility/getLoggedInUserFacilities', {
+    return await apiCall('/api/facility/getLoggedInUserFacilities', {
       method: 'GET',
     });
   },

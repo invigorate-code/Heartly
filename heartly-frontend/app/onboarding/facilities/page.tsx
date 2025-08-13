@@ -27,6 +27,8 @@ import {
 } from "@/app/onboarding/facilities/model";
 import { redirect } from "next/navigation";
 import { useUser } from "@/shared/context/UserContext";
+import { useOnboarding } from "@/shared/hooks/useOnboarding";
+import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { facilityAPI, FacilityResponse } from "@/lib/api/facility";
 import { toast } from "react-hot-toast";
 const FacilitiesPage = () => {
@@ -47,6 +49,7 @@ const FacilitiesPage = () => {
   const [tenantId, setTenantId] = useState<string | null>(null);
 
   const { user } = useUser();
+  const { validateCurrentStep, completeCurrentStep, goToNextStep } = useOnboarding();
 
   useEffect(() => {
     const getUserAndFacilities = async () => {
@@ -212,14 +215,37 @@ const FacilitiesPage = () => {
   };
 
   const completeFacilityOnboarding = async () => {
-    // TODO: Implement user onboarding step update API call
-    console.log("Completing facility onboarding for user:", owner?.id);
+    try {
+      // Validate current step before proceeding
+      const validation = await validateCurrentStep();
+      
+      if (!validation.canProceed) {
+        console.warn('Cannot proceed - validation failed:', validation.errors);
+        alert('Please complete all required facility information before proceeding.');
+        return;
+      }
 
-    redirect("/onboarding/staff-invite");
+      // Complete current step and move to next
+      const completed = await completeCurrentStep();
+      
+      if (completed) {
+        console.log("Facility onboarding step completed successfully");
+        await goToNextStep();
+      } else {
+        console.error('Failed to complete facility onboarding step');
+        alert('Failed to save progress. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error completing facility onboarding:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full p-6 relative">
+    <div className="flex flex-col gap-6 w-full p-6 relative">
+      {/* Onboarding Progress */}
+      <OnboardingProgress />
+      
       <div className="flex flex-row justify-between">
         <h1 className="text-2xl font-medium">Facilities</h1>
         <Button color="primary" className="text-white" onPress={onOpen}>
@@ -434,20 +460,6 @@ const FacilitiesPage = () => {
           )}
         </ModalContent>
       </Modal>
-      <div className="fixed bottom-4 right-4">
-        {
-          // are there any facilities
-          facilitiesState.length > 0 && (
-            <Button
-              className="text-white"
-              color="primary"
-              onPress={completeFacilityOnboarding}
-            >
-              Next Page
-            </Button>
-          )
-        }
-      </div>
     </div>
   );
 };
