@@ -174,6 +174,74 @@ ai-workflow/ai-development-track/ai-dev-notes/
 5. **Test Everything**: Run tests to ensure nothing breaks
 6. **Document Next Steps**: Update todos with completed items and what to work on next
 
+## Agent Usage Guidelines
+
+### Primary Development Agents
+
+#### Task Management
+- **TodoWrite**: Always use for complex features and multi-step tasks. Essential for tracking HIPAA compliance implementations and maintaining development notes structure.
+
+#### Code Search and Analysis
+- **Grep**: Primary search tool for finding patterns, HIPAA-related code, audit implementations, and security vulnerabilities
+- **Glob**: Fast file pattern matching for locating specific file types (migrations, tests, configs)
+- **Read**: Essential for understanding implementations, reviewing documentation, and analyzing existing code
+
+#### Code Modification
+- **Edit/MultiEdit**: Apply targeted fixes, implement features, and maintain HIPAA compliance. MultiEdit preferred for multiple changes to same file
+- **Write**: Create new test files and implementation files (avoid creating documentation unless explicitly requested)
+
+#### Development Operations
+- **Bash**: Execute tests, build applications, run database migrations, and git operations. Critical for compliance verification
+- **mcp__ide__getDiagnostics**: Identify TypeScript errors and maintain strict mode compliance
+
+### Agent Usage Workflow
+
+#### Starting New Features
+1. **Read** relevant epic/story plans from `ai-workflow/`
+2. **TodoWrite** to create structured task list
+3. **Grep/Glob** to find existing patterns and related files
+4. **Read** existing implementations for context
+5. **Edit/MultiEdit** to implement feature
+6. **Write** test files
+7. **Bash** to run tests and verify
+8. **TodoWrite** to update progress
+
+#### HIPAA Compliance Audits
+1. **TodoWrite** to structure compliance audit tasks
+2. **Grep** to search for PHI handling patterns
+3. **Read** specific files for detailed analysis
+4. **Edit** to apply compliance fixes
+5. **Bash** to run security tests
+6. **TodoWrite** to document findings
+
+#### Error Investigation
+1. **mcp__ide__getDiagnostics** to identify errors
+2. **Grep** to find error patterns
+3. **Read** error logs and related files
+4. **Edit** to apply fixes
+5. **Bash** to test fixes
+
+### Agent Best Practices
+
+#### Proactive Usage (Start of Session)
+- Always begin with **TodoWrite** for task planning
+- Use **Read** to review relevant documentation
+- Apply **Grep** to understand existing patterns
+- Check structure with **LS** when needed
+
+#### Reactive Usage (As Needed)
+- **Edit/MultiEdit** when implementing changes
+- **Bash** for testing and verification
+- **WebSearch** for researching solutions
+- **mcp__ide__getDiagnostics** after changes
+
+### Critical Reminders
+- **Never skip TodoWrite** for complex features - it's essential for tracking progress
+- **Always use Grep** before implementing new patterns to maintain consistency
+- **Prefer MultiEdit** over multiple Edit operations on the same file
+- **Run tests with Bash** after every significant change
+- **Use Read extensively** to understand the comprehensive documentation in `ai-workflow/`
+
 ## Success Metrics
 - All features implemented according to story requirements
 - Comprehensive test coverage for all new code
@@ -181,6 +249,7 @@ ai-workflow/ai-development-track/ai-dev-notes/
 - Proper error handling and validation throughout
 - Clear, maintainable code with appropriate documentation
 - All development notes properly maintained in `ai-dev-notes/`
+- Effective use of agents for systematic development workflow
 
 ---
 
