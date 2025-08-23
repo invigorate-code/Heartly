@@ -15,25 +15,30 @@ Heartly is a HIPAA-compliant management system for Adult Residential Facilities 
 
 ## Key Documentation Locations
 
-### Development Planning
-- **Epic Plans**: `ai-workflow/ai-development-track/epic-plan.md`
-- **Story Plans**: `ai-workflow/ai-development-track/story-plan.md`
-- **Parallel Work Plan**: `ai-workflow/ai-development-track/parallel-work-plan.md`
-- **Development Direction**: `ai-workflow/ai-development-track/ai-development-direction.md`
-
 ### Technical Documentation
 - **Technical Structure**: `ai-workflow/heartly-technical-structure.md`
 - **Comprehensive Overview**: `ai-workflow/heartly-comprehensive-overview.md`
+- **Vision Document**: `ai-workflow/heartly-vision.md`
+- **MVP Outline**: `ai-workflow/mvp-outline.md`
 - **Authentication Flow**: `heartly-frontend/docs/authentication-flow.md`
-- **HIPAA Compliance**: `ai-workflow/hipaa-compliance-developers-guide-master/`
+- **HIPAA Compliance Guide**: `ai-workflow/hipaa-compliance-guide/`
+- **SuperTokens Documentation**: `ai-workflow/supertokens-documentation/`
 
 ### Feature Specifications
-- **Multi-facility Access**: `ai-workflow/multi-facility-access-system.md`
-- **Dashboard System**: `ai-workflow/customizable-dashboard-system.md`
-- **Cash Management**: `ai-workflow/client-cash-management-system.md`
-- **Timeline Management**: `ai-workflow/timeline-management-system.md`
-- **Audit System**: `ai-workflow/granular-audit-system.md`
-- **Document Management**: `ai-workflow/document-timelines-and-compliance.md`
+- **Core Features Directory**: `ai-workflow/heartly-core-features/`
+  - **Multi-facility Access**: `ai-workflow/heartly-core-features/multi-facility-access-system.md`
+  - **Dashboard System**: `ai-workflow/heartly-core-features/customizable-dashboard-system.md`
+  - **Cash Management**: `ai-workflow/heartly-core-features/client-cash-management-system.md`
+  - **Timeline Management**: `ai-workflow/heartly-core-features/timeline-management-system.md`
+  - **Audit System**: `ai-workflow/heartly-core-features/granular-audit-system.md`
+  - **Universal Action Button**: `ai-workflow/heartly-core-features/universal-action-button.md`
+
+### Document Management & Forms
+- **Forms Documentation**: `ai-workflow/currently-used-pdfs/`
+  - **Document Timelines & Compliance**: `ai-workflow/currently-used-pdfs/document-timelines-and-compliance.md`
+  - **Form Transformation Philosophy**: `ai-workflow/currently-used-pdfs/form-transformation-philosophy.md`
+  - **Transformation Roadmap**: `ai-workflow/currently-used-pdfs/transformation-roadmap.md`
+  - **17 Core Forms with Analysis**: Each form PDF with accompanying analysis markdown file
 
 ## Development Standards
 
@@ -86,32 +91,56 @@ Heartly is a HIPAA-compliant management system for Adult Residential Facilities 
 - [ ] Secure API endpoints with proper authentication
 - [ ] Database security with RLS policies
 
+## Additional Resources
+
+### HIPAA Compliance Documentation
+The `ai-workflow/hipaa-compliance-guide/` directory contains comprehensive HIPAA guidance:
+- Table of Contents and Introduction
+- What is HIPAA and compliance requirements
+- Security rules and implementation guides
+- Developer considerations and best practices
+- Mobile and wearable application guidelines
+- Detailed implementation examples
+
+### Forms and Document Analysis
+The `ai-workflow/currently-used-pdfs/` directory contains 17 core facility forms:
+- Each form has an original PDF and accompanying analysis markdown
+- Forms cover placement, services, medical records, and compliance
+- Analysis files provide structured field mapping and requirements
+- Essential for understanding data model and workflow requirements
+
+### SuperTokens Integration
+The `ai-workflow/supertokens-documentation/` directory contains:
+- Authentication setup and configuration guides
+- Session management and verification
+- User roles and permissions implementation
+- MFA, email verification, and security features
+- Enterprise SSO and tenant management
+- Migration guides and API references
+
 ## Development Workflow
 
-### AI Development Notes Structure
-```
-ai-workflow/ai-development-track/ai-dev-notes/
-├── feature-epic-{X}-story-{Y}-{feature-name}/
-│   ├── feature.md          # Feature implementation details
-│   ├── errors.md           # Error handling and troubleshooting
-│   └── tests.md            # Test implementation details
-```
+### AI Development Structure
+- **Vision Document**: `ai-workflow/heartly-vision.md` - Overall product vision and goals
+- **Technical Structure**: `ai-workflow/heartly-technical-structure.md` - Complete technical architecture
+- **Comprehensive Overview**: `ai-workflow/heartly-comprehensive-overview.md` - Full system documentation
+- **MVP Outline**: `ai-workflow/mvp-outline.md` - Initial release requirements
+- **Core Features**: `ai-workflow/heartly-core-features/` - Detailed feature specifications
 
 ### Feature Implementation Process
-1. **Review Epic/Story Plans**: Understand the specific requirements from the story plan
-2. **Check Team Assignment**: Review `parallel-work-plan.md` for team responsibilities
-3. **Create Feature Folder**: Set up the feature folder in `ai-dev-notes/`
-4. **Plan Implementation**: Document the technical approach in `feature.md`
-5. **Implement Feature**: Follow the documented plan with detailed explanations
-6. **Handle Errors**: Document any issues and solutions in `errors.md`
-7. **Write Tests**: Implement comprehensive tests for the feature
-8. **Code Review**: Ensure all standards are met and HIPAA compliance is maintained
+1. **Review Specifications**: Understand requirements from technical structure, feature specs, and vision documents
+2. **Review Priorities**: Check MVP outline and technical structure for current priorities
+3. **Plan Implementation**: Document the technical approach based on specifications
+4. **Implement Feature**: Follow the documented specifications and technical structure
+5. **Handle Errors**: Document and resolve any issues
+6. **Write Tests**: Implement comprehensive tests for the feature
+7. **Code Review**: Ensure all standards are met and HIPAA compliance is maintained
 
 ### Documentation and Tracking
 - Always document what we worked on and what we think we should work on next
 - Maintain an "update todos" list with completed items and next steps
 - Refer back to this documentation in subsequent work sessions to provide continuity and context
-- Keep notes of work in ai-dev-notes folder with epic-story-team naming structure
+- Review comprehensive documentation in `ai-workflow/` folder for specifications and requirements
 
 ### Testing Requirements
 - Always try to add test files for whatever you are implementing
@@ -119,7 +148,7 @@ ai-workflow/ai-development-track/ai-dev-notes/
 - Include both unit tests and integration tests for comprehensive coverage
 
 ## Quality Assurance Checklist
-- [ ] Feature matches story requirements exactly
+- [ ] Feature matches specifications exactly
 - [ ] All code follows TypeScript strict mode
 - [ ] Proper error handling and validation implemented
 - [ ] Comprehensive tests written and passing
@@ -133,41 +162,41 @@ ai-workflow/ai-development-track/ai-dev-notes/
 
 ### Do's
 - ✅ Read and understand ALL files in the `ai-workflow/` folder for complete context
-- ✅ Check `parallel-work-plan.md` to understand team responsibilities
-- ✅ Follow the epic and story plans exactly
-- ✅ Create detailed implementation notes in `ai-dev-notes/`
+- ✅ Check `ai-workflow/mvp-outline.md` and technical structure for development priorities
+- ✅ Follow the technical specifications and vision documents exactly
+- ✅ Create detailed implementation documentation
 - ✅ Implement comprehensive error handling and validation
 - ✅ Write tests for every feature
 - ✅ Consider HIPAA compliance in every decision
 - ✅ Use concise inline documentation
-- ✅ Coordinate with other teams for dependencies and handoffs
 
 ### Don'ts
-- ❌ Don't implement features not in the current story plan
-- ❌ Don't work on stories assigned to other teams without coordination
+- ❌ Don't implement features not in the current specifications
+- ❌ Don't deviate from the documented vision and technical structure
 - ❌ Don't skip error handling or validation
 - ❌ Don't ignore HIPAA compliance requirements
 - ❌ Don't implement suggested improvements without explicit approval
 - ❌ Don't skip testing or documentation
 - ❌ Don't assume the foundation is solid - check current state if needed
-- ❌ Don't make breaking changes without notifying other teams
 
 ## Branch Strategy
-- Use dev branch as main branch to branch from
-- Follow the naming convention: `feature/epic-{X}-story-{Y}-{feature-name}`
+- **IMPORTANT**: Always pull from main branch and create a new branch from main before starting any work
+- Branch from main using: `git checkout main && git pull && git checkout -b feature/{feature-name}`
+- Follow the naming convention: `feature/{feature-name}` or `fix/{issue-name}`
+- Never work directly on main branch
 
 ## Getting Started
 
 ### For New Development Sessions
 1. **Read Complete Context**: Review relevant files in the `ai-workflow/` folder
-2. **Check Team Assignment**: Review `parallel-work-plan.md` for responsibilities
-3. **Understand Current Priorities**: Review epic and story plans
-4. **Check Previous Work**: Review existing `ai-dev-notes/` for current progress
-5. **Set Up Notes**: Create feature folder in `ai-dev-notes/` for current story
+2. **Review Specifications**: Check technical structure and feature specifications
+3. **Understand Current Priorities**: Review vision, technical structure, and feature specifications
+4. **Check Previous Work**: Review existing code and documentation for current progress
+5. **Plan Implementation**: Align with documented specifications and architecture
 6. **Begin Implementation**: Follow documented standards and processes
 
 ### For Ongoing Development
-1. **Check Current Status**: Review existing `ai-dev-notes/` for current progress
+1. **Check Current Status**: Review existing code and documentation for current progress
 2. **Continue Implementation**: Follow established patterns and standards
 3. **Update Documentation**: Keep feature and error files current
 4. **Maintain Quality**: Ensure all code meets established standards
@@ -197,7 +226,7 @@ ai-workflow/ai-development-track/ai-dev-notes/
 ### Agent Usage Workflow
 
 #### Starting New Features
-1. **Read** relevant epic/story plans from `ai-workflow/`
+1. **Read** relevant specifications, vision, and technical structure from `ai-workflow/`
 2. **TodoWrite** to create structured task list
 3. **Grep/Glob** to find existing patterns and related files
 4. **Read** existing implementations for context
@@ -243,12 +272,12 @@ ai-workflow/ai-development-track/ai-dev-notes/
 - **Use Read extensively** to understand the comprehensive documentation in `ai-workflow/`
 
 ## Success Metrics
-- All features implemented according to story requirements
+- All features implemented according to specifications
 - Comprehensive test coverage for all new code
 - Zero HIPAA compliance violations
 - Proper error handling and validation throughout
 - Clear, maintainable code with appropriate documentation
-- All development notes properly maintained in `ai-dev-notes/`
+- All development properly documented and aligned with specifications
 - Effective use of agents for systematic development workflow
 
 ---

@@ -6,13 +6,14 @@ Heartly is a comprehensive, HIPAA-compliant management system designed to stream
 
 **Core Innovation**: Heartly transforms traditional PDF forms into engaging, conversational interfaces that don't feel like form-filling while maintaining complete PDF compliance and audit trails for California regional center and licensing requirements.
 
-**Timeline Management**: Comprehensive tracking of due dates, suspense dates, deadlines, and profile completion progress to ensure regulatory compliance and prevent missed requirements.
+### Core Features
 
-**Granular Audit System**: Complete field-level audit trails tracking every change, save, submit, and edit action with full user attribution for complete regulatory compliance and transparency.
-
-**Customizable Dashboards**: Drag-and-drop widget system allowing Administrators and Owners to customize staff and client dashboard layouts for optimal user experience and facility-specific workflows.
-
-**Multi-Facility Access System**: Comprehensive facility selection and access control system allowing users to work across multiple facilities with role-based permissions and shift-based access controls.
+- **Timeline Management**: See `heartly-core-features/timeline-management-system.md`
+- **Granular Audit System**: See `heartly-core-features/granular-audit-system.md`
+- **Customizable Dashboards**: See `heartly-core-features/customizable-dashboard-system.md`
+- **Multi-Facility Access**: See `heartly-core-features/multi-facility-access-system.md`
+- **Cash Management**: See `heartly-core-features/client-cash-management-system.md`
+- **Universal Action Button**: See `heartly-core-features/universal-action-button.md`
 
 ## 🛠 Tech Stack
 
@@ -59,13 +60,8 @@ The application implements a robust multi-tenant architecture where all data is 
 
 ### Multi-Facility Access System
 
-The application supports users working across multiple facilities with comprehensive access controls:
-
-- **Facility Selection**: Users with multiple facility access are presented with a facility selection screen after login
-- **Role-Based Access**: Different facility access rules based on user roles
-- **Dynamic Switching**: Seamless facility switching during active sessions
-- **Access Control**: Granular permissions based on facility assignments and user roles
-- **Shift-Based Access**: Staff access limited to facilities where they are currently on shift
+The application supports users working across multiple facilities with comprehensive access controls.
+*See `heartly-core-features/multi-facility-access-system.md` for complete specifications.*
 
 ### Database Schema
 
