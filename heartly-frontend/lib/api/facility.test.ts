@@ -46,10 +46,7 @@ describe('Facility API Service', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockResponse),
-      } as any);
+      mockApiCall.mockResolvedValueOnce(mockResponse);
 
       const result = await facilityAPI.create(createData);
 
@@ -76,10 +73,7 @@ describe('Facility API Service', () => {
         tenantId: 'tenant-123',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: false,
-        json: jest.fn().mockResolvedValueOnce({ message: 'Validation failed' }),
-      } as any);
+      mockApiCall.mockRejectedValueOnce(new Error('Validation failed'));
 
       await expect(facilityAPI.create(createData)).rejects.toThrow('Validation failed');
     });
@@ -109,10 +103,7 @@ describe('Facility API Service', () => {
         updated_at: '2024-01-01T01:00:00Z',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockResponse),
-      } as any);
+      mockApiCall.mockResolvedValueOnce(mockResponse);
 
       const result = await facilityAPI.update(updateData);
 
@@ -133,10 +124,7 @@ describe('Facility API Service', () => {
         name: 'Updated Facility',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: false,
-        json: jest.fn().mockResolvedValueOnce({ message: 'Facility not found' }),
-      } as any);
+      mockApiCall.mockRejectedValueOnce(new Error('Facility not found'));
 
       await expect(facilityAPI.update(updateData)).rejects.toThrow('Facility not found');
     });
@@ -157,10 +145,7 @@ describe('Facility API Service', () => {
     });
 
     it('should throw error when delete fails', async () => {
-      mockApiCall.mockResolvedValueOnce({
-        ok: false,
-        json: jest.fn().mockResolvedValueOnce({ message: 'Insufficient permissions' }),
-      } as any);
+      mockApiCall.mockRejectedValueOnce(new Error('Insufficient permissions'));
 
       await expect(facilityAPI.delete('facility-123')).rejects.toThrow('Insufficient permissions');
     });
@@ -184,10 +169,7 @@ describe('Facility API Service', () => {
         updated_at: '2024-01-01T02:00:00Z',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockResponse),
-      } as any);
+      mockApiCall.mockResolvedValueOnce(mockResponse);
 
       const result = await facilityAPI.restore('facility-123');
 
@@ -217,10 +199,7 @@ describe('Facility API Service', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockResponse),
-      } as any);
+      mockApiCall.mockResolvedValueOnce(mockResponse);
 
       const result = await facilityAPI.getById('facility-123');
 
@@ -232,10 +211,7 @@ describe('Facility API Service', () => {
     });
 
     it('should throw error when facility not found', async () => {
-      mockApiCall.mockResolvedValueOnce({
-        ok: false,
-        json: jest.fn().mockResolvedValueOnce({ message: 'Facility not found' }),
-      } as any);
+      mockApiCall.mockRejectedValueOnce(new Error('Facility not found'));
 
       await expect(facilityAPI.getById('invalid-id')).rejects.toThrow('Facility not found');
     });
@@ -276,10 +252,7 @@ describe('Facility API Service', () => {
         },
       ];
 
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockResponse),
-      } as any);
+      mockApiCall.mockResolvedValueOnce(mockResponse);
 
       const result = await facilityAPI.getUserFacilities();
 
@@ -291,10 +264,7 @@ describe('Facility API Service', () => {
     });
 
     it('should return empty array when user has no facilities', async () => {
-      mockApiCall.mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce([]),
-      } as any);
+      mockApiCall.mockResolvedValueOnce([]);
 
       const result = await facilityAPI.getUserFacilities();
 
@@ -302,10 +272,7 @@ describe('Facility API Service', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      mockApiCall.mockResolvedValueOnce({
-        ok: false,
-        json: jest.fn().mockResolvedValueOnce({ message: 'Not authenticated' }),
-      } as any);
+      mockApiCall.mockRejectedValueOnce(new Error('Failed to get user facilities'));
 
       await expect(facilityAPI.getUserFacilities()).rejects.toThrow('Failed to get user facilities');
     });
