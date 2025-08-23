@@ -153,7 +153,7 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
                 // Assign SuperTokens role to the new user
                 try {
                   await UserRoles.addRoleToUser(
-                    tenant.id, // tenantId
+                    'public', // default tenantId
                     response.user.id, // userId
                     'OWNER', // role - new users are owners of their tenant
                   );
@@ -371,7 +371,10 @@ export const SuperTokensInitModule = SuperTokensModule.forRoot({
         },
       },
     }),
-    UserRoles.init(),
+    UserRoles.init({
+      skipAddingRolesToAccessToken: false,
+      skipAddingPermissionsToAccessToken: false,
+    }),
     Dashboard.init(),
     UserMetadata.init(),
   ],

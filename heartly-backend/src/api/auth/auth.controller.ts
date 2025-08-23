@@ -6,10 +6,11 @@ import {
   Param,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import {
   Session,
   SuperTokensAuthGuard,
@@ -49,10 +50,10 @@ export class AuthController {
     summary:
       'Get basic user info for unverified users during verification process',
   })
-  async getBasicUserInfo(@Req() req: Request) {
+  async getBasicUserInfo(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
       // Try to get session but don't require it
-      const session = await SessionNode.getSession(req, undefined, {
+      const session = await SessionNode.getSession(req, res, {
         sessionRequired: false,
       });
 
@@ -141,12 +142,13 @@ export class AuthController {
   })
   async resendVerificationEmail(
     @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
     @Body() body: { email: string },
   ) {
     let session: SessionContainer | undefined;
     try {
       // Try to get session for unverified users
-      session = await SessionNode.getSession(req, undefined, {
+      session = await SessionNode.getSession(req, res, {
         sessionRequired: false,
       });
     } catch (sessionErr) {

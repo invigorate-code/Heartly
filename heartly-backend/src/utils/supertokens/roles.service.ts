@@ -106,7 +106,8 @@ export class SuperTokensRolesService {
     tenantId?: string,
   ): Promise<void> {
     try {
-      await UserRoles.addRoleToUser(tenantId, userId, role);
+      const defaultTenantId = tenantId || 'public';
+      await UserRoles.addRoleToUser(defaultTenantId, userId, role);
       this.logger.log(`Assigned role ${role} to user ${userId}`);
     } catch (error) {
       this.logger.error(
@@ -126,7 +127,8 @@ export class SuperTokensRolesService {
     tenantId?: string,
   ): Promise<void> {
     try {
-      await UserRoles.removeUserRole(tenantId, userId, role);
+      const defaultTenantId = tenantId || 'public';
+      await UserRoles.removeUserRole(defaultTenantId, userId, role);
       this.logger.log(`Removed role ${role} from user ${userId}`);
     } catch (error) {
       this.logger.error(
@@ -142,7 +144,8 @@ export class SuperTokensRolesService {
    */
   async getUserRoles(userId: string, tenantId?: string): Promise<string[]> {
     try {
-      const rolesResponse = await UserRoles.getRolesForUser(tenantId, userId);
+      const defaultTenantId = tenantId || 'public';
+      const rolesResponse = await UserRoles.getRolesForUser(defaultTenantId, userId);
       return rolesResponse.roles;
     } catch (error) {
       this.logger.error(`Failed to get roles for user ${userId}`, error);
@@ -159,7 +162,8 @@ export class SuperTokensRolesService {
   ): Promise<string[]> {
     try {
       // Get user roles first, then get permissions for each role
-      const { roles } = await UserRoles.getRolesForUser(tenantId, userId);
+      const defaultTenantId = tenantId || 'public';
+      const { roles } = await UserRoles.getRolesForUser(defaultTenantId, userId);
       const allPermissions: string[] = [];
 
       for (const role of roles) {
