@@ -33,10 +33,8 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### 4. **Multi-Facility Access System**
 
-- **Facility Selection**: Users with multiple facility access are presented with a facility selection screen after login
-- **Role-Based Access**: Different facility access rules based on user roles
-- **Dynamic Switching**: Seamless facility switching during active sessions
-- **Access Control**: Granular permissions based on facility assignments and user roles
+Comprehensive facility selection and access control system for multi-facility operations.
+*See `heartly-core-features/multi-facility-access-system.md` for complete specifications.*
 
 ### 5. **Modern Technology Stack**
 
@@ -54,26 +52,18 @@ To transform facility management by converting static PDF forms into dynamic, in
 
 ### 7. **Timeline & Deadline Management**
 
-- **Due Date Tracking**: Comprehensive system for tracking all regulatory deadlines and requirements
-- **Suspense Date Management**: Automated tracking of critical suspense dates for compliance
-- **Profile Completion Progress**: Real-time visibility into client profile completeness and missing requirements
-- **Compliance Monitoring**: Automated alerts and notifications for upcoming deadlines and incomplete profiles
+Comprehensive system for tracking deadlines, compliance requirements, and profile completion.
+*See `heartly-core-features/timeline-management-system.md` for complete specifications.*
 
 ### 8. **Granular Audit Logging**
 
-- **Field-Level Tracking**: Complete audit trail of every field change, save, submit, and edit action
-- **User Attribution**: Track who made each change, when, and from where
-- **Event Logging**: Comprehensive logging of all application events and user actions
-- **Data Lineage**: Complete history of data modifications and transformations
-- **Compliance Visibility**: Granular audit trails for regulatory inspections and compliance verification
+Complete field-level audit trails with user attribution and compliance visibility.
+*See `heartly-core-features/granular-audit-system.md` for complete specifications.*
 
 ### 9. **Customizable Dashboards**
 
-- **Widget-Based Layouts**: Drag-and-drop widget system for customizable dashboards
-- **Role-Based Customization**: Administrators and Owners can customize staff and client dashboards
-- **Widget Library**: Comprehensive library of widgets for different data types and insights
-- **Layout Persistence**: Save and restore dashboard layouts for different user roles
-- **Real-Time Updates**: Widgets update in real-time with live data and insights
+Widget-based dashboard system with role-based customization capabilities.
+*See `heartly-core-features/customizable-dashboard-system.md` for complete specifications.*
 
 ## 🎯 Target Outcomes
 

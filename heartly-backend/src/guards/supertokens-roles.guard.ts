@@ -1,13 +1,13 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
   ForbiddenException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import UserRoles from 'supertokens-node/recipe/userroles';
 import { SessionContainer } from 'supertokens-node/recipe/session';
+import UserRoles from 'supertokens-node/recipe/userroles';
 import { UserRole } from '../api/user/entities/user.entity';
 import { SuperTokensRolesService } from '../utils/supertokens/roles.service';
 
@@ -20,10 +20,10 @@ export class SuperTokensRolesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get required roles from decorator
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>('roles', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      'roles',
+      [context.getHandler(), context.getClass()],
+    );
 
     // If no roles are required, allow access
     if (!requiredRoles || requiredRoles.length === 0) {
@@ -73,7 +73,10 @@ export class SuperTokensRolesGuard implements CanActivate {
 
       return true;
     } catch (error) {
-      if (error instanceof ForbiddenException || error instanceof UnauthorizedException) {
+      if (
+        error instanceof ForbiddenException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
       throw new UnauthorizedException('Failed to verify user roles');

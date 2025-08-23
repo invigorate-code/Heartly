@@ -1,24 +1,10 @@
-import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { createClient } from "@/utils/supabase/server";
-
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code");
-
-  if (!code) {
-    return NextResponse.redirect(new URL("/auth/auth-error", request.url));
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error) {
-    console.error("Auth error:", error);
-    return NextResponse.redirect(new URL("/auth/auth-error", request.url));
-  }
-
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+  console.log("Confirm route called");
+  
+  // TODO: Implement SuperTokens email confirmation
+  return NextResponse.json({
+    error: 'Email confirmation needs to be implemented with SuperTokens'
+  }, { status: 501 });
 }

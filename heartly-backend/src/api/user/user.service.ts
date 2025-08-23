@@ -88,4 +88,50 @@ export class UserService {
   async delete(id: Uuid): Promise<void> {
     await this.userRepository.delete(id);
   }
+
+  async updateOnboardingProgress(
+    userId: string,
+    onboardingStep: number,
+  ): Promise<UserEntity> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new ValidationException(ErrorCode.E002);
+    }
+
+    // Update onboarding step
+    user.onboarding_step = onboardingStep;
+    
+    const updatedUser = await this.userRepository.save(user);
+    
+    this.logger.log(`Onboarding progress updated for user ${userId}:`, {
+      onboarding_step: updatedUser.onboarding_step,
+      timestamp: new Date().toISOString(),
+    });
+
+    return updatedUser;
+  }
+
+  async completeOnboarding(userId: string): Promise<UserEntity> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new ValidationException(ErrorCode.E002);
+    }
+
+    // Mark onboarding as completed
+    user.onboarding_completed_at = new Date();
+    
+    // Set final onboarding step (total number of steps)
+    const totalSteps = 2; // facilities + staff-invite
+    user.onboarding_step = totalSteps;
+    
+    const updatedUser = await this.userRepository.save(user);
+    
+    this.logger.log(`Onboarding completed for user ${userId}:`, {
+      onboarding_completed_at: updatedUser.onboarding_completed_at,
+      final_step: updatedUser.onboarding_step,
+      timestamp: new Date().toISOString(),
+    });
+
+    return updatedUser;
+  }
 }

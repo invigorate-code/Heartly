@@ -13,7 +13,7 @@ export function LoginForm() {
   const [showPasswordText, setShowPasswordText] = useState(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<SignInUserResponse>();
+  const [error, setError] = useState<string | undefined>();
   const [confirmLinkSent, setConfirmLinkSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,7 +72,7 @@ export function LoginForm() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError(error);
+      setError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsLoading(false);
     }
@@ -108,15 +108,11 @@ export function LoginForm() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-small">
       <p className="pb-2 text-2xl font-bold">Welcome Back</p>
-      {error?.reason && <Alert
+      {error && <Alert
         color={confirmLinkSent ? "success" : "danger"}
-        description={
-          error?.reason === "Email not verified"
-            ? emailNotVerifiedComponent()
-            : (error?.reason ?? "")
-        }
-        isVisible={error?.status !== "OK"}
-        title={errorMessageParser(error?.status ?? "")}
+        description={error === "Email not verified" ? emailNotVerifiedComponent() : ""}
+        isVisible={!!error}
+        title={errorMessageParser(error ?? "")}
         variant="faded"
       />}
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>

@@ -26,8 +26,8 @@ export const useEmailVerification = (): UseEmailVerificationReturn => {
       
       const userInfo: BasicUserInfoResponse = await getBasicUserInfo();
       
-      setIsVerified(userInfo.isEmailVerified);
-      setUserEmail(userInfo.email);
+      setIsVerified(userInfo.isEmailVerified ?? null);
+      setUserEmail(userInfo.email ?? null);
     } catch (err) {
       console.error('Error checking email verification status:', err);
       setError('Failed to check email verification status');

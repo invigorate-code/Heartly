@@ -13,7 +13,7 @@ export interface UserEntity {
   onboarding_step?: number;
   role: UserRole;
   permissions?: Record<string, boolean>;
-  tenantOwned?: TenantEntity;
+  tenantId: string;
   tenant: TenantEntity;
   facilities: FacilityEntity[];
 }

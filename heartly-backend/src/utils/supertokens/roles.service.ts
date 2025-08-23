@@ -23,13 +23,17 @@ export class SuperTokensRolesService {
   private readonly logger = new Logger(SuperTokensRolesService.name);
 
   // System roles that exist for all tenants
-  private readonly SYSTEM_ROLES = [UserRole.OWNER, UserRole.ADMIN, UserRole.STAFF];
+  private readonly SYSTEM_ROLES = [
+    UserRole.OWNER,
+    UserRole.ADMIN,
+    UserRole.STAFF,
+  ];
 
   // Default permissions for system roles
   private readonly DEFAULT_ROLE_PERMISSIONS: RolePermissions = {
     [UserRole.OWNER]: [
       'users:read',
-      'users:write', 
+      'users:write',
       'users:delete',
       'users:invite',
       'facilities:read',
@@ -105,7 +109,10 @@ export class SuperTokensRolesService {
       await UserRoles.addRoleToUser(tenantId, userId, role);
       this.logger.log(`Assigned role ${role} to user ${userId}`);
     } catch (error) {
-      this.logger.error(`Failed to assign role ${role} to user ${userId}`, error);
+      this.logger.error(
+        `Failed to assign role ${role} to user ${userId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -122,7 +129,10 @@ export class SuperTokensRolesService {
       await UserRoles.removeUserRole(tenantId, userId, role);
       this.logger.log(`Removed role ${role} from user ${userId}`);
     } catch (error) {
-      this.logger.error(`Failed to remove role ${role} from user ${userId}`, error);
+      this.logger.error(
+        `Failed to remove role ${role} from user ${userId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -151,14 +161,14 @@ export class SuperTokensRolesService {
       // Get user roles first, then get permissions for each role
       const { roles } = await UserRoles.getRolesForUser(tenantId, userId);
       const allPermissions: string[] = [];
-      
+
       for (const role of roles) {
         const rolePermissions = await UserRoles.getPermissionsForRole(role);
         if (rolePermissions.status === 'OK') {
           allPermissions.push(...rolePermissions.permissions);
         }
       }
-      
+
       // Remove duplicates and return
       return [...new Set(allPermissions)];
     } catch (error) {
@@ -179,7 +189,10 @@ export class SuperTokensRolesService {
       const roles = await this.getUserRoles(userId, tenantId);
       return roles.includes(role);
     } catch (error) {
-      this.logger.error(`Failed to check role ${role} for user ${userId}`, error);
+      this.logger.error(
+        `Failed to check role ${role} for user ${userId}`,
+        error,
+      );
       return false;
     }
   }
@@ -247,10 +260,15 @@ export class SuperTokensRolesService {
       // Create the role in SuperTokens with tenant-specific naming
       const fullRoleName = this.getTenantSpecificRoleName(roleName, tenantId);
       await UserRoles.createNewRoleOrAddPermissions(fullRoleName, permissions);
-      
-      this.logger.log(`Created custom role ${fullRoleName} with ${permissions.length} permissions`);
+
+      this.logger.log(
+        `Created custom role ${fullRoleName} with ${permissions.length} permissions`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to create custom role ${roleName} for tenant ${tenantId}`, error);
+      this.logger.error(
+        `Failed to create custom role ${roleName} for tenant ${tenantId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -258,10 +276,7 @@ export class SuperTokensRolesService {
   /**
    * Delete a custom role (system roles cannot be deleted)
    */
-  async deleteCustomRole(
-    roleName: string,
-    tenantId: string,
-  ): Promise<void> {
+  async deleteCustomRole(roleName: string, tenantId: string): Promise<void> {
     try {
       // Prevent deletion of system roles
       if (this.SYSTEM_ROLES.includes(roleName as UserRole)) {
@@ -270,10 +285,13 @@ export class SuperTokensRolesService {
 
       const fullRoleName = this.getTenantSpecificRoleName(roleName, tenantId);
       await UserRoles.deleteRole(fullRoleName);
-      
+
       this.logger.log(`Deleted custom role ${fullRoleName}`);
     } catch (error) {
-      this.logger.error(`Failed to delete custom role ${roleName} for tenant ${tenantId}`, error);
+      this.logger.error(
+        `Failed to delete custom role ${roleName} for tenant ${tenantId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -293,22 +311,26 @@ export class SuperTokensRolesService {
       }
 
       const fullRoleName = this.getTenantSpecificRoleName(roleName, tenantId);
-      
+
       // Get current permissions and remove them
-      const permissionsResponse = await UserRoles.getPermissionsForRole(fullRoleName);
+      const permissionsResponse =
+        await UserRoles.getPermissionsForRole(fullRoleName);
       if (permissionsResponse.status === 'OK') {
         const currentPermissions = permissionsResponse.permissions;
         for (const permission of currentPermissions) {
           await UserRoles.removePermissionsFromRole(fullRoleName, [permission]);
         }
       }
-      
+
       // Add new permissions
       await UserRoles.createNewRoleOrAddPermissions(fullRoleName, permissions);
-      
+
       this.logger.log(`Updated custom role ${fullRoleName} permissions`);
     } catch (error) {
-      this.logger.error(`Failed to update custom role ${roleName} for tenant ${tenantId}`, error);
+      this.logger.error(
+        `Failed to update custom role ${roleName} for tenant ${tenantId}`,
+        error,
+      );
       throw error;
     }
   }
@@ -320,12 +342,13 @@ export class SuperTokensRolesService {
     try {
       // Get all roles from SuperTokens
       const { roles } = await UserRoles.getAllRoles();
-      
+
       // Filter to get tenant-specific roles and system roles
       const tenantPrefix = `${tenantId}_`;
-      const tenantRoles = roles.filter(role => 
-        this.SYSTEM_ROLES.includes(role as UserRole) || 
-        role.startsWith(tenantPrefix)
+      const tenantRoles = roles.filter(
+        (role) =>
+          this.SYSTEM_ROLES.includes(role as UserRole) ||
+          role.startsWith(tenantPrefix),
       );
 
       return tenantRoles;
@@ -361,13 +384,17 @@ export class SuperTokensRolesService {
       }
 
       const fullRoleName = this.getTenantSpecificRoleName(roleName, tenantId);
-      const permissionsResponse = await UserRoles.getPermissionsForRole(fullRoleName);
+      const permissionsResponse =
+        await UserRoles.getPermissionsForRole(fullRoleName);
       if (permissionsResponse.status === 'OK') {
         return permissionsResponse.permissions;
       }
       return [];
     } catch (error) {
-      this.logger.error(`Failed to get permissions for role ${roleName}`, error);
+      this.logger.error(
+        `Failed to get permissions for role ${roleName}`,
+        error,
+      );
       throw error;
     }
   }
@@ -401,10 +428,10 @@ export class SuperTokensRolesService {
    */
   getAllAvailablePermissions(): string[] {
     const allPermissions = new Set<string>();
-    
+
     // Add all permissions from system roles
-    Object.values(this.DEFAULT_ROLE_PERMISSIONS).forEach(permissions => {
-      permissions.forEach(permission => allPermissions.add(permission));
+    Object.values(this.DEFAULT_ROLE_PERMISSIONS).forEach((permissions) => {
+      permissions.forEach((permission) => allPermissions.add(permission));
     });
 
     return Array.from(allPermissions).sort();
@@ -417,12 +444,15 @@ export class SuperTokensRolesService {
   /**
    * Generate tenant-specific role name for custom roles
    */
-  private getTenantSpecificRoleName(roleName: string, tenantId: string): string {
+  private getTenantSpecificRoleName(
+    roleName: string,
+    tenantId: string,
+  ): string {
     // System roles don't need tenant prefix
     if (this.isSystemRole(roleName)) {
       return roleName;
     }
-    
+
     return `${tenantId}_${roleName}`;
   }
 

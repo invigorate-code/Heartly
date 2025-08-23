@@ -25,8 +25,8 @@ import { LoggerModule } from 'nestjs-pino';
 import path from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import loggerFactory from './logger-factory';
-import { SuperTokensInitModule } from './supertokens/supertokensInitConfig';
 import { SuperTokensRolesModule } from './supertokens/roles.module';
+import { SuperTokensInitModule } from './supertokens/supertokensInitConfig';
 
 function generateModulesSet() {
   const imports: ModuleMetadata['imports'] = [

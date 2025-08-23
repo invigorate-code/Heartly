@@ -1,29 +1,36 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  UseGuards,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { SuperTokensAuthGuard, VerifySession } from 'supertokens-nestjs';
-import { Session } from 'supertokens-nestjs';
-import { SessionContainer } from 'supertokens-node/recipe/session';
-import { CustomRoleService } from './custom-role.service';
-import { CreateCustomRoleDto } from './dto/create-custom-role.dto';
-import { UpdateCustomRoleDto } from './dto/update-custom-role.dto';
-import { 
-  CustomRoleResponseDto, 
-  AvailablePermissionsResponseDto,
-  RoleAssignmentDto 
-} from './dto/custom-role.res.dto';
 import { Roles } from '@/decorators/roles.decorator';
 import { SuperTokensRolesGuard } from '@/guards/supertokens-roles.guard';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  Session,
+  SuperTokensAuthGuard,
+  VerifySession,
+} from 'supertokens-nestjs';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserRole } from '../user/entities/user.entity';
+import { CustomRoleService } from './custom-role.service';
+import { CreateCustomRoleDto } from './dto/create-custom-role.dto';
+import {
+  AvailablePermissionsResponseDto,
+  CustomRoleResponseDto,
+} from './dto/custom-role.res.dto';
+import { UpdateCustomRoleDto } from './dto/update-custom-role.dto';
 
 @ApiTags('Custom Roles')
 @ApiBearerAuth()
@@ -34,13 +41,19 @@ export class CustomRoleController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new custom role' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Custom role created successfully',
-    type: CustomRoleResponseDto 
+    type: CustomRoleResponseDto,
   })
-  @ApiResponse({ status: 403, description: 'Forbidden - insufficient permissions' })
-  @ApiResponse({ status: 409, description: 'Conflict - role name already exists' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - insufficient permissions',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict - role name already exists',
+  })
   @UseGuards(SuperTokensRolesGuard)
   @VerifySession()
   @Roles(UserRole.OWNER) // Only owners can create custom roles
@@ -51,9 +64,11 @@ export class CustomRoleController {
     // Check email verification
     const payload = session.getAccessTokenPayload();
     const isEmailVerified = payload['st-ev']?.v || false;
-    
+
     if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required for role management');
+      throw new UnauthorizedException(
+        'Email verification required for role management',
+      );
     }
 
     const tenantId = payload.tenantId;
@@ -69,9 +84,11 @@ export class CustomRoleController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all roles for the current tenant (system + custom)' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({
+    summary: 'Get all roles for the current tenant (system + custom)',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Roles retrieved successfully',
     schema: {
       type: 'object',
@@ -107,10 +124,10 @@ export class CustomRoleController {
 
   @Get('permissions')
   @ApiOperation({ summary: 'Get all available permissions in the system' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Available permissions retrieved successfully',
-    type: AvailablePermissionsResponseDto 
+    type: AvailablePermissionsResponseDto,
   })
   @UseGuards(SuperTokensRolesGuard)
   @VerifySession()
@@ -122,10 +139,10 @@ export class CustomRoleController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific custom role' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Custom role retrieved successfully',
-    type: CustomRoleResponseDto 
+    type: CustomRoleResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Custom role not found' })
   @UseGuards(SuperTokensRolesGuard)
@@ -143,12 +160,15 @@ export class CustomRoleController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a custom role' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Custom role updated successfully',
-    type: CustomRoleResponseDto 
+    type: CustomRoleResponseDto,
   })
-  @ApiResponse({ status: 403, description: 'Forbidden - cannot update system roles' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - cannot update system roles',
+  })
   @ApiResponse({ status: 404, description: 'Custom role not found' })
   @UseGuards(SuperTokensRolesGuard)
   @VerifySession()
@@ -161,9 +181,11 @@ export class CustomRoleController {
     // Check email verification
     const payload = session.getAccessTokenPayload();
     const isEmailVerified = payload['st-ev']?.v || false;
-    
+
     if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required for role management');
+      throw new UnauthorizedException(
+        'Email verification required for role management',
+      );
     }
 
     const tenantId = payload.tenantId;
@@ -180,7 +202,10 @@ export class CustomRoleController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a custom role' })
   @ApiResponse({ status: 200, description: 'Custom role deleted successfully' })
-  @ApiResponse({ status: 403, description: 'Forbidden - cannot delete system roles' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - cannot delete system roles',
+  })
   @ApiResponse({ status: 404, description: 'Custom role not found' })
   @UseGuards(SuperTokensRolesGuard)
   @VerifySession()
@@ -192,9 +217,11 @@ export class CustomRoleController {
     // Check email verification
     const payload = session.getAccessTokenPayload();
     const isEmailVerified = payload['st-ev']?.v || false;
-    
+
     if (!isEmailVerified) {
-      throw new UnauthorizedException('Email verification required for role management');
+      throw new UnauthorizedException(
+        'Email verification required for role management',
+      );
     }
 
     const tenantId = payload.tenantId;

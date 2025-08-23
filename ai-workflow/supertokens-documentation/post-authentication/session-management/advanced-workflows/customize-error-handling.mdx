@@ -1,0 +1,500 @@
+---
+title: Customize error handling
+hide_title: true
+sidebar_position: 3
+description: Customize errors thrown by the Session recipe in your SuperTokens integration.
+page_type: guide
+recipe: session
+category: session-management
+---
+
+
+# Customize error handling
+
+## Overview
+
+The following page shows the errors that the SuperTokens Session recipe throws and how you can customize them.
+
+---
+
+## Unauthorised error
+
+The system generates the error when someone accesses a protected backend API without a session.
+The default behavior is to clear session tokens (if any) and send a 401 to the frontend.
+
+<BackendTabs>
+<BackendTabs.TabItem value="nodejs">
+
+```tsx
+import SuperTokens from "supertokens-node";
+import Session from "supertokens-node/recipe/session";
+
+SuperTokens.init({
+    supertokens: {
+        connectionURI: "...",
+    },
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        Session.init({
+            //highlight-start
+            errorHandlers: {
+                onUnauthorised: async (message, request, response, userContext) => {
+                    // TODO: Write your own logic and then send a 401 response to the frontend
+                },
+            }
+            //highlight-end
+        })
+    ]
+});
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="go">
+
+```go
+import (
+	"net/http"
+
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+)
+
+func main() {
+	supertokens.Init(supertokens.TypeInput{
+		RecipeList: []supertokens.Recipe{
+			session.Init(&sessmodels.TypeInput{
+				//highlight-start
+				ErrorHandlers: &sessmodels.ErrorHandlers{
+					OnUnauthorised: func(message string, req *http.Request, res http.ResponseWriter) error {
+						// TODO: Write your own logic and then send a 401 response to the frontend
+						return nil
+					},
+				},
+				//highlight-end
+			}),
+		},
+	})
+}
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="python">
+
+```python
+from supertokens_python import init, InputAppInfo
+from supertokens_python.recipe import session
+from supertokens_python.framework import BaseRequest, BaseResponse
+
+async def unauthorised_callback(req: BaseRequest, err: str, response: BaseResponse):
+    # TODO: Write your own logic and then send a 401 response to the frontend
+    return response
+
+init(
+    app_info=InputAppInfo(api_domain="...", app_name="...", website_domain="..."),
+    framework='...', # type: ignore
+    recipe_list=[
+        session.init(
+            # highlight-start
+            error_handlers=session.InputErrorHandlers(
+                on_unauthorised=unauthorised_callback
+            )
+            # highlight-end
+        )
+    ]
+)
+```
+
+</BackendTabs.TabItem>
+</BackendTabs>
+
+---
+
+## Invalid claim error
+
+The system generates the error when someone accesses a protected backend API with a session that doesn't pass the claim validators.
+The default behavior is to send a 403 to the frontend with the errors included in the body.
+
+<BackendTabs>
+<BackendTabs.TabItem value="nodejs">
+
+```tsx
+import SuperTokens from "supertokens-node";
+import Session from "supertokens-node/recipe/session";
+
+SuperTokens.init({
+    supertokens: {
+        connectionURI: "...",
+    },
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        Session.init({
+            //highlight-start
+            errorHandlers: {
+                onInvalidClaim: async (validatorErrors, request, response, userContext) => {
+                    // TODO: Write your own logic and then send a 403 response to the frontend
+                },
+            }
+            //highlight-end
+        })
+    ]
+});
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="go">
+
+```go
+import (
+	"net/http"
+
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/claims"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+)
+
+func main() {
+	supertokens.Init(supertokens.TypeInput{
+		RecipeList: []supertokens.Recipe{
+			session.Init(&sessmodels.TypeInput{
+				//highlight-start
+				ErrorHandlers: &sessmodels.ErrorHandlers{
+					OnInvalidClaim: func(validationErrors []claims.ClaimValidationError, req *http.Request, res http.ResponseWriter) error {
+						// TODO: Write your own logic and then send a 403 response to the frontend
+						return nil
+					},
+				},
+				//highlight-end
+			}),
+		},
+	})
+}
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="python">
+
+```python
+from supertokens_python import init, InputAppInfo
+from supertokens_python.recipe import session
+from supertokens_python.recipe.session.exceptions import ClaimValidationError
+from supertokens_python.framework import BaseRequest, BaseResponse
+from typing import List
+
+async def invalid_claim_callback(req: BaseRequest, invalid_claims: List[ClaimValidationError], response: BaseResponse):
+    # TODO: Write your own logic and then send a 403 response to the frontend
+    return response
+
+init(
+    app_info=InputAppInfo(
+        api_domain="...", app_name="...", website_domain="..."),
+    framework='...',  # type: ignore
+    recipe_list=[
+        session.init(
+            # highlight-start
+            error_handlers=session.InputErrorHandlers(
+                on_invalid_claim=invalid_claim_callback
+            )
+            # highlight-end
+        )
+    ]
+)
+```
+
+</BackendTabs.TabItem>
+</BackendTabs>
+
+---
+
+## Token theft detected error
+
+The system generates the error when the system detects a [session hijacking](https://en.wikipedia.org/wiki/Session_hijacking) attempt.
+This happens through the use of [rotating refresh tokens](https://supertokens.com/blog/the-best-way-to-securely-manage-user-sessions).
+The default behavior is to revoke the session and send a `401` to the frontend.
+
+<BackendTabs>
+<BackendTabs.TabItem value="nodejs">
+
+```tsx
+import SuperTokens from "supertokens-node";
+import Session from "supertokens-node/recipe/session";
+
+SuperTokens.init({
+    supertokens: {
+        connectionURI: "...",
+    },
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        Session.init({
+            //highlight-start
+            errorHandlers: {
+                onTokenTheftDetected: async (sessionHandle, userId, req, res, userContext) => {
+                    // TODO: Write your own logic and then send a 401 response to the frontend
+                },
+            }
+            //highlight-end
+        })
+    ]
+});
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="go">
+
+```go
+import (
+	"net/http"
+
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+)
+
+func main() {
+	supertokens.Init(supertokens.TypeInput{
+		RecipeList: []supertokens.Recipe{
+			session.Init(&sessmodels.TypeInput{
+				//highlight-start
+				ErrorHandlers: &sessmodels.ErrorHandlers{
+					OnTokenTheftDetected: func(sessionHandle, userID string,
+						req *http.Request, res http.ResponseWriter) error {
+						// TODO: Write your own logic and then send a 401 response to the frontend
+						return nil
+					},
+				},
+				//highlight-end
+			}),
+		},
+	})
+}
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="python">
+
+```python
+from supertokens_python import init, InputAppInfo
+from supertokens_python.recipe import session
+from supertokens_python.framework import BaseRequest, BaseResponse
+from supertokens_python.types import RecipeUserId
+
+async def token_theft_detected_callback(req: BaseRequest, session_handle: str, user_id: str, recipe_user_id: RecipeUserId, response: BaseResponse):
+    # TODO: Write your own logic and then send a 401 response to the frontend
+    return response
+
+init(
+    app_info=InputAppInfo(api_domain="...", app_name="...", website_domain="..."),
+    
+    framework='...', # type: ignore
+    recipe_list=[
+        session.init(
+            # highlight-start
+            error_handlers=session.InputErrorHandlers(
+                on_token_theft_detected=token_theft_detected_callback
+            )
+            # highlight-end
+        )
+    ]
+)
+```
+
+</BackendTabs.TabItem>
+</BackendTabs>
+
+---
+
+## Try refresh token error
+
+Thrown when the access token expires or is invalid.
+The session refresh endpoint can also throw this if multiple access tokens are present in the request cookies.
+The default behavior is to send a `401` to the frontend.
+
+<BackendTabs>
+<BackendTabs.TabItem value="nodejs">
+
+```tsx
+import SuperTokens from "supertokens-node";
+import Session from "supertokens-node/recipe/session";
+
+SuperTokens.init({
+    supertokens: {
+        connectionURI: "...",
+    },
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        Session.init({
+            //highlight-start
+            errorHandlers: {
+                onTryRefreshToken: async (message, request, response, userContext) => {
+                    // TODO: Write your own logic and then send a 401 response to the frontend
+                },
+            }
+            //highlight-end
+        })
+    ]
+});
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="go">
+
+```go
+import (
+	"net/http"
+
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+)
+
+func main() {
+	supertokens.Init(supertokens.TypeInput{
+		RecipeList: []supertokens.Recipe{
+			session.Init(&sessmodels.TypeInput{
+				//highlight-start
+				ErrorHandlers: &sessmodels.ErrorHandlers{
+					OnTryRefreshToken: func(message string, req *http.Request, res http.ResponseWriter) error {
+						// TODO: Write your own logic and then send a 401 response to the frontend
+						return nil
+					},
+				},
+				//highlight-end
+			}),
+		},
+	})
+}
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="python">
+
+```python
+from supertokens_python import init, InputAppInfo
+from supertokens_python.recipe import session
+from supertokens_python.framework import BaseRequest, BaseResponse
+
+async def try_refresh_callback(req: BaseRequest, err: str, response: BaseResponse):
+    # TODO: Write your own logic and then send a 401 response to the frontend
+    return response
+
+init(
+    app_info=InputAppInfo(api_domain="...", app_name="...", website_domain="..."),
+    framework='...', # type: ignore
+    recipe_list=[
+        session.init(
+            # highlight-start
+            error_handlers=session.InputErrorHandlers(
+                on_try_refresh_token=try_refresh_callback
+            )
+            # highlight-end
+        )
+    ]
+)
+```
+
+</BackendTabs.TabItem>
+</BackendTabs>
+
+---
+
+## Clear duplicate session cookies error
+
+Thrown when the refresh session API clears session cookies from the `olderCookieDomain` because it found multiple access tokens in the request cookies. See [this issue](https://github.com/supertokens/supertokens-node/issues/826) for more information.
+The default behavior is to send a 200 to the frontend.
+
+<BackendTabs>
+<BackendTabs.TabItem value="nodejs">
+
+```tsx
+import SuperTokens from "supertokens-node";
+import Session from "supertokens-node/recipe/session";
+
+SuperTokens.init({
+    supertokens: {
+        connectionURI: "...",
+    },
+    appInfo: {
+        apiDomain: "...",
+        appName: "...",
+        websiteDomain: "..."
+    },
+    recipeList: [
+        Session.init({
+            //highlight-start
+            errorHandlers: {
+                onClearDuplicateSessionCookies: async (message, request, response, userContext) => {
+                    // TODO: Write your own logic and then send a 200 response to the frontend
+                },
+            }
+            //highlight-end
+        })
+    ]
+});
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="go">
+
+```go
+import (
+	"net/http"
+
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
+)
+
+func main() {
+	supertokens.Init(supertokens.TypeInput{
+		RecipeList: []supertokens.Recipe{
+			session.Init(&sessmodels.TypeInput{
+				//highlight-start
+				ErrorHandlers: &sessmodels.ErrorHandlers{
+					OnClearDuplicateSessionCookies: func(message string, req *http.Request, res http.ResponseWriter) error {
+						// TODO: Write your own logic and then send a 200 response to the frontend
+						return nil
+					},
+				},
+				//highlight-end
+			}),
+		},
+	})
+}
+```
+</BackendTabs.TabItem>
+<BackendTabs.TabItem value="python">
+
+```python
+from supertokens_python import init, InputAppInfo
+from supertokens_python.recipe import session
+from supertokens_python.framework import BaseRequest, BaseResponse
+
+async def on_clear_duplication_session_cookies_callback(req: BaseRequest, err: str, response: BaseResponse):
+    # TODO: Write your own logic and then send a 200 response to the frontend
+    return response
+
+init(
+    app_info=InputAppInfo(api_domain="...", app_name="...", website_domain="..."),
+    framework='...', # type: ignore
+    recipe_list=[
+        session.init(
+            # highlight-start
+            error_handlers=session.InputErrorHandlers(
+                on_clear_duplicate_session_cookies=on_clear_duplication_session_cookies_callback
+            )
+            # highlight-end
+        )
+    ]
+)
+```
+
+</BackendTabs.TabItem>
+</BackendTabs>

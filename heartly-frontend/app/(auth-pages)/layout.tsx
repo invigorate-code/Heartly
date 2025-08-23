@@ -7,7 +7,6 @@ import {
 } from "@heroui/react";
 import Logo from "@/app/logo.png";
 import Image from "next/image";
-import { ToastProvider } from "@heroui/toast";
 export default async function Layout({ children }) {
   return (
     <div className="flex flex-col bg-[#f8f8f8]">
@@ -40,7 +39,6 @@ export default async function Layout({ children }) {
         </NavbarContent>
       </Navbar>
       <div className="flex min-h-[calc(100vh-65px)] items-center justify-center">
-        <ToastProvider placement="top-right" />
         {children}
       </div>
     </div>

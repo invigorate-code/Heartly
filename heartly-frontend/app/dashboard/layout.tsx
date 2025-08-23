@@ -8,11 +8,12 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await authApi.getLoggedInUser();
+  // TODO: Implement user fetching with SuperTokens
+  // const user = await authApi.getLoggedInUser();
 
   return (
       <div className="flex flex-col h-dvh bg-[#f8f8f8]">
-        <Header user={user} headerPurpose="dashboard" />
+        <Header headerPurpose="dashboard" />
         <main className="flex flex-grow h-dvh">
           <Sidebar />
           <div className="lg:ps-[210px] flex-grow h-[92dvh] p-4">

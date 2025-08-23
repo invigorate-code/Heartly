@@ -104,20 +104,21 @@ export class ImplementRowLevelSecurityPolicies1754252063000
         `);
 
     // Create indexes to optimize RLS policy performance
+    // Note: CONCURRENTLY removed as it cannot run inside a transaction
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_user_tenant_id" ON "user" ("tenantId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_user_tenant_id" ON "user" ("tenantId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_client_tenant_facility" ON "client" ("tenantId", "facilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_client_tenant_facility" ON "client" ("tenantId", "facilityId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_facility_tenant_id" ON "facility" ("tenantId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_facility_tenant_id" ON "facility" ("tenantId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_audit_log_tenant_facility" ON "user_action_audit_log" ("targetTenantId", "targetFacilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_audit_log_tenant_facility" ON "user_action_audit_log" ("targetTenantId", "targetFacilityId")`,
     );
     await queryRunner.query(
-      `CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_facility_staff_user_facility" ON "facility_staff" ("userId", "facilityId")`,
+      `CREATE INDEX IF NOT EXISTS "idx_facility_staff_user_facility" ON "facility_staff" ("userId", "facilityId")`,
     );
   }
 
@@ -151,20 +152,17 @@ export class ImplementRowLevelSecurityPolicies1754252063000
     );
 
     // Drop performance indexes
+    // Note: CONCURRENTLY removed as it cannot run inside a transaction
+    await queryRunner.query(`DROP INDEX IF EXISTS "idx_user_tenant_id"`);
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_user_tenant_id"`,
+      `DROP INDEX IF EXISTS "idx_client_tenant_facility"`,
+    );
+    await queryRunner.query(`DROP INDEX IF EXISTS "idx_facility_tenant_id"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "idx_audit_log_tenant_facility"`,
     );
     await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_client_tenant_facility"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_facility_tenant_id"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_audit_log_tenant_facility"`,
-    );
-    await queryRunner.query(
-      `DROP INDEX CONCURRENTLY IF EXISTS "idx_facility_staff_user_facility"`,
+      `DROP INDEX IF EXISTS "idx_facility_staff_user_facility"`,
     );
 
     // Restore the original facility policy (from previous migration)

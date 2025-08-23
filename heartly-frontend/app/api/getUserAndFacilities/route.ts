@@ -1,80 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
 
 export async function GET(req: NextRequest) {
-  console.log("get user and facilities called");
-  //   try {
-  const supabase = await createClient();
-  const { data: user, error: userError } = await supabase.auth.getUser();
+  try {
+    const backendBaseUrl = process.env.NEXT_PUBLIC_NEST_API_URL || 'http://localhost:4000';
+    
+    // Get user basic info first to check authentication
+    const userInfoResponse = await fetch(`${backendBaseUrl}/api/user/getBasicUserInfo`, {
+      method: 'POST',
+      headers: {
+        Cookie: req.headers.get('cookie') || '',
+      },
+      credentials: 'include',
+    });
 
-  console.log("user", user);
+    if (!userInfoResponse.ok) {
+      return NextResponse.json({
+        error: 'Failed to authenticate'
+      }, { status: 401 });
+    }
 
-  if (userError) {
-    console.error("Error getting user:", JSON.stringify(userError));
-    return NextResponse.json({ error: "Error getting user" }, { status: 500 });
+    const userInfo = await userInfoResponse.json();
+    
+    if (userInfo.status !== 'OK') {
+      return NextResponse.json({
+        error: 'Not authenticated'
+      }, { status: 401 });
+    }
+
+    // Get user facilities
+    const facilitiesResponse = await fetch(`${backendBaseUrl}/api/facility/getLoggedInUserFacilities`, {
+      method: 'GET',
+      headers: {
+        Cookie: req.headers.get('cookie') || '',
+      },
+      credentials: 'include',
+    });
+
+    if (!facilitiesResponse.ok) {
+      throw new Error('Failed to fetch facilities');
+    }
+
+    const facilities = await facilitiesResponse.json();
+
+    return NextResponse.json({
+      owner: {
+        id: userInfo.userId,
+        email: userInfo.email,
+        auth_id: userInfo.userId,
+      },
+      tenantId: userInfo.tenantIds?.[0] || 'default',
+      facilities: facilities,
+    });
+  } catch (error) {
+    console.error('Error fetching user and facilities:', error);
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Failed to fetch user and facilities'
+    }, { status: 500 });
   }
-
-  //     type UserFacilityFunctionReturn = {
-  //       facilities: {
-  //         facility_id: string;
-  //         facility_name: string;
-  //         facility_address: string;
-  //         facility_city: string;
-  //         facility_state: string;
-  //         facility_zip: string;
-  //         facility_projected_client_count: number;
-  //       }[];
-  //       tenant_id: string;
-  //       up_user_id: string;
-  //       user_auth_id: string;
-  //       user_email: string;
-  //     };
-
-  //     const {
-  //       data: userFacilityFunctionReturn,
-  //       error: userFacilityFunctionError,
-  //     } = await supabase
-  //       .schema("api")
-  //       .rpc("get_user_and_facilities", {
-  //         user_id_param: user.user.id,
-  //       })
-  //       .single<UserFacilityFunctionReturn>();
-
-  //     if (userFacilityFunctionError) {
-  //       console.error(
-  //         "Error getting facilities:",
-  //         JSON.stringify(userFacilityFunctionError)
-  //       );
-  //       return NextResponse.json(
-  //         { error: "Error getting facilities" },
-  //         { status: 500 }
-  //       );
-  //     }
-
-  //     console.log("userFacilityFunctionReturn", userFacilityFunctionReturn);
-
-  //     const { tenant_id, facilities, user_email, up_user_id, user_auth_id } =
-  //       userFacilityFunctionReturn;
-
-  //     const allFacilities = facilities.map((facility) => ({
-  //       id: facility.facility_id,
-  //       name: facility.facility_name,
-  //       address: facility.facility_address,
-  //       city: facility.facility_city,
-  //       state: facility.facility_state,
-  //       zip: facility.facility_zip,
-  //       tenant_id: tenant_id,
-  //       projected_client_count: facility.facility_projected_client_count,
-  //     }));
-
-  //     return NextResponse.json({
-  //       tenantId: tenant_id,
-  //       owner: { id: up_user_id, email: user_email, auth_id: user_auth_id },
-  //       facilities: allFacilities,
-  //     });
-  //   } catch (error) {
-  //     console.error("Unexpected error:", error);
-  //     return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
-  //   }
-  return NextResponse.json({ user: user.user.id });
 }

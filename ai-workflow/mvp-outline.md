@@ -1,6 +1,37 @@
 # Heartly MVP Outline
 
-This document outlines the Minimum Viable Product (MVP) for the Heartly application. The MVP focuses on the essential features required to onboard users, manage clients, and perform core facility operations while transforming traditional forms into engaging, intelligent experiences with automation, smart defaults, and predictive capabilities.
+This document outlines the Minimum Viable Product (MVP) for the Heartly application. The MVP focuses on the essential features required to onboard users, manage clients, and perform core facility operations. The MVP prioritizes reliability, compliance, and core functionality over advanced features, which are planned for future releases (see Post-MVP Roadmap).
+
+## Core Feature Specifications
+
+For detailed specifications of core features, see:
+- **Multi-Facility Access**: `heartly-core-features/multi-facility-access-system.md`
+- **Dashboard System**: `heartly-core-features/customizable-dashboard-system.md`
+- **Audit System**: `heartly-core-features/granular-audit-system.md`
+- **Timeline Management**: `heartly-core-features/timeline-management-system.md`
+- **Cash Management**: `heartly-core-features/client-cash-management-system.md`
+- **Universal Action Button**: `heartly-core-features/universal-action-button.md`
+
+---
+
+## MVP vs Future Features
+
+This table clarifies what functionality is included in the MVP release versus planned future enhancements.
+
+| Feature | MVP Scope | Future Enhancements |
+|---------|-----------|-------------------|
+| **Dashboard** | Static layout with essential widgets for each role | Drag-and-drop customization, custom widget creation |
+| **Client Management** | Basic CRUD operations, file uploads, profile viewing | Automated workflows, predictive analytics, bulk operations |
+| **Medication Tracking** | Manual entry, basic scheduling, administration records | Barcode scanning, pharmacy integration, automated refills |
+| **Cash Management** | Basic deposit/withdraw, receipt uploads, balance tracking | Automated reconciliation, financial reports, spending analytics |
+| **Audit System** | Basic activity logging, user action tracking | Advanced analytics, pattern detection, anomaly alerts |
+| **Facility Access** | Simple facility selection and switching | Cross-facility analytics, performance comparison, network insights |
+| **Offline Support** | Not included | PWA with offline capabilities (Phase 2) |
+| **Forms** | PDF upload/download, basic data entry | Dynamic form transformation, auto-population, smart defaults |
+| **Notifications** | Basic email alerts for critical events | Smart notifications, predictive alerts, customizable rules |
+| **Analytics** | Basic reports and activity summaries | Predictive insights, trend analysis, custom report builder |
+| **Daily Notes** | Text entry with mood/goal tracking | Natural language processing, behavioral analytics |
+| **Timeline Management** | Due date tracking, basic alerts | Automated scheduling, compliance predictions |
 
 ---
 
@@ -14,7 +45,6 @@ This document outlines the Minimum Viable Product (MVP) for the Heartly applicat
   - Register
 - Onboarding
   - Facility Creation (first-time setup)
-  - Staff Creation (invite/add staff)
 
 ### 1.2. Multi-Facility Access
 
@@ -22,7 +52,7 @@ This document outlines the Minimum Viable Product (MVP) for the Heartly applicat
 - **Single Facility Users**: Direct access to their assigned facility
 - **Role-Based Access**: Different facility access rules based on user roles
 - **Facility Context**: Clear indication of current facility throughout the application
-- **Intelligent Facility Insights**: Smart recommendations and analytics for facility management
+- **Facility Analytics**: Basic usage reports and occupancy tracking
 
 ### 1.3. Navigation
 
@@ -30,7 +60,7 @@ This document outlines the Minimum Viable Product (MVP) for the Heartly applicat
   - User dropdown with Logout
   - Profile Settings (basic: change password)
   - **Facility Selector**: Quick facility switching for multi-facility users
-  - **Intelligent Notifications**: Smart alerts and recommendations
+  - **Notifications**: Basic alerts for important events
 
 ---
 
@@ -38,87 +68,87 @@ This document outlines the Minimum Viable Product (MVP) for the Heartly applicat
 
 ### 2.1. Client List & Profile
 
-- View list of clients with **profile completion progress indicators** and intelligent completion prediction
+- View list of clients with **profile completion progress indicators**
 - Select client to view basic profile/overview
 - Dynamic routing to client dashboard (clients/{id})
-- **Timeline compliance status** visible on client list with intelligent risk assessment
+- **Timeline compliance status** visible on client list
 - **Facility Context**: Clear indication of which facility the client belongs to
-- **Smart Recommendations**: Intelligent suggestions for incomplete profiles and missing requirements
+- **Profile Alerts**: Notifications for incomplete profiles and missing requirements
 
 ### 2.2. Client Dashboard (MVP Components)
 
 - **Daily Notes** (add/view for a client)
-  - Intelligent, intuitive interface for entering daily notes with mood tracking
-  - Mood tracking with interactive sliders and pattern recognition
-  - Goal progress tracking with automated insights
-  - Natural language data entry with smart suggestions
-  - Behavioral analytics and trend analysis
+  - Simple form for entering daily observations
+  - Basic mood tracking (1-5 scale or simple categories)
+  - Goal progress checkboxes
+  - Text fields for notes and observations
+  - View history of previous notes
 - **Medication Administration Tracker** (record/administer meds)
-  - Interactive medication scheduling with barcode integration
-  - Quick check-in/check-out interface with dosage validation
-  - Visual medication tracking with automated conflict detection
-  - Integration with pharmacy systems for automated refill management
+  - Manual medication entry and scheduling
+  - Check-in/check-out interface with time stamps
+  - Basic medication list and dosage tracking
+  - Simple administration record keeping
 - **File Upload/Download for client** (forms, docs)
-  - PDF export capability for all data with automated formatting
-  - Document management with audit trails and intelligent organization
-  - Smart document categorization and search
+  - PDF export capability for all data
+  - Document management with audit trails
+  - Basic document categorization by type
 - **Cash Management** (deposit/withdraw for client)
   - Simple transaction interface with signature requirements
-  - Balance tracking and history with intelligent financial monitoring
-  - Receipt upload and management with automated association
+  - Balance tracking and transaction history
+  - Receipt upload and storage
 - **Recent Activity** (basic audit of actions on client)
-  - Timeline view of all client interactions with intelligent analysis
-  - Audit trail for regulatory compliance with risk assessment
-  - Pattern recognition and behavioral insights
+  - Timeline view of all client interactions
+  - Audit trail for regulatory compliance
+  - Basic activity log with timestamps and users
 - **Profile Completion Progress**
-  - Real-time completion status with intelligent prediction
-  - Missing requirements alerts with smart recommendations
-  - Due date tracking for required documentation with automated notifications
+  - Real-time completion status percentage
+  - List of missing requirements
+  - Due date tracking for required documentation
 
 ---
 
 ## 3. Staff Dashboard
 
-- View action items (ToDo/Tasks) with intelligent prioritization
-- View recent activity with pattern analysis
-- View recent notes with behavioral insights
-- View special incident reports (basic list) with risk assessment
-- **Engaging Interface**: Dashboard that feels like a helpful tool, not paperwork
-- **Timeline Alerts**: Notifications for upcoming deadlines and incomplete profiles with intelligent escalation
-- **Compliance Overview**: Quick view of facility-wide completion status with risk assessment
-- **Basic Widget Layout**: Static dashboard with essential widgets for staff role and intelligent insights
+- View action items (ToDo/Tasks) sorted by due date and priority
+- View recent activity log
+- View recent notes from all staff
+- View special incident reports (basic list)
+- **Clean Interface**: Dashboard with clear, organized information display
+- **Timeline Alerts**: Email notifications for upcoming deadlines and incomplete profiles
+- **Compliance Overview**: Quick view of facility-wide completion status
+- **Basic Widget Layout**: Static dashboard with essential widgets for staff role
 - **Facility Context**: Clear indication of current facility and access permissions
-- **Smart Recommendations**: Intelligent suggestions for improving care quality and efficiency
+- **Task Management**: Clear action items and daily priorities
 
 ---
 
 ## 4. Admin Portal (MVP Scope)
 
-- Facility Dashboard (basic: view facility, occupancy) with intelligent analytics
-- Staff Management (view/add staff, assign roles) with smart role recommendations
-- Client Management (view/add/edit/delete clients) with intelligent client insights
-- Settings: User management (add/remove users, assign roles), basic notifications with intelligent routing
-- **Compliance Features**: Audit trail access and PDF export capabilities with intelligent compliance monitoring
-- **Timeline Management**: Overview of all deadlines and compliance requirements with predictive analytics
-- **Profile Completion Reports**: Facility-wide completion status and missing requirements with intelligent recommendations
-- **Basic Dashboard Customization**: Simple layout options for staff and client dashboards with intelligent widget suggestions
-- **Multi-Facility Management**: Basic facility switching and management for multi-facility users with cross-facility analytics
+- Facility Dashboard (basic: view facility, occupancy statistics)
+- Staff Management (view/add staff, assign roles)
+- Client Management (view/add/edit/delete clients)
+- Settings: User management (add/remove users, assign roles), basic notification preferences
+- **Compliance Features**: Audit trail access and PDF export capabilities
+- **Timeline Management**: Overview of all deadlines and compliance requirements
+- **Profile Completion Reports**: Facility-wide completion status and missing requirements
+- **Basic Dashboard Layout**: Pre-configured dashboards for each role
+- **Multi-Facility Management**: Basic facility switching and management for multi-facility users
 
 ---
 
 ## 5. Essential System Features
 
-- Role-based access (basic: Admin, Staff) with intelligent permission management
-- Audit log of key actions (recent activity) with intelligent risk assessment
-- Secure authentication and session management with smart security monitoring
-- **PDF Compliance**: All data exportable to official forms with automated formatting
-- **Timeline Compliance**: Tracking of required documentation deadlines with intelligent reminders
-- **Due Date Management**: Comprehensive tracking of all deadlines and suspense dates with automated escalation
-- **Profile Completion Tracking**: Real-time monitoring of client profile completeness with intelligent recommendations
-- **Basic Widget System**: Essential widgets for each user role with intelligent data visualization
-- **Multi-Facility Access**: Basic facility selection and switching capabilities with intelligent cross-facility insights
-- **Intelligent Automation**: Smart defaults, automated workflows, and basic predictive insights
-- **Enhanced Integration**: Basic integration with external systems and real-time data synchronization
+- Role-based access (basic: Admin, Staff)
+- Audit log of key actions (recent activity)
+- Secure authentication and session management
+- **PDF Compliance**: All data exportable to official forms
+- **Timeline Compliance**: Tracking of required documentation deadlines
+- **Due Date Management**: Tracking of all deadlines and suspense dates
+- **Profile Completion Tracking**: Real-time monitoring of client profile completeness
+- **Basic Widget System**: Essential widgets for each user role
+- **Multi-Facility Access**: Basic facility selection and switching capabilities
+- **Data Entry**: Simple forms with basic validation
+- **Basic Reporting**: Essential reports for compliance and operations
 
 ---
 
@@ -127,151 +157,141 @@ This document outlines the Minimum Viable Product (MVP) for the Heartly applicat
 ### Traditional vs. Heartly Approach
 
 **Traditional**: Digital forms that still feel like filling out paperwork
-**Heartly**: Intelligent, engaging interfaces that feel like helpful tools with automation and smart insights
+**Heartly MVP**: Clean, user-friendly interfaces that simplify data entry
+**Future**: Engaging interfaces with automation and predictive capabilities
 
-### MVP Form Transformations1 **Daily Notes**
+### MVP Form Transformations
 
+1. **Daily Notes**
    - Instead of: "Fill out daily notes form"
-   - Heartly: "How was [Client Name]'s day? with intelligent, intuitive input options and pattern recognition
+   - Heartly MVP: "Add daily note for [Client Name]" with structured fields
 
 2. **Medication Administration**
-
    - Instead of: "Medication administration record form"
-   - Heartly: "Quick check-in: Did [Client Name] take their 2pm medication?" with barcode scanning and automated validation
+   - Heartly MVP: "Record medication for [Client Name]" with time stamps
 
 3. **Client Information**
    - Instead of: "Client information form"
-   - Heartly: Progressive disclosure with smart defaults, intelligent suggestions, and automated field population
+   - Heartly MVP: Step-by-step profile creation with clear sections
 
 ### PDF Compliance Requirements
 
 - All data must be exportable to official PDF forms for regulatory requirements
-- Complete audit trails for regulatory inspections with intelligent compliance verification
-- Timeline compliance tracking for required documentation with automated alerts
-- California regional center and licensing inspection readiness with intelligent preparation tools
+- Complete audit trails for regulatory inspections
+- Timeline compliance tracking for required documentation
+- California regional center and licensing inspection readiness
 
 ---
 
 ## 7. Timeline & Deadline Management
 
-### Due Date Tracking
+The MVP includes basic timeline tracking for regulatory compliance and deadline management.
 
-- **Client Admission**: Track required documentation within 30 days of admission with intelligent reminders
-- **Quarterly Reports**: Automated tracking of quarterly report deadlines with smart generation
-- **Annual Reviews**: Yearly documentation requirements and deadlines with predictive scheduling
-- **Medication Reviews**: Regular medication review and update deadlines with automated alerts
+**Complete Specifications**: See `heartly-core-features/timeline-management-system.md`
 
-### Suspense Date Management
+**MVP Implementation**:
+- Basic due date tracking for client documentation
+- Simple deadline notifications via email
+- Profile completion progress indicators
+- Basic compliance dashboard
 
-- **Critical Deadlines**: High-priority suspense dates with escalation alerts and intelligent prioritization
-- **Compliance Requirements**: Regulatory deadlines with automatic notifications and risk assessment
-- **Documentation Updates**: Required updates and review deadlines with smart workflow triggers
-
-### Profile Completion Progress
-
-- **Real-time Indicators**: Visual progress bars on client list and profiles with intelligent completion prediction
-- **Missing Requirements**: Clear identification of incomplete documentation with smart recommendations
-- **Completion Alerts**: Notifications for staff and administrators with automated task assignment
-- **Compliance Dashboard**: Facility-wide overview of completion status with intelligent risk assessment
+**Future Enhancements** (Phase 2+):
+- Automated deadline predictions
+- Advanced compliance analytics
+- Intelligent reminder scheduling
 
 ---
 
 ## 8. Multi-Facility Access System
 
-### Facility Selection Flow
+The MVP includes basic multi-facility support with facility selection, role-based access, and context switching.
 
-1 Login**: Standard authentication process with intelligent session management
-2. **Facility Check**: System checks user's facility assignments with smart access recommendations
-3. **Single Facility**: Direct access to dashboard if only one facility
-4. **Multiple Facilities**: Facility selection screen with available options and intelligent insights
-5. **Facility Selection**: User chooses which facility to work in with smart context switching
-6**Context Setup**: Application loads with selected facility context and intelligent analytics
+**Complete Specifications**: See `heartly-core-features/multi-facility-access-system.md`
 
-### Role-Based Access Rules
+**MVP Implementation**:
+- Basic facility selection screen for multi-facility users
+- Simple role-based access (Owner, Admin, Staff)
+- Context switching between facilities
+- Basic audit logging of facility access
 
-#### Owners
-
-- **Access**: All facilities they own with intelligent cross-facility analytics
-- **Switching**: Can switch between any owned facility with smart context management
-- **Management**: Full management capabilities across all facilities with intelligent insights
-- **Audit**: Complete audit trails across all facilities with intelligent risk assessment
-
-#### Administrators
-
-- **Access**: All facilities they are assigned to with intelligent facility insights
-- **Switching**: Can switch between assigned facilities with smart workflow management
-- **Management**: Management capabilities for assigned facilities with intelligent recommendations
-- **Audit**: Audit trails for assigned facilities with intelligent compliance monitoring
-
-#### Staff
-
-- **Access**: Facilities where they are currently on shift with intelligent access management
-- **Switching**: Limited to facilities with active shift assignments with smart context switching
-- **Management**: Basic operational capabilities with intelligent task recommendations
-- **Audit**: Audit trails for current facility only with intelligent activity monitoring
-
-### Facility Context Features
-
-- **Current Facility Indicator**: Clear display of active facility with intelligent context management
-- **Facility Switcher**: Quick facility switching for authorized users with smart recommendations
-- **Context-Aware Data**: All data filtered by current facility with intelligent cross-facility insights
-- **Access Controls**: Proper permissions based on facility and role with intelligent security monitoring
-- **Audit Logging**: Complete tracking of facility access and switching with intelligent behavioral analysis
+**Future Enhancements** (Phase 2+):
+- Cross-facility analytics
+- Advanced permission management
+- Network-wide reporting
 
 ---
 
-## 9. Dashboard Customization (Future Enhancement)
+## Post-MVP Roadmap
+
+### Phase 2 (Months 4-6)
+- Offline capabilities with PWA
+- Drag-and-drop dashboard customization
+- Advanced analytics and reporting
+- Barcode scanning for medications
+- Smart defaults and auto-population
+- Enhanced audit trail analytics
+
+### Phase 3 (Months 7-9)
+- Pharmacy integration
+- Natural language processing for notes
+- Predictive analytics for compliance
+- Cross-facility performance metrics
+- Advanced role-based permissions
+- Custom widget creation
+
+### Phase 4 (Months 10-12)
+- Mobile applications (iOS/Android)
+- Voice input capabilities
+- AI-powered insights and recommendations
+- Advanced automation workflows
+- Enterprise multi-facility management
+- Machine learning for pattern detection
+
+---
+
+## 9. Dashboard Customization (Future Enhancement - Phase 2)
+
+Note: This feature is planned for Phase 2, not included in MVP.
 
 ### Widget Library
-
-- **Client Management Widgets**: Client list, profile completion, recent activity with intelligent insights
-- **Timeline Widgets**: Due dates, suspense dates, compliance status with intelligent risk assessment
-- **Audit Widgets**: Recent changes, user activity, audit trails with intelligent analysis
-- **Analytics Widgets**: Facility statistics, trends, insights with predictive analytics
-- **Communication Widgets**: Notifications, alerts, messages with intelligent routing
-- **Multi-Facility Widgets**: Cross-facility overview, network statistics with intelligent coordination
-- **Intelligent Insights Widgets**: Pattern recognition, trend analysis, and automated recommendations
+- Client Management Widgets: Client list, profile completion, recent activity
+- Timeline Widgets: Due dates, suspense dates, compliance status
+- Audit Widgets: Recent changes, user activity, audit trails
+- Analytics Widgets: Facility statistics, trends, reports
+- Communication Widgets: Notifications, alerts, messages
+- Multi-Facility Widgets: Cross-facility overview, network statistics
 
 ### Customization Features
-
-- **Drag-and-Drop Interface**: Intuitive widget placement and arrangement with intelligent suggestions
-- **Widget Drawer**: Side drawer with example widgets that can be dragged to dashboards with smart recommendations
-- **Role-Based Layouts**: Different default layouts for different user roles with intelligent customization
-- **Layout Persistence**: Save and restore dashboard layouts with intelligent optimization
-- **Real-Time Updates**: Widgets that update with live data and intelligent insights
-- **Facility-Specific Customization**: Dashboards that adapt to specific facility needs with intelligent recommendations
+- Drag-and-Drop Interface: Widget placement and arrangement
+- Widget Drawer: Side drawer with widgets to add to dashboards
+- Role-Based Layouts: Different default layouts for different user roles
+- Layout Persistence: Save and restore dashboard layouts
+- Real-Time Updates: Widgets update with live data
+- Facility-Specific Customization: Dashboards for specific facility needs
 
 ### Administrator Control
-
-- **Staff Dashboard Customization**: Administrators can customize staff dashboard layouts with intelligent suggestions
-- **Client Dashboard Customization**: Administrators can customize client dashboard layouts with smart recommendations
-- **Widget Configuration**: Configure widget settings and data sources with intelligent optimization
-- **Layout Templates**: Pre-built layout templates for different facility types with intelligent customization
-- **Multi-Facility Management**: Customize dashboards across multiple facilities with intelligent coordination
+- Staff Dashboard Customization: Administrators can customize staff layouts
+- Client Dashboard Customization: Administrators can customize client layouts
+- Widget Configuration: Configure widget settings and data sources
+- Layout Templates: Pre-built templates for different facility types
+- Multi-Facility Management: Customize dashboards across multiple facilities
 
 ---
 
-## Out of Scope for MVP (Future Releases)
+## Out of Scope for MVP (See Post-MVP Roadmap)
 
-- Advanced scheduling, shift management with intelligent optimization
+- Advanced scheduling and shift management
 - Certification/training management
-- Advanced search/filtering with intelligent recommendations
-- Payment methods with intelligent financial management
-- Advanced reporting/analytics with predictive modeling and intelligent insights
-- Mood/Outburst tracker, IPP goals, weight management, etc.
-- Bulletin, calendar, advanced notifications
+- Advanced search/filtering capabilities
+- Payment processing and financial management
+- Advanced reporting and predictive analytics
+- Mood/Outburst tracker, IPP goals, weight management
+- Bulletin board, calendar, advanced notifications
 - Natural language processing and voice-to-text
-- Advanced AI/ML features with personalized recommendations and predictive analytics
-- Advanced conversational AI
-- Predictive deadline management
-- Advanced timeline analytics
-- Full dashboard customization system
-- Advanced widget library
-- AI-powered dashboard optimization
-- Advanced multi-facility analytics
-- Cross-facility reporting
-- Network-wide insights
-- Enterprise multi-facility management
+- AI/ML features and recommendations
+- Dashboard customization (Phase 2)
+- Cross-facility analytics and reporting
+- Enterprise features
 
 ---
 

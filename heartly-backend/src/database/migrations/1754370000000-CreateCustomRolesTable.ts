@@ -81,21 +81,21 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
         foreignKeys: [
           {
             columnNames: ['tenant_id'],
-            referencedTableName: 'tenants',
+            referencedTableName: 'tenant',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
             name: 'fk_custom_roles_tenant_id',
           },
           {
             columnNames: ['created_by'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'SET NULL',
             name: 'fk_custom_roles_created_by',
           },
           {
             columnNames: ['updated_by'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'SET NULL',
             name: 'fk_custom_roles_updated_by',
@@ -106,22 +106,19 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
     );
 
     // Create unique index for role name per tenant
-    await queryRunner.query(`
-      CREATE UNIQUE INDEX "idx_custom_roles_name_tenant_unique" 
-      ON "custom_roles" ("tenant_id", "name")
-    `);
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "idx_custom_roles_name_tenant_unique" ON "custom_roles" ("tenant_id", "name")`,
+    );
 
     // Create index for active roles per tenant
-    await queryRunner.query(`
-      CREATE INDEX "idx_custom_roles_tenant_active" 
-      ON "custom_roles" ("tenant_id", "is_active")
-    `);
+    await queryRunner.query(
+      `CREATE INDEX "idx_custom_roles_tenant_active" ON "custom_roles" ("tenant_id", "is_active")`,
+    );
 
     // Create index for system roles
-    await queryRunner.query(`
-      CREATE INDEX "idx_custom_roles_is_system" 
-      ON "custom_roles" ("is_system")
-    `);
+    await queryRunner.query(
+      `CREATE INDEX "idx_custom_roles_is_system" ON "custom_roles" ("is_system")`,
+    );
 
     // Insert default system roles for documentation purposes
     // Note: These will be managed by SuperTokens but tracked here for UI purposes
@@ -145,7 +142,7 @@ export class CreateCustomRolesTable1754370000000 implements MigrationInterface {
           ('STAFF', 'Staff Member', 'Basic operational access for client management',
            '["users:read","facilities:read","clients:read","clients:write","audit:read"]')
       ) AS system_roles(role_name, display_name, description, permissions)
-      CROSS JOIN tenants t;
+      CROSS JOIN tenant t;
     `);
   }
 

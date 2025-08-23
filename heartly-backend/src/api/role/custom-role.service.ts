@@ -1,11 +1,17 @@
-import { Injectable, Logger, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CustomRoleEntity } from './entities/custom-role.entity';
-import { CreateCustomRoleDto } from './dto/create-custom-role.dto';
-import { UpdateCustomRoleDto } from './dto/update-custom-role.dto';
 import { SuperTokensRolesService } from '../../utils/supertokens/roles.service';
 import { UserRole } from '../user/entities/user.entity';
+import { CreateCustomRoleDto } from './dto/create-custom-role.dto';
+import { UpdateCustomRoleDto } from './dto/update-custom-role.dto';
+import { CustomRoleEntity } from './entities/custom-role.entity';
 
 @Injectable()
 export class CustomRoleService {
@@ -28,7 +34,9 @@ export class CustomRoleService {
     try {
       // Validate that role name doesn't conflict with system roles
       if (this.superTokensRolesService.isSystemRole(dto.name)) {
-        throw new ConflictException(`Role name '${dto.name}' conflicts with system role`);
+        throw new ConflictException(
+          `Role name '${dto.name}' conflicts with system role`,
+        );
       }
 
       // Check if role already exists for this tenant
@@ -37,13 +45,16 @@ export class CustomRoleService {
       });
 
       if (existingRole) {
-        throw new ConflictException(`Role '${dto.name}' already exists for this tenant`);
+        throw new ConflictException(
+          `Role '${dto.name}' already exists for this tenant`,
+        );
       }
 
       // Validate permissions
-      const availablePermissions = this.superTokensRolesService.getAllAvailablePermissions();
+      const availablePermissions =
+        this.superTokensRolesService.getAllAvailablePermissions();
       const invalidPermissions = dto.permissions.filter(
-        permission => !availablePermissions.includes(permission),
+        (permission) => !availablePermissions.includes(permission),
       );
 
       if (invalidPermissions.length > 0) {
@@ -69,7 +80,9 @@ export class CustomRoleService {
         tenantId,
       );
 
-      this.logger.log(`Created custom role '${dto.name}' for tenant ${tenantId}`);
+      this.logger.log(
+        `Created custom role '${dto.name}' for tenant ${tenantId}`,
+      );
       return savedRole;
     } catch (error) {
       this.logger.error(`Failed to create custom role '${dto.name}'`, error);
@@ -91,29 +104,40 @@ export class CustomRoleService {
    * Get all roles for a tenant (system + custom)
    */
   async getAllTenantRoles(tenantId: string): Promise<{
-    systemRoles: Array<{ name: string; displayName: string; isSystem: true; permissions: string[] }>;
+    systemRoles: Array<{
+      name: string;
+      displayName: string;
+      isSystem: true;
+      permissions: string[];
+    }>;
     customRoles: CustomRoleEntity[];
   }> {
     const customRoles = await this.getCustomRoles(tenantId);
-    
+
     const systemRoles = [
       {
         name: UserRole.OWNER,
         displayName: 'Owner',
         isSystem: true as const,
-        permissions: await this.superTokensRolesService.getRolePermissions(UserRole.OWNER),
+        permissions: await this.superTokensRolesService.getRolePermissions(
+          UserRole.OWNER,
+        ),
       },
       {
         name: UserRole.ADMIN,
         displayName: 'Administrator',
         isSystem: true as const,
-        permissions: await this.superTokensRolesService.getRolePermissions(UserRole.ADMIN),
+        permissions: await this.superTokensRolesService.getRolePermissions(
+          UserRole.ADMIN,
+        ),
       },
       {
         name: UserRole.STAFF,
         displayName: 'Staff Member',
         isSystem: true as const,
-        permissions: await this.superTokensRolesService.getRolePermissions(UserRole.STAFF),
+        permissions: await this.superTokensRolesService.getRolePermissions(
+          UserRole.STAFF,
+        ),
       },
     ];
 
@@ -153,9 +177,10 @@ export class CustomRoleService {
 
     // Validate permissions if provided
     if (dto.permissions) {
-      const availablePermissions = this.superTokensRolesService.getAllAvailablePermissions();
+      const availablePermissions =
+        this.superTokensRolesService.getAllAvailablePermissions();
       const invalidPermissions = dto.permissions.filter(
-        permission => !availablePermissions.includes(permission),
+        (permission) => !availablePermissions.includes(permission),
       );
 
       if (invalidPermissions.length > 0) {
@@ -176,7 +201,9 @@ export class CustomRoleService {
     Object.assign(role, dto, { updatedBy });
     const updatedRole = await this.customRoleRepository.save(role);
 
-    this.logger.log(`Updated custom role '${role.name}' for tenant ${tenantId}`);
+    this.logger.log(
+      `Updated custom role '${role.name}' for tenant ${tenantId}`,
+    );
     return updatedRole;
   }
 
@@ -201,7 +228,9 @@ export class CustomRoleService {
     role.isActive = false;
     await this.customRoleRepository.save(role);
 
-    this.logger.log(`Deleted custom role '${role.name}' for tenant ${tenantId}`);
+    this.logger.log(
+      `Deleted custom role '${role.name}' for tenant ${tenantId}`,
+    );
   }
 
   /**
@@ -259,10 +288,15 @@ export class CustomRoleService {
   /**
    * Validate role permissions
    */
-  validatePermissions(permissions: string[]): { valid: string[]; invalid: string[] } {
+  validatePermissions(permissions: string[]): {
+    valid: string[];
+    invalid: string[];
+  } {
     const availablePermissions = this.getAllAvailablePermissions();
-    const valid = permissions.filter(p => availablePermissions.includes(p));
-    const invalid = permissions.filter(p => !availablePermissions.includes(p));
+    const valid = permissions.filter((p) => availablePermissions.includes(p));
+    const invalid = permissions.filter(
+      (p) => !availablePermissions.includes(p),
+    );
     return { valid, invalid };
   }
 }
