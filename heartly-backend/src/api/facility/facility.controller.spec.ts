@@ -6,6 +6,7 @@ import { UpdateFacilityDto } from './dto/updateFacility.req.dto';
 import { FacilityResDto } from './dto/getFacility.res.dto';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UnauthorizedException } from '@nestjs/common';
+import { SuperTokensRolesService } from '@/utils/supertokens/roles.service';
 
 describe('FacilityController', () => {
   let controller: FacilityController;
@@ -26,6 +27,17 @@ describe('FacilityController', () => {
     getAccessTokenPayload: jest.fn(),
   } as unknown as SessionContainer;
 
+  const mockSuperTokensRolesService = {
+    getUserRoles: jest.fn(),
+    hasRole: jest.fn(),
+    addRoleToUser: jest.fn(),
+    removeRoleFromUser: jest.fn(),
+    createCustomRole: jest.fn(),
+    deleteCustomRole: jest.fn(),
+    getCustomRoles: jest.fn(),
+    updateCustomRole: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FacilityController],
@@ -33,6 +45,10 @@ describe('FacilityController', () => {
         {
           provide: FacilityService,
           useValue: mockFacilityService,
+        },
+        {
+          provide: SuperTokensRolesService,
+          useValue: mockSuperTokensRolesService,
         },
       ],
     }).compile();
